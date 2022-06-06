@@ -1,5 +1,5 @@
 ---
-title: "OysterWorkspace"
+title: "Oyster Workspace"
 author: "Ruby K"
 date: '2022-06-06'
 output:
@@ -46,18 +46,18 @@ ggplot(initialHeights,aes(x=initialHeights1))+geom_histogram(binwidth = 5, fill=
 ```{r random-table}
 library(knitr)
 randTable<-data.frame()
-for (i in 1:6) {
+for (i in 1:4) {
   newRow<-sample(1:3, 30, replace=TRUE)
   randTable<-rbind(randTable,newRow)
 }
 colnames(randTable)<-c(1:30)
-rownames(randTable)<-c("control_in", "control_out", "FB_in", "FB_out", "OG_in", "OG_out")
+rownames(randTable)<-c("FB_in", "FB_out", "OG_in", "OG_out")
 
 Ones<-c()
 Twos<-c()
 Threes<-c()
 
-for (i in 1:6) {
+for (i in 1:4) {
   sumOne<-0
   sumTwo<-0
   sumThree<-0
@@ -68,6 +68,7 @@ for (i in 1:6) {
   Twos[i]=sumTwo
   Threes[i]=sumThree
 }
+
 randTable<-cbind(randTable, Ones)
 randTable<-cbind(randTable, Twos)
 randTable<-cbind(randTable, Threes)
@@ -75,3 +76,17 @@ randTable<-cbind(randTable, Threes)
 kable(randTable)
 ```
 This code segment can be re-run each day that the shell dimensions will be sampled to generate a new table of random numbers. When sampling for biofouling or condition index, the "j" loop can be altered to run 15 times instead of 30.
+
+Similar code can be used to generate a table to randomly select the bags to be pulled from within a given 4-pack OysterGro cage.
+
+```{r echo=FALSE}
+randTableOG<-data.frame()
+for (i in 1:3) {
+  newRow<-sample(1:4, 30, replace=TRUE)
+  randTableOG<-rbind(randTableOG,newRow)
+}
+colnames(randTableOG)<-c(1:30)
+rownames(randTableOG)<-c("Cage 1", "Cage 2", "Cage 3")
+kable(randTableOG)
+```
+
