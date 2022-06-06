@@ -33,7 +33,7 @@ lowerLimit
 initialHeights<-data.frame(initialHeights1)
 ```
 
-The mean is `r oysterAvgInitial`mm and the standard deviation is `r initialHeightSD` mm. The acceptable range of oyster shell heights for the experimental bags will be from `r upperLimit` mm to `r lowerLimit` mm.
+The mean is `r round(oysterAvgInitial, digits=2)`mm and the standard deviation is `r round(initialHeightSD, digits=2)` mm. The acceptable range of oyster shell heights for the experimental bags will be from `r round(upperLimit, digits=2)` mm to `r round(lowerLimit, digits=2)` mm.
 
 ```{r warning=FALSE, initialShellHeightDist, fig.width=4, fig.height=3, fig.align='center'}
 library(ggplot2)
@@ -74,4 +74,4 @@ randTable<-cbind(randTable, Threes)
 
 kable(randTable)
 ```
-This code segment can be run each day that the shell dimensions will be sampled, generating a new table of random numbers each time. When sampling for biofouling or condition index, the "j" loop can be altered to run 15 times instead of 30.
+This code segment can be re-run each day that the shell dimensions will be sampled to generate a new table of random numbers. When sampling for biofouling or condition index, the "j" loop can be altered to run 15 times instead of 30.
