@@ -11,7 +11,7 @@
 
 <meta name="author" content="Ruby K" />
 
-<meta name="date" content="2022-06-06" />
+<meta name="date" content="2022-06-08" />
 
 <title>Oyster Workspace</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">Oyster Workspace</h1>
 <h4 class="author">Ruby K</h4>
-<h4 class="date">2022-06-06</h4>
+<h4 class="date">2022-06-08</h4>
 
 </div>
 
@@ -408,7 +408,7 @@ for (i in 1:4) {
   randTable&lt;-rbind(randTable,newRow)
 }
 colnames(randTable)&lt;-c(1:30)
-rownames(randTable)&lt;-c(&quot;FB_in&quot;, &quot;FB_out&quot;, &quot;OG_in&quot;, &quot;OG_out&quot;)
+rownames(randTable)&lt;-c(&quot;Bags_in&quot;, &quot;Bags_out&quot;, &quot;Cages_in&quot;, &quot;Cages_out&quot;)
 
 Ones&lt;-c()
 Twos&lt;-c()
@@ -431,9 +431,9 @@ randTable&lt;-cbind(randTable, Twos)
 randTable&lt;-cbind(randTable, Threes)
 
 kable(randTable)</code></pre>
-<table style="width:100%;">
+<table>
 <colgroup>
-<col width="6%" />
+<col width="8%" />
 <col width="2%" />
 <col width="2%" />
 <col width="2%" />
@@ -466,7 +466,7 @@ kable(randTable)</code></pre>
 <col width="2%" />
 <col width="4%" />
 <col width="4%" />
-<col width="6%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -508,9 +508,7 @@ kable(randTable)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">FB_in</td>
-<td align="right">2</td>
-<td align="right">1</td>
+<td align="left">Bags_in</td>
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">1</td>
@@ -519,137 +517,139 @@ kable(randTable)</code></pre>
 <td align="right">2</td>
 <td align="right">2</td>
 <td align="right">2</td>
-<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">1</td>
 <td align="right">3</td>
 <td align="right">2</td>
 <td align="right">1</td>
+<td align="right">2</td>
 <td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">2</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">2</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">12</td>
-<td align="right">9</td>
-<td align="right">9</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">10</td>
 </tr>
 <tr class="even">
-<td align="left">FB_out</td>
+<td align="left">Bags_out</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">3</td>
+<td align="right">3</td>
 <td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">2</td>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">2</td>
+<td align="right">1</td>
 <td align="right">3</td>
 <td align="right">2</td>
 <td align="right">3</td>
-<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">1</td>
-<td align="right">2</td>
 <td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">3</td>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">7</td>
-<td align="right">14</td>
-<td align="right">9</td>
+<td align="right">7</td>
+<td align="right">16</td>
 </tr>
 <tr class="odd">
-<td align="left">OG_in</td>
-<td align="right">2</td>
+<td align="left">Cages_in</td>
 <td align="right">1</td>
-<td align="right">2</td>
 <td align="right">1</td>
-<td align="right">3</td>
-<td align="right">2</td>
 <td align="right">1</td>
 <td align="right">1</td>
 <td align="right">3</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">1</td>
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">2</td>
 <td align="right">2</td>
-<td align="right">14</td>
-<td align="right">7</td>
-<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">16</td>
+<td align="right">6</td>
+<td align="right">8</td>
 </tr>
 <tr class="even">
-<td align="left">OG_out</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">3</td>
+<td align="left">Cages_out</td>
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">2</td>
 <td align="right">2</td>
 <td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">1</td>
 <td align="right">2</td>
 <td align="right">2</td>
-<td align="right">9</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">1</td>
 <td align="right">12</td>
-<td align="right">9</td>
+<td align="right">10</td>
+<td align="right">8</td>
 </tr>
 </tbody>
 </table>
@@ -658,7 +658,7 @@ will be sampled to generate a new table of random numbers. When sampling
 for biofouling or condition index, the “j” loop can be altered to run 15
 times instead of 30.</p>
 <p>Similar code can be used to generate a table to randomly select the
-bags to be pulled from within a given 4-pack OysterGro cage.</p>
+bags to be pulled from within a given 4-pack floating cage.</p>
 <table>
 <colgroup>
 <col width="7%" />
@@ -734,99 +734,99 @@ bags to be pulled from within a given 4-pack OysterGro cage.</p>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">4</td>
-<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">3</td>
 <td align="right">2</td>
-<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">4</td>
 <td align="right">4</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">4</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">4</td>
 <td align="right">3</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">2</td>
-<td align="right">4</td>
 </tr>
 <tr class="even">
 <td align="left">Cage 2</td>
 <td align="right">4</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">4</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">2</td>
-<td align="right">4</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">2</td>
 <td align="right">1</td>
 <td align="right">3</td>
-<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">1</td>
 <td align="right">3</td>
 <td align="right">3</td>
 <td align="right">4</td>
 <td align="right">2</td>
-<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">3</td>
 <td align="right">1</td>
 <td align="right">4</td>
 <td align="right">2</td>
 <td align="right">2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">3</td>
 <td align="right">2</td>
+<td align="right">1</td>
 <td align="right">2</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
 </tr>
 <tr class="odd">
 <td align="left">Cage 3</td>
 <td align="right">1</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
-<td align="right">2</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">3</td>
 <td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">3</td>
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">4</td>
 <td align="right">2</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">2</td>
-<td align="right">1</td>
+<td align="right">3</td>
 </tr>
 </tbody>
 </table>

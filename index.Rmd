@@ -1,7 +1,7 @@
 ---
 title: "Oyster Workspace"
 author: "Ruby K"
-date: '2022-06-06'
+date: '2022-06-08'
 output:
   html_document: default
   pdf_document: default
@@ -51,7 +51,7 @@ for (i in 1:4) {
   randTable<-rbind(randTable,newRow)
 }
 colnames(randTable)<-c(1:30)
-rownames(randTable)<-c("FB_in", "FB_out", "OG_in", "OG_out")
+rownames(randTable)<-c("Bags_in", "Bags_out", "Cages_in", "Cages_out")
 
 Ones<-c()
 Twos<-c()
@@ -77,16 +77,16 @@ kable(randTable)
 ```
 This code segment can be re-run each day that the shell dimensions will be sampled to generate a new table of random numbers. When sampling for biofouling or condition index, the "j" loop can be altered to run 15 times instead of 30.
 
-Similar code can be used to generate a table to randomly select the bags to be pulled from within a given 4-pack OysterGro cage.
+Similar code can be used to generate a table to randomly select the bags to be pulled from within a given 4-pack floating cage.
 
 ```{r echo=FALSE}
-randTableOG<-data.frame()
+randTableFC<-data.frame()
 for (i in 1:3) {
   newRow<-sample(1:4, 30, replace=TRUE)
-  randTableOG<-rbind(randTableOG,newRow)
+  randTableFC<-rbind(randTableFC,newRow)
 }
-colnames(randTableOG)<-c(1:30)
-rownames(randTableOG)<-c("Cage 1", "Cage 2", "Cage 3")
-kable(randTableOG)
+colnames(randTableFC)<-c(1:30)
+rownames(randTableFC)<-c("Cage 1", "Cage 2", "Cage 3")
+kable(randTableFC)
 ```
 
