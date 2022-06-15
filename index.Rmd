@@ -1,7 +1,7 @@
 ---
 title: "Oyster Workspace"
 author: "Ruby K"
-date: '2022-06-08'
+date: '2022-06-15'
 output:
   html_document: default
   pdf_document: default
@@ -41,52 +41,39 @@ ggplot(initialHeights,aes(x=initialHeights1))+geom_histogram(binwidth = 5, fill=
 ```
 
 
-## Random Number Generation for Sampling
+## Outside Floating Bag Replacement
 
-```{r random-table}
-library(knitr)
-randTable<-data.frame()
-for (i in 1:4) {
-  newRow<-sample(1:3, 30, replace=TRUE)
-  randTable<-rbind(randTable,newRow)
-}
-colnames(randTable)<-c(1:30)
-rownames(randTable)<-c("Bags_in", "Bags_out", "Cages_in", "Cages_out")
+At some point during the initial sampling day (6/14), the middle floating bag outside the pound became detached from the line and could not be recovered. A replacement bag was stocked from the "leftover" oysters in the population used to stock the original experimental gear. These leftover oysters were being stored in a submerged plastic crate attached to the dock within the North Pound. Only 7 full days had elapsed since the initial stocking was completed, so it was hypothesized that the oysters in the source population would not yet show significant morphological differences from those in the experimental gear.
 
-Ones<-c()
-Twos<-c()
-Threes<-c()
+The replacement ADPI bag was filled with 175 oysters selected in the same manner as the initial treatments (i.e., randomly chosen from the larger population, excluding any animals that were dead, strongly fused together, or had a shell height outside the range of `r round(upperLimit, digits=2)`-`r round(lowerLimit, digits=2)` mm).
 
-for (i in 1:4) {
-  sumOne<-0
-  sumTwo<-0
-  sumThree<-0
-  for (j in 1:30) {
-    ifelse(randTable[i,j]==1,sumOne<-sumOne+1, ifelse(randTable[i,j]==2, sumTwo<-sumTwo+1, sumThree<-sumThree+1) )
-  }
-  Ones[i]=sumOne
-  Twos[i]=sumTwo
-  Threes[i]=sumThree
-}
+Before the placement bag was deployed, a random sample of 32 oysters was collected for comparison to the samples (n=32 for each bag) taken the previous day from the three initial outside ADPI bags. Shapiro-Wilk and Levene's tests were employed to assess the ANOVA assumptions of normality and homoscedasticity, respectively. If no assumptions were violated, a one-way ANOVA was used to determine if significant differences existed between any of the four outside ADPI bags— the three original bags plus the replacement bag. If the assumptions could not be met, the nonparametric Kruskal-Wallis test was used in place of the ANOVA.
 
-randTable<-cbind(randTable, Ones)
-randTable<-cbind(randTable, Twos)
-randTable<-cbind(randTable, Threes)
-
-kable(randTable)
+### Height
+Testing height for homoscedasticity (no violation)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+FBout<-read.csv("FBout2.csv")
+library(car)
+NewBag<-as.character(FBout$Bag)
+FBout$Bag<-NewBag
+leveneTest(Height~Bag, data=FBout)
 ```
-This code segment can be re-run each day that the shell dimensions will be sampled to generate a new table of random numbers. When sampling for biofouling or condition index, the "j" loop can be altered to run 15 times instead of 30.
 
-Similar code can be used to generate a table to randomly select the bags to be pulled from within a given 4-pack floating cage.
-
+Testing height for normality (no violations)
 ```{r echo=FALSE}
-randTableFC<-data.frame()
-for (i in 1:3) {
-  newRow<-sample(1:4, 30, replace=TRUE)
-  randTableFC<-rbind(randTableFC,newRow)
-}
-colnames(randTableFC)<-c(1:30)
-rownames(randTableFC)<-c("Cage 1", "Cage 2", "Cage 3")
-kable(randTableFC)
+ 
+bag1height<- FBout[FBout$Bag == 1,"Height"]
+shapiro.test(bag1height)
+bag2height<- FBout[FBout$Bag == 2,"Height"]
+shapiro.test(bag2height)
+bag3height<- FBout[FBout$Bag == 3,"Height"]
+shapiro.test(bag3height)
+bag4height<- FBout[FBout$Bag == 4,"Height"]
+shapiro.test(bag4height)
 ```
 
+Height ANOVA - no significant differences
+```{r}
+HeightResults<-aov(Height~Bag, data=FBout)
+summary(HeightResults)
+```
