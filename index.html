@@ -432,21 +432,29 @@ ANOVA.</p>
 ## group   3  0.3856 0.7635
 ##       124</code></pre>
 <p>Testing height for normality (no violations)</p>
+<pre class="r"><code>bag1height&lt;- FBout[FBout$Bag == 1,&quot;Height&quot;]
+shapiro.test(bag1height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1height
 ## W = 0.96398, p-value = 0.3515</code></pre>
+<pre class="r"><code>bag2height&lt;- FBout[FBout$Bag == 2,&quot;Height&quot;]
+shapiro.test(bag2height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2height
 ## W = 0.94763, p-value = 0.1234</code></pre>
+<pre class="r"><code>bag3height&lt;- FBout[FBout$Bag == 3,&quot;Height&quot;]
+shapiro.test(bag3height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3height
 ## W = 0.94142, p-value = 0.08217</code></pre>
+<pre class="r"><code>bag4height&lt;- FBout[FBout$Bag == 4,&quot;Height&quot;]
+shapiro.test(bag4height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -458,6 +466,104 @@ summary(HeightResults)</code></pre>
 <pre><code>##              Df Sum Sq Mean Sq F value Pr(&gt;F)
 ## Bag           3    437   145.6   1.427  0.238
 ## Residuals   124  12656   102.1</code></pre>
+</div>
+<div id="length" class="section level3">
+<h3>Length</h3>
+<p>Testing length for homoscedasticity (no violation)</p>
+<pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##        Df F value Pr(&gt;F)
+## group   3  0.5378 0.6572
+##       124</code></pre>
+<p>Testing length for normality (no violations)</p>
+<pre class="r"><code>bag1length&lt;- FBout[FBout$Bag == 1,&quot;Length&quot;]
+shapiro.test(bag1length) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag1length
+## W = 0.96472, p-value = 0.3677</code></pre>
+<pre class="r"><code>bag2length&lt;- FBout[FBout$Bag == 2,&quot;Length&quot;]
+shapiro.test(bag2length) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag2length
+## W = 0.9538, p-value = 0.1847</code></pre>
+<pre class="r"><code>bag3length&lt;- FBout[FBout$Bag == 3,&quot;Length&quot;]
+shapiro.test(bag3length) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag3length
+## W = 0.96006, p-value = 0.2757</code></pre>
+<pre class="r"><code>bag4length&lt;- FBout[FBout$Bag == 4,&quot;Length&quot;]
+shapiro.test(bag4length) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag4length
+## W = 0.97333, p-value = 0.596</code></pre>
+<p>Length ANOVA - no significant differences</p>
+<pre class="r"><code>LengthResults&lt;-aov(Length~Bag, data=FBout)
+summary(LengthResults)</code></pre>
+<pre><code>##              Df Sum Sq Mean Sq F value Pr(&gt;F)  
+## Bag           3    286   95.31   2.547  0.059 .
+## Residuals   124   4640   37.42                 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="width" class="section level3">
+<h3>Width</h3>
+<p>Testing width for homoscedasticity</p>
+<pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##        Df F value Pr(&gt;F)
+## group   3  1.9622 0.1231
+##       124</code></pre>
+<p>Testing width for normality</p>
+<pre class="r"><code>bag1width&lt;- FBout[FBout$Bag == 1,&quot;Width&quot;]
+shapiro.test(bag1width) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag1width
+## W = 0.94412, p-value = 0.09806</code></pre>
+<pre class="r"><code>bag2width&lt;- FBout[FBout$Bag == 2,&quot;Width&quot;]
+shapiro.test(bag2width) #Not normal, p=0.0231</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag2width
+## W = 0.92168, p-value = 0.0231</code></pre>
+<pre class="r"><code>bag3width&lt;- FBout[FBout$Bag == 3,&quot;Width&quot;]
+shapiro.test(bag3width) #Normal</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag3width
+## W = 0.93566, p-value = 0.05645</code></pre>
+<pre class="r"><code>bag4width&lt;- FBout[FBout$Bag == 4,&quot;Width&quot;]
+shapiro.test(bag4width) #Not normal, p=0.04589</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  bag4width
+## W = 0.93246, p-value = 0.04589</code></pre>
+<p>Width Kruskal-Wallis - no significant differences</p>
+<pre class="r"><code>kruskal.test(Width~Bag, data=FBout)</code></pre>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  Width by Bag
+## Kruskal-Wallis chi-squared = 2.2322, df = 3, p-value = 0.5256</code></pre>
+<p>Conclusion: no significant differences were found between the height,
+length, or widths of the oysters in any of the outside ADPI bags,
+including the replacement bag. For future analysis of growth and shell
+morphology, the replacement bag will be analyzed as if it were the
+original outside bag #2. However, biofouling did appear to be more
+severe on the replacement oysters than on the oysters in the original
+outside ADPI bags. As such, when oysters are selected from each
+treatment for biofouling analysis at the conclusion of the experiment,
+the outside FB sample will be collected from only bags #1 and #3.</p>
 </div>
 </div>
 

@@ -60,16 +60,16 @@ leveneTest(Height~Bag, data=FBout)
 ```
 
 Testing height for normality (no violations)
-```{r echo=FALSE}
+```{r}
  
 bag1height<- FBout[FBout$Bag == 1,"Height"]
-shapiro.test(bag1height)
+shapiro.test(bag1height) #Normal
 bag2height<- FBout[FBout$Bag == 2,"Height"]
-shapiro.test(bag2height)
+shapiro.test(bag2height) #Normal
 bag3height<- FBout[FBout$Bag == 3,"Height"]
-shapiro.test(bag3height)
+shapiro.test(bag3height) #Normal
 bag4height<- FBout[FBout$Bag == 4,"Height"]
-shapiro.test(bag4height)
+shapiro.test(bag4height) #Normal
 ```
 
 Height ANOVA - no significant differences
@@ -77,3 +77,60 @@ Height ANOVA - no significant differences
 HeightResults<-aov(Height~Bag, data=FBout)
 summary(HeightResults)
 ```
+
+### Length
+Testing length for homoscedasticity (no violation)
+```{r echo=FALSE, message=FALSE, warning=FALSE }
+leveneTest(Length~Bag, data=FBout)
+```
+
+Testing length for normality (no violations)
+```{r}
+ 
+bag1length<- FBout[FBout$Bag == 1,"Length"]
+shapiro.test(bag1length) #Normal
+bag2length<- FBout[FBout$Bag == 2,"Length"]
+shapiro.test(bag2length) #Normal
+bag3length<- FBout[FBout$Bag == 3,"Length"]
+shapiro.test(bag3length) #Normal
+bag4length<- FBout[FBout$Bag == 4,"Length"]
+shapiro.test(bag4length) #Normal
+```
+
+Length ANOVA - no significant differences
+```{r}
+LengthResults<-aov(Length~Bag, data=FBout)
+summary(LengthResults)
+```
+
+### Width
+Testing width for homoscedasticity (no violation)
+```{r echo=FALSE, message=FALSE, warning=FALSE }
+leveneTest(Width~Bag, data=FBout)
+```
+
+Testing width for normality (assumption violated)
+```{r}
+bag1width<- FBout[FBout$Bag == 1,"Width"]
+shapiro.test(bag1width) #Normal
+bag2width<- FBout[FBout$Bag == 2,"Width"]
+shapiro.test(bag2width) #Not normal, p=0.0231
+bag3width<- FBout[FBout$Bag == 3,"Width"]
+shapiro.test(bag3width) #Normal
+bag4width<- FBout[FBout$Bag == 4,"Width"]
+shapiro.test(bag4width) #Not normal, p=0.04589
+```
+
+Width Kruskal-Wallis - no significant differences
+```{r}
+kruskal.test(Width~Bag, data=FBout)
+```
+
+If ANOVA is run and assumed to be robust to violations of the normality assumptions because of sufficiently large sample sizes (n>30), again no significant differences are found.
+
+```{r}
+WidthResults<-aov(Width~Bag, data=FBout)
+summary(WidthResults)
+```
+
+Conclusion: no significant differences were found between the height, length, or widths of the oysters in any of the outside ADPI bags, including the replacement bag. For future analysis of growth and shell morphology, the replacement bag will be analyzed as if it were the original outside bag #2. However, biofouling did appear to be more severe on the replacement oysters than on the oysters in the original outside ADPI bags. As such, when oysters are selected from each treatment for biofouling analysis at the conclusion of the experiment, the outside FB sample will be collected from only bags #1 and #3.
