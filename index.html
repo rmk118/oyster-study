@@ -11,7 +11,7 @@
 
 <meta name="author" content="Ruby K" />
 
-<meta name="date" content="2022-06-16" />
+<meta name="date" content="2022-06-17" />
 
 <title>Oyster Workspace</title>
 
@@ -365,11 +365,13 @@ pre code {
 
 <h1 class="title toc-ignore">Oyster Workspace</h1>
 <h4 class="author">Ruby K</h4>
-<h4 class="date">2022-06-16</h4>
+<h4 class="date">2022-06-17</h4>
 
 </div>
 
 
+<p>To see all code and the raw output of any significance tests, see the
+<a href="/OysterCode.html">OysterCode page</a></p>
 <div id="initial-analysis" class="section level2">
 <h2>Initial Analysis</h2>
 <pre class="r"><code>oysterAvgInitial&lt;-mean(initialHeights1)
@@ -432,28 +434,28 @@ ANOVA.</p>
 ## group   3  0.3856 0.7635
 ##       124</code></pre>
 <p>Testing height for normality (no violations)</p>
-<pre class="r"><code>bag1height&lt;- FBout[FBout$Bag == 1,&quot;Height&quot;]
+<pre class="r"><code>bag1height&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Height&quot;]
 shapiro.test(bag1height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1height
 ## W = 0.96398, p-value = 0.3515</code></pre>
-<pre class="r"><code>bag2height&lt;- FBout[FBout$Bag == 2,&quot;Height&quot;]
+<pre class="r"><code>bag2height&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Height&quot;]
 shapiro.test(bag2height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2height
 ## W = 0.94763, p-value = 0.1234</code></pre>
-<pre class="r"><code>bag3height&lt;- FBout[FBout$Bag == 3,&quot;Height&quot;]
+<pre class="r"><code>bag3height&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Height&quot;]
 shapiro.test(bag3height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3height
 ## W = 0.94142, p-value = 0.08217</code></pre>
-<pre class="r"><code>bag4height&lt;- FBout[FBout$Bag == 4,&quot;Height&quot;]
+<pre class="r"><code>bag4height&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Height&quot;]
 shapiro.test(bag4height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
@@ -475,28 +477,28 @@ summary(HeightResults)</code></pre>
 ## group   3  0.5378 0.6572
 ##       124</code></pre>
 <p>Testing length for normality (no violations)</p>
-<pre class="r"><code>bag1length&lt;- FBout[FBout$Bag == 1,&quot;Length&quot;]
+<pre class="r"><code>bag1length&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Length&quot;]
 shapiro.test(bag1length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1length
 ## W = 0.96472, p-value = 0.3677</code></pre>
-<pre class="r"><code>bag2length&lt;- FBout[FBout$Bag == 2,&quot;Length&quot;]
+<pre class="r"><code>bag2length&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Length&quot;]
 shapiro.test(bag2length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2length
 ## W = 0.9538, p-value = 0.1847</code></pre>
-<pre class="r"><code>bag3length&lt;- FBout[FBout$Bag == 3,&quot;Length&quot;]
+<pre class="r"><code>bag3length&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Length&quot;]
 shapiro.test(bag3length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3length
 ## W = 0.96006, p-value = 0.2757</code></pre>
-<pre class="r"><code>bag4length&lt;- FBout[FBout$Bag == 4,&quot;Length&quot;]
+<pre class="r"><code>bag4length&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Length&quot;]
 shapiro.test(bag4length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
@@ -520,28 +522,28 @@ summary(LengthResults)</code></pre>
 ## group   3  1.9622 0.1231
 ##       124</code></pre>
 <p>Testing width for normality (assumption violated)</p>
-<pre class="r"><code>bag1width&lt;- FBout[FBout$Bag == 1,&quot;Width&quot;]
+<pre class="r"><code>bag1width&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Width&quot;]
 shapiro.test(bag1width) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1width
 ## W = 0.94412, p-value = 0.09806</code></pre>
-<pre class="r"><code>bag2width&lt;- FBout[FBout$Bag == 2,&quot;Width&quot;]
+<pre class="r"><code>bag2width&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Width&quot;]
 shapiro.test(bag2width) #Not normal, p=0.0231</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2width
 ## W = 0.92168, p-value = 0.0231</code></pre>
-<pre class="r"><code>bag3width&lt;- FBout[FBout$Bag == 3,&quot;Width&quot;]
+<pre class="r"><code>bag3width&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Width&quot;]
 shapiro.test(bag3width) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3width
 ## W = 0.93566, p-value = 0.05645</code></pre>
-<pre class="r"><code>bag4width&lt;- FBout[FBout$Bag == 4,&quot;Width&quot;]
+<pre class="r"><code>bag4width&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Width&quot;]
 shapiro.test(bag4width) #Not normal, p=0.04589</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
