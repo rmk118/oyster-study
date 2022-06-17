@@ -11,9 +11,9 @@
 
 <meta name="author" content="Ruby K" />
 
-<meta name="date" content="2022-06-16" />
+<meta name="date" content="2022-06-17" />
 
-<title>Oyster Workspace</title>
+<title>Oyster Code</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -363,15 +363,16 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">Oyster Workspace</h1>
+<h1 class="title toc-ignore">Oyster Code</h1>
 <h4 class="author">Ruby K</h4>
-<h4 class="date">2022-06-16</h4>
+<h4 class="date">2022-06-17</h4>
 
 </div>
 
 
 <div id="initial-analysis" class="section level2">
 <h2>Initial Analysis</h2>
+<pre class="r"><code>initialHeights1&lt;-c(63,32,48,61,71,41,58,69,33,34,70,61,61,51,39,45,61,60,61,67,60,55,40,69,55,29,60,46,46,53,75,42,21,35,72,61,48,46,47,73,55,31,43,37,52,56,52,40,63,48,50,19,59,59,47,63,41,41,26,35,48,64,44,60,40,49,47,35,55,45,60,42,42,46,49,56,48,45,40,37,60,59,37,28,51,61,45,35,26,54,41,44,58,39,41,47,34,47,50,52,55,43,44,45,41,26,50,38,41,58,42,37,36,48,28,24,32,29,45,70,64,67,24,35,63,56,41,37,47,55,38,75,47,43,40,39,65,50,42,42,40,60,28,36,60,64,48,48,50,49,33,34,40,43,59,46,30,38,58,43,45,35,34,37,48,58,58,42,46,57,44,24,40,40,41,37,59,57,68,40,45,49,50,35,35,30,36,30,32,70,34,41,54,29,43,52,32,37,38,70,42,32,56,37,35,58,50,38,42,43,55,60,43,68,46,60,53,55,59,55,32,50,41,64,37,59,57,52,55,50,38,60,61,37,60,62,55,45,63,47,35,62,61,65,36,62,59,42,39,49,35,50,49,46,43,45,34,44,44,30,41,49,45,41,42,48,32,80,69,69,50,46,57,45,59,63,56,51,45,51)</code></pre>
 <pre class="r"><code>oysterAvgInitial&lt;-mean(initialHeights1)
 oysterAvgInitial</code></pre>
 <pre><code>## [1] 47.63929</code></pre>
@@ -392,6 +393,7 @@ upperLimit</code></pre>
 <pre class="r"><code>lowerLimit&lt;-oysterAvgInitial-2*initialHeightSD
 lowerLimit</code></pre>
 <pre><code>## [1] 24.19758</code></pre>
+<pre class="r"><code>initialHeights&lt;-data.frame(initialHeights1)</code></pre>
 <p>The mean is 47.64 mm and the standard deviation is 11.72 mm. The
 acceptable range of oyster shell heights for the experimental bags will
 be from 71.08 mm to 24.2 mm.</p>
@@ -432,28 +434,28 @@ ANOVA.</p>
 ## group   3  0.3856 0.7635
 ##       124</code></pre>
 <p>Testing height for normality (no violations)</p>
-<pre class="r"><code>bag1height&lt;- FBout[FBout$Bag == 1,&quot;Height&quot;]
+<pre class="r"><code>bag1height&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Height&quot;]
 shapiro.test(bag1height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1height
 ## W = 0.96398, p-value = 0.3515</code></pre>
-<pre class="r"><code>bag2height&lt;- FBout[FBout$Bag == 2,&quot;Height&quot;]
+<pre class="r"><code>bag2height&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Height&quot;]
 shapiro.test(bag2height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2height
 ## W = 0.94763, p-value = 0.1234</code></pre>
-<pre class="r"><code>bag3height&lt;- FBout[FBout$Bag == 3,&quot;Height&quot;]
+<pre class="r"><code>bag3height&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Height&quot;]
 shapiro.test(bag3height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3height
 ## W = 0.94142, p-value = 0.08217</code></pre>
-<pre class="r"><code>bag4height&lt;- FBout[FBout$Bag == 4,&quot;Height&quot;]
+<pre class="r"><code>bag4height&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Height&quot;]
 shapiro.test(bag4height) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
@@ -475,28 +477,28 @@ summary(HeightResults)</code></pre>
 ## group   3  0.5378 0.6572
 ##       124</code></pre>
 <p>Testing length for normality (no violations)</p>
-<pre class="r"><code>bag1length&lt;- FBout[FBout$Bag == 1,&quot;Length&quot;]
+<pre class="r"><code>bag1length&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Length&quot;]
 shapiro.test(bag1length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1length
 ## W = 0.96472, p-value = 0.3677</code></pre>
-<pre class="r"><code>bag2length&lt;- FBout[FBout$Bag == 2,&quot;Length&quot;]
+<pre class="r"><code>bag2length&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Length&quot;]
 shapiro.test(bag2length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2length
 ## W = 0.9538, p-value = 0.1847</code></pre>
-<pre class="r"><code>bag3length&lt;- FBout[FBout$Bag == 3,&quot;Length&quot;]
+<pre class="r"><code>bag3length&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Length&quot;]
 shapiro.test(bag3length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3length
 ## W = 0.96006, p-value = 0.2757</code></pre>
-<pre class="r"><code>bag4length&lt;- FBout[FBout$Bag == 4,&quot;Length&quot;]
+<pre class="r"><code>bag4length&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Length&quot;]
 shapiro.test(bag4length) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
@@ -520,28 +522,28 @@ summary(LengthResults)</code></pre>
 ## group   3  1.9622 0.1231
 ##       124</code></pre>
 <p>Testing width for normality (assumption violated)</p>
-<pre class="r"><code>bag1width&lt;- FBout[FBout$Bag == 1,&quot;Width&quot;]
+<pre class="r"><code>bag1width&lt;- FBout[FBout$Bag == &quot;1&quot;,&quot;Width&quot;]
 shapiro.test(bag1width) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag1width
 ## W = 0.94412, p-value = 0.09806</code></pre>
-<pre class="r"><code>bag2width&lt;- FBout[FBout$Bag == 2,&quot;Width&quot;]
+<pre class="r"><code>bag2width&lt;- FBout[FBout$Bag == &quot;2&quot;,&quot;Width&quot;]
 shapiro.test(bag2width) #Not normal, p=0.0231</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag2width
 ## W = 0.92168, p-value = 0.0231</code></pre>
-<pre class="r"><code>bag3width&lt;- FBout[FBout$Bag == 3,&quot;Width&quot;]
+<pre class="r"><code>bag3width&lt;- FBout[FBout$Bag == &quot;3&quot;,&quot;Width&quot;]
 shapiro.test(bag3width) #Normal</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  bag3width
 ## W = 0.93566, p-value = 0.05645</code></pre>
-<pre class="r"><code>bag4width&lt;- FBout[FBout$Bag == 4,&quot;Width&quot;]
+<pre class="r"><code>bag4width&lt;- FBout[FBout$Bag == &quot;Rep.&quot;,&quot;Width&quot;]
 shapiro.test(bag4width) #Not normal, p=0.04589</code></pre>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
