@@ -6,7 +6,7 @@ output:
   html_document: default
   pdf_document: default
 ---
-To see all code and the raw output of any significance tests, see the [OysterCode page](/oyster-study/OysterCode.html)
+To see all code and the raw output of any significance tests, see the <a href="https://rmk118.github.io/oyster-study/OysterCode.html" target="_blank">OysterCode Progress</a> page
 
 ## Initial Analysis
 
