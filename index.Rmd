@@ -16,8 +16,6 @@ To see all code and the raw output of any significance tests, see the <a href="h
 
 [Outside Floating Bag Replacement](https://rmk118.github.io/oyster-study#Outside-Floating-Bag-Replacement)
 
-
-<!---
 ## Initial Analysis
 
 ```{r, initialHeights, include=FALSE}
@@ -51,7 +49,7 @@ library(ggplot2)
 ggplot(initialHeights,aes(x=initialHeights1))+geom_histogram(binwidth = 5, fill="#69b3a2", color="#e9ecef")+theme_classic()+xlab("Shell height")+ylab("Frequency")
 ```
 Figure #1: Initial distribution of shell heights in population used to stock experimental gear (n=280)
--->
+
 
 ## Outside Floating Bag Replacement
 
