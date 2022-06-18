@@ -1,19 +1,22 @@
 ---
 title: "OysterCode"
 author: "Ruby K"
-date: '2022-06-17'
+date: '2022-06-18'
 output: html_document
 ---
 
 Return to <a href="https://rmk118.github.io/oyster-study" target="_blank">Oyster Study Progress</a>
 
+To see all code and the raw output of any significance tests, see the <a href="https://rmk118.github.io/oyster-study/OysterCode.html" target="_blank">OysterCode</a> page
+
 
 ## Contents
 
-- [Initial Analysis](#initial-analysis)
+- [Initial Shell Dimensions](#initial-shell-dimensions)
 - [Outside Floating Bag Replacement](#outside-floating-bag-replacement)
+- [First Sampling Day](#first-sampling-day)
 
-## Initial Analysis
+## Initial Shell Dimensions
 
 ```{r, initialHeights}
 initialHeights1<-c(63,32,48,61,71,41,58,69,33,34,70,61,61,51,39,45,61,60,61,67,60,55,40,69,55,29,60,46,46,53,75,42,21,35,72,61,48,46,47,73,55,31,43,37,52,56,52,40,63,48,50,19,59,59,47,63,41,41,26,35,48,64,44,60,40,49,47,35,55,45,60,42,42,46,49,56,48,45,40,37,60,59,37,28,51,61,45,35,26,54,41,44,58,39,41,47,34,47,50,52,55,43,44,45,41,26,50,38,41,58,42,37,36,48,28,24,32,29,45,70,64,67,24,35,63,56,41,37,47,55,38,75,47,43,40,39,65,50,42,42,40,60,28,36,60,64,48,48,50,49,33,34,40,43,59,46,30,38,58,43,45,35,34,37,48,58,58,42,46,57,44,24,40,40,41,37,59,57,68,40,45,49,50,35,35,30,36,30,32,70,34,41,54,29,43,52,32,37,38,70,42,32,56,37,35,58,50,38,42,43,55,60,43,68,46,60,53,55,59,55,32,50,41,64,37,59,57,52,55,50,38,60,61,37,60,62,55,45,63,47,35,62,61,65,36,62,59,42,39,49,35,50,49,46,43,45,34,44,44,30,41,49,45,41,42,48,32,80,69,69,50,46,57,45,59,63,56,51,45,51)
@@ -26,8 +29,6 @@ initialHeightSD<-sd(initialHeights1)
 initialHeightSD
 shapiro.test(initialHeights1)
 ```
-
-
 
 ```{r}
 upperLimit<-oysterAvgInitial+2*initialHeightSD
@@ -62,7 +63,8 @@ The shell width distributions were non-normal for both the original bag #2 (p=0.
 
 Testing height for homoscedasticity (no violation)
 ```{r message=FALSE, warning=FALSE}
-FBout<-read.csv("FBout.csv")
+SamplingOne<-read.csv("6_14.csv")
+FBout<-SamplingOne[SamplingOne$Treatment == "FBo",]
 library(car)
 NewBag<-as.character(FBout$Bag)
 FBout$Bag<-NewBag
@@ -71,18 +73,17 @@ height.levene<-leveneTest(Height~Bag, data=FBout)
 
 Testing height for normality (no violations)
 ```{r}
- 
 bag1height<- FBout[FBout$Bag == "1","Height"]
 bag1height.normality<-shapiro.test(bag1height) #Normal
 bag2height<- FBout[FBout$Bag == "2","Height"]
 bag2height.normality<-shapiro.test(bag2height) #Normal
 bag3height<- FBout[FBout$Bag == "3","Height"]
 bag3height.normality<-shapiro.test(bag3height) #Normal
-bag4height<- FBout[FBout$Bag == "Rep.","Height"]
+bag4height<- FBout[FBout$Bag == "Rep","Height"]
 bag4height.normality<-shapiro.test(bag4height) #Normal
 ```
 
-Height ANOVA - no significant differences
+Height ANOVA: no significant differences
 ```{r}
 HeightResults<-aov(Height~Bag, data=FBout)
 summary(HeightResults)
@@ -102,11 +103,11 @@ bag2length<- FBout[FBout$Bag == "2","Length"]
 shapiro.test(bag2length) #Normal
 bag3length<- FBout[FBout$Bag == "3","Length"]
 shapiro.test(bag3length) #Normal
-bag4length<- FBout[FBout$Bag == "Rep.","Length"]
+bag4length<- FBout[FBout$Bag == "Rep","Length"]
 shapiro.test(bag4length) #Normal
 ```
 
-Length ANOVA - no significant differences
+Length ANOVA: no significant differences
 ```{r}
 LengthResults<-aov(Length~Bag, data=FBout)
 summary(LengthResults)
@@ -125,11 +126,11 @@ bag2width<- FBout[FBout$Bag == "2","Width"]
 shapiro.test(bag2width) #Not normal, p=0.0231
 bag3width<- FBout[FBout$Bag == "3","Width"]
 shapiro.test(bag3width) #Normal
-bag4width<- FBout[FBout$Bag == "Rep.","Width"]
+bag4width<- FBout[FBout$Bag == "Rep","Width"]
 shapiro.test(bag4width) #Not normal, p=0.04589
 ```
 
-Width Kruskal-Wallis - no significant differences
+Width Kruskal-Wallis: no significant differences
 ```{r}
 kruskal.test(Width~Bag, data=FBout)
 ```
@@ -142,3 +143,83 @@ summary(WidthResults)
 ```
 
 Conclusion: no significant differences were found between the height, length, or widths of the oysters in any of the outside ADPI bags, including the replacement bag. For future analysis of growth and shell morphology, the replacement bag will be analyzed as if it were the original outside bag #2. However, biofouling did appear to be more severe on the replacement oysters than on the oysters in the original outside ADPI bags. As such, when oysters are selected from each treatment for biofouling analysis at the conclusion of the experiment, the outside FB sample will be collected from only bags #1 and #3.
+
+### Within-bag Variability
+
+Within-bag or within-cage variability for each floating bag and cage treatment in given location were assessed using a one-way ANOVA or, if assumptions were not met, a Kruskal-Wallis test. Within-bag variability for outside FB is described above.
+
+##### Inside Floating Bags
+```{r}
+FBin<-SamplingOne[SamplingOne$Treatment == "FBi",]
+#Testing variances (all good)
+leveneTest(Height~Bag, data=FBin)
+leveneTest(Length~Bag, data=FBin)
+leveneTest(Width~Bag, data=FBin)
+
+#Testing height for normality (assumption violated)
+bag1height_in<- FBin[FBin$Bag == "1","Height"]
+shapiro.test(bag1height_in)
+bag2height_in<- FBin[FBin$Bag == "2","Height"]
+shapiro.test(bag2height_in)
+bag3height_in<- FBin[FBin$Bag == "3","Height"]
+shapiro.test(bag3height_in) #p=0.04558
+
+#Testing length for normality (all good)
+bag1length_in<- FBin[FBin$Bag == "1","Length"]
+shapiro.test(bag1length)
+bag2length_in<- FBin[FBin$Bag == "2","Length"]
+shapiro.test(bag2length_in)
+bag3length_in<- FBin[FBin$Bag == "3","Length"]
+shapiro.test(bag3length_in)
+
+#Testing width for normality (assumptions violated)
+bag1width_in<- FBin[FBin$Bag == "1","Width"]
+shapiro.test(bag1width_in) #Bag 1 not normal, p<0.001
+bag2width_in<- FBin[FBin$Bag == "2","Width"]
+shapiro.test(bag2width_in) #Bag 2 not normal, p=0.02344
+bag3width_in<- FBin[FBin$Bag == "3","Width"]
+shapiro.test(bag3width_in) #Bag 3 good
+```
+
+```{r}
+#Testing for significant differences between inside FB
+FBin.height.interbag<-kruskal.test(Height~Bag, data=FBin)
+FBin.length.interbag<-aov(Length~Bag, data=FBin)
+summary(FBin.length.interbag)
+FBin.width.interbag<-kruskal.test(Width~Bag, data=FBin)
+```
+
+There were no significant differences in shell height between the three inside floating bags (Kruskal-Wallis test, H(2)=`r round(FBin.height.interbag$statistic, digits=3)`, p=`r round(FBin.height.interbag$p.value, digits=3)`). Similarly, no significant differences in shell width were observed between the three bags (Kruskal-Wallis test, H(2)=`r round(FBin.width.interbag$statistic, digits=3)`, p=`r round(FBin.width.interbag$p.value, digits=3)`).
+
+```{r fig.show="hold", out.width="50%"}
+ggplot(data = FBin, aes(x = Bag, y = Height))+geom_boxplot()+theme_classic()+xlab("Bag")+ylab("Height (mm)")+theme(text = element_text(size=15))+scale_y_continuous(limits=c(0,75))
+
+ggplot(data = FBin, aes(x = Bag, y = Width))+geom_boxplot()+theme_classic()+xlab("Bag")+ylab("Width (mm)")+theme(text = element_text(size=15))+scale_y_continuous(limits=c(0,25))
+```
+Figure #3: Shell height and width of oysters in outside floating bags
+<br>
+
+However, the three inside floating bags did significantly differ with regards to shell length (One-way ANOVA, F(2,93)=3.607, p=0.031).
+```{r fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data = FBin, aes(x = Bag, y = Length))+geom_boxplot()+theme_classic()+xlab("Bag")+ylab("Length (mm)")+theme(text = element_text(size=15))+scale_y_continuous(limits=c(0,50))
+```
+Figure #4: Shell length of oysters in inside floating bags
+
+
+### Graphical Results
+
+```{r fig.width=4, fig.height=3, fig.align='center'}
+SamplingNew<-SamplingOne[c(1:320,353:608),]
+ggplot(data = SamplingNew, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,75))
+```
+Figure #5: Oyster shell height across gear types and locations (n=32 oysters per gear/location combination).
+
+```{r fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data = SamplingNew, aes(x = Gear, y = Length, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,50))
+```
+Figure #5: Oyster shell length across gear types and locations (n=32 oysters per gear/location combination).
+
+```{r fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data = SamplingNew, aes(x = Gear, y = Width, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,25))
+```
+Figure #7: Oyster shell width across gear types and locations (n=32 oysters per gear/location combination).
