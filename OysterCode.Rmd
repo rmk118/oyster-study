@@ -7,6 +7,12 @@ output: html_document
 
 Return to <a href="https://rmk118.github.io/oyster-study" target="_blank">Oyster Study Progress</a>
 
+
+## Contents
+
+- [Initial Analysis](#initial-analysis)
+- [Outside Floating Bag Replacement](#outside-floating-bag-replacement)
+
 ## Initial Analysis
 
 ```{r, initialHeights}
@@ -128,9 +134,9 @@ Width Kruskal-Wallis - no significant differences
 kruskal.test(Width~Bag, data=FBout)
 ```
 
-If ANOVA is run and assumed to be robust to violations of the normality assumptions because of sufficiently large sample sizes (n>30), again no significant differences are found.
+A one-way ANOVA is considered robust to violations of the normality assumption (e.g., Schmider et al., 2010). If an ANOVA is run on the width data despite the noted normality violations, again no significant differences are found.
 
-```{r
+```{r}
 WidthResults<-aov(Width~Bag, data=FBout)
 summary(WidthResults)
 ```

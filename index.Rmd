@@ -1,7 +1,7 @@
 ---
 title: "Oyster Study Progress"
 author: "Ruby K"
-date: '2022-06-17'
+date: '2022-06-18'
 output:
   html_document: default
   pdf_document: default
@@ -10,11 +10,8 @@ To see all code and the raw output of any significance tests, see the <a href="h
 
 ## Contents
 
-
-[Initial Analysis](https://rmk118.github.io/oyster-study#Initial-Analysis)
-
-
-[Outside Floating Bag Replacement](https://rmk118.github.io/oyster-study#Outside-Floating-Bag-Replacement)
+- [Initial Analysis](#initial-analysis)
+- [Outside Floating Bag Replacement](#outside-floating-bag-replacement)
 
 ## Initial Analysis
 
