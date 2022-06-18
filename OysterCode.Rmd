@@ -13,7 +13,7 @@ Return to <a href="https://rmk118.github.io/oyster-study" target="_blank">Oyster
 initialHeights1<-c(63,32,48,61,71,41,58,69,33,34,70,61,61,51,39,45,61,60,61,67,60,55,40,69,55,29,60,46,46,53,75,42,21,35,72,61,48,46,47,73,55,31,43,37,52,56,52,40,63,48,50,19,59,59,47,63,41,41,26,35,48,64,44,60,40,49,47,35,55,45,60,42,42,46,49,56,48,45,40,37,60,59,37,28,51,61,45,35,26,54,41,44,58,39,41,47,34,47,50,52,55,43,44,45,41,26,50,38,41,58,42,37,36,48,28,24,32,29,45,70,64,67,24,35,63,56,41,37,47,55,38,75,47,43,40,39,65,50,42,42,40,60,28,36,60,64,48,48,50,49,33,34,40,43,59,46,30,38,58,43,45,35,34,37,48,58,58,42,46,57,44,24,40,40,41,37,59,57,68,40,45,49,50,35,35,30,36,30,32,70,34,41,54,29,43,52,32,37,38,70,42,32,56,37,35,58,50,38,42,43,55,60,43,68,46,60,53,55,59,55,32,50,41,64,37,59,57,52,55,50,38,60,61,37,60,62,55,45,63,47,35,62,61,65,36,62,59,42,39,49,35,50,49,46,43,45,34,44,44,30,41,49,45,41,42,48,32,80,69,69,50,46,57,45,59,63,56,51,45,51)
 ```
 
-```{r, initialHeights-analysis}
+```{r}
 oysterAvgInitial<-mean(initialHeights1)
 oysterAvgInitial
 initialHeightSD<-sd(initialHeights1)
@@ -21,9 +21,9 @@ initialHeightSD
 shapiro.test(initialHeights1)
 ```
 
-The initial shell heights are normally distributed (Shapiro-Wilk test, W=0.988, P=0.024).
 
-```{r, initialHeights-analysis2}
+
+```{r}
 upperLimit<-oysterAvgInitial+2*initialHeightSD
 upperLimit
 lowerLimit<-oysterAvgInitial-2*initialHeightSD
@@ -34,12 +34,13 @@ lowerLimit
 initialHeights<-data.frame(initialHeights1)
 ```
 
-The mean is `r round(oysterAvgInitial, digits=2)` mm and the standard deviation is `r round(initialHeightSD, digits=2)` mm. The acceptable range of oyster shell heights for the experimental bags will be from `r round(upperLimit, digits=2)` mm to `r round(lowerLimit, digits=2)` mm.
+The initial shell heights were normally distributed (Shapiro-Wilk test, W=0.988, P=0.024). The mean was `r round(oysterAvgInitial, digits=2)` mm and the standard deviation was `r round(initialHeightSD, digits=2)` mm. The acceptable range of oyster shell heights for the experimental gear was set at two standard deviations above and below the mean: `r round(upperLimit, digits=2)` mm to `r round(lowerLimit, digits=2)` mm.
 
 ```{r warning=FALSE, initialShellHeightDist, fig.width=4, fig.height=3, fig.align='center'}
 library(ggplot2)
 ggplot(initialHeights,aes(x=initialHeights1))+geom_histogram(binwidth = 5, fill="#69b3a2", color="#e9ecef")+theme_classic()+xlab("Shell height")+ylab("Frequency")
 ```
+Figure #1: Initial distribution of shell heights in population used to stock experimental gear (n=280)
 
 ## Outside Floating Bag Replacement
 
@@ -47,29 +48,32 @@ At some point during the initial sampling day (6/14), the middle floating bag ou
 
 The replacement ADPI bag was filled with 175 oysters selected in the same manner as the initial treatments (i.e., randomly chosen from the larger population, excluding any animals that were dead, strongly fused together, or had a shell height outside the range of `r round(upperLimit, digits=2)`-`r round(lowerLimit, digits=2)` mm).
 
-Before the placement bag was deployed, a random sample of 32 oysters was collected for comparison to the samples (n=32 for each bag) taken the previous day from the three initial outside ADPI bags. Shapiro-Wilk and Levene's tests were employed to assess the ANOVA assumptions of normality and homoscedasticity, respectively. If no assumptions were violated, a one-way ANOVA was used to determine if significant differences existed between any of the four outside ADPI bags— the three original bags plus the replacement bag. If the assumptions could not be met, the nonparametric Kruskal-Wallis test was used in place of the ANOVA.
+Before the placement bag was deployed, a random sample of 32 oysters was collected for comparison to the samples (n=32 for each bag) taken the previous day from the three initial outside ADPI bags. Shapiro-Wilk and Levene's tests were employed to assess the ANOVA assumptions of normality and homoscedasticity, respectively. 
 
-### Height
+No assumptions were violated for height and length, so a one-way ANOVA was used to determine if significant differences existed between any of the four outside ADPI bags— the three original bags plus the replacement bag.
+
+The shell width distributions were non-normal for both the original bag #2 (p=0.0231) and the replacement bag #2 (p=0.04589). As such, the nonparametric Kruskal-Wallis test was used in place of the ANOVA.
+
 Testing height for homoscedasticity (no violation)
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 FBout<-read.csv("FBout.csv")
 library(car)
 NewBag<-as.character(FBout$Bag)
 FBout$Bag<-NewBag
-leveneTest(Height~Bag, data=FBout)
+height.levene<-leveneTest(Height~Bag, data=FBout)
 ```
 
 Testing height for normality (no violations)
 ```{r}
  
 bag1height<- FBout[FBout$Bag == "1","Height"]
-shapiro.test(bag1height) #Normal
+bag1height.normality<-shapiro.test(bag1height) #Normal
 bag2height<- FBout[FBout$Bag == "2","Height"]
-shapiro.test(bag2height) #Normal
+bag2height.normality<-shapiro.test(bag2height) #Normal
 bag3height<- FBout[FBout$Bag == "3","Height"]
-shapiro.test(bag3height) #Normal
+bag3height.normality<-shapiro.test(bag3height) #Normal
 bag4height<- FBout[FBout$Bag == "Rep.","Height"]
-shapiro.test(bag4height) #Normal
+bag4height.normality<-shapiro.test(bag4height) #Normal
 ```
 
 Height ANOVA - no significant differences
@@ -78,10 +82,9 @@ HeightResults<-aov(Height~Bag, data=FBout)
 summary(HeightResults)
 ```
 
-### Length
 Testing length for homoscedasticity (no violation)
-```{r echo=FALSE, message=FALSE, warning=FALSE }
-leveneTest(Length~Bag, data=FBout)
+```{r message=FALSE, warning=FALSE }
+length.levene<-leveneTest(Length~Bag, data=FBout)
 ```
 
 Testing length for normality (no violations)
@@ -103,9 +106,8 @@ LengthResults<-aov(Length~Bag, data=FBout)
 summary(LengthResults)
 ```
 
-### Width
 Testing width for homoscedasticity (no violation)
-```{r echo=FALSE, message=FALSE, warning=FALSE }
+```{r message=FALSE, warning=FALSE }
 leveneTest(Width~Bag, data=FBout)
 ```
 
@@ -128,7 +130,7 @@ kruskal.test(Width~Bag, data=FBout)
 
 If ANOVA is run and assumed to be robust to violations of the normality assumptions because of sufficiently large sample sizes (n>30), again no significant differences are found.
 
-```{r}
+```{r
 WidthResults<-aov(Width~Bag, data=FBout)
 summary(WidthResults)
 ```
