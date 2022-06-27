@@ -1,7 +1,7 @@
 ---
 title: "Oyster Study Progress"
 author: "Ruby K"
-date: '2022-06-18'
+date: '2022-06-27'
 output:
   html_document: default
   pdf_document: default
@@ -68,7 +68,6 @@ height.levene<-leveneTest(Height~Bag, data=FBout)
 
 <!--Testing height for normality (no violations)-->
 ```{r include=FALSE}
- 
 bag1height<- FBout[FBout$Bag == "1","Height"]
 bag1height.normality<-shapiro.test(bag1height) #Normal
 bag2height<- FBout[FBout$Bag == "2","Height"]
@@ -84,7 +83,6 @@ length.levene<-leveneTest(Length~Bag, data=FBout)
 ```
 <!--Testing length for normality (no violations)-->
 ```{r include=FALSE}
- 
 bag1length<- FBout[FBout$Bag == "1","Length"]
 bag1length.normality<-shapiro.test(bag1length) #Normal
 bag2length<- FBout[FBout$Bag == "2","Length"]
@@ -233,9 +231,46 @@ shapiro.test(initialCI_list)
 ```{r echo=FALSE, fig.width=4, fig.height=3, fig.align='center'}
 ggplot(initialCI,aes(x=initialCI_list))+geom_histogram(bins = 8, fill="#69b3a2", color="#e9ecef")+theme_classic()+xlab("Condition index")+ylab("Frequency")
 ```
-
+Figure #8: Initial condition index distribution (n=20)
 
 A random sample of 20 oysters from the population used to stock all experimental gear was collected on 6/16 and assessed for initial condition index following the procedure detailed by Walton et al., 2013, which calculates condition index using the formula from Abbe and Albright (2003): CI = (dry tissue weight)/(whole wet weight - dry shell weight) *100. 
 
 
 Condition index was normally distributed (Shapiro-Wilk test; W=0.973; p=0.822) with a mean of `r round(meanInitialCI, digits=2)` and a standard deviation of `r round(SDInitialCI, digits=2)`.
+
+### Turbidity
+
+```{r echo=FALSE, fig.width=5, fig.height=4, fig.align='center', message=FALSE}
+library(Hmisc)
+library(plotrix)
+library(plyr)
+
+turbidity<-read.csv("turbidity.csv")
+
+#Function to calculate mean and standard error
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      SE = std.error(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+  return(data_sum)
+}
+#Create summary data frame
+df2<-data_summary(turbidity, varname="Turbidity", 
+                    groupnames=c("Date", "Location"))
+
+#Convert date to factor variable
+df2$Date=as.factor(df2$Date)
+
+#Plot
+ggplot(df2, aes(x=Date, y=Turbidity, group=Location, color=Location)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Turbidity-SE, ymax=Turbidity+SE), width=.2,
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,3))
+```
+Figure #9: Average turbidity inside vs. outside the pound (mean±SEM).
