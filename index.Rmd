@@ -1,7 +1,7 @@
 ---
 title: "Oyster Study Progress"
 author: "Ruby K"
-date: '2022-06-27'
+date: '2022-06-30'
 output:
   html_document: default
   pdf_document: default
@@ -13,6 +13,7 @@ output:
 - [Outside Floating Bag Replacement](#outside-floating-bag-replacement)
 - [First Sampling Day - Graphical Results](#graphical-results)
 - [Initial Condition Index](#initial-condition-index)
+- [Turbidity](#turbidity)
 
 ## Initial Shell Dimensions
 
@@ -58,7 +59,7 @@ The replacement ADPI bag was filled with 175 oysters selected in the same manner
 Before the placement bag was deployed, a random sample of 32 oysters was collected for comparison to the samples (n=32 for each bag) taken the previous day from the three initial outside ADPI bags. Shapiro-Wilk and Levene's tests were employed to assess the ANOVA assumptions of normality and homoscedasticity, respectively. 
 <!--Testing height for homoscedasticity (no violation)-->
 ```{r include=FALSE, message=FALSE, warning=FALSE}
-SamplingOne<-read.csv("6_14.csv")
+SamplingOne<-read.csv("6_14_22.csv")
 FBout<-SamplingOne[SamplingOne$Treatment == "FBo",]
 library(car)
 NewBag<-as.character(FBout$Bag)
@@ -111,11 +112,13 @@ bag4width.normality<-shapiro.test(bag4width) #Not normal, p=0.04589
 ```{r include=FALSE}
 HeightResults<-aov(Height~Bag, data=FBout)
 summary(HeightResults)
+shapiro.test(HeightResults$residuals)
 ```
 
 ```{r include=FALSE}
 LengthResults<-aov(Length~Bag, data=FBout)
 summary(LengthResults)
+shapiro.test(LengthResults$residuals)
 ```
 
 ```{r include=FALSE}
@@ -218,6 +221,18 @@ ggplot(data = SamplingNew, aes(x = Gear, y = Width, fill=Location))+geom_boxplot
 ```
 Figure #7: Oyster shell width across gear types and locations (n=32 oysters per gear/location combination).
 
+
+```{r echo=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data = SamplingNew, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))
+```
+Figure #8: Oyster shell cup ratio (width/height) across gear types and locations (n=32 oysters per gear/location combination).
+
+
+```{r echo=FALSE, fig.width=4, fig.height=3, fig.align='center'}
+ggplot(data = SamplingNew, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,8))
+```
+Figure #9: Oyster shell shape index across gear types and locations (n=32 oysters per gear/location combination).
+
 ### Initial Condition Index
 
 ```{r include=FALSE}
@@ -271,6 +286,6 @@ ggplot(df2, aes(x=Date, y=Turbidity, group=Location, color=Location)) +
   geom_line() +
   geom_point()+
   geom_errorbar(aes(ymin=Turbidity-SE, ymax=Turbidity+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,3))
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))
 ```
 Figure #9: Average turbidity inside vs. outside the pound (mean±SEM).

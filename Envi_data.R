@@ -1,38 +1,25 @@
 #Environmental Data
-#packages: ggplot2, Hmisc, plotrix, plyr
 
 library(ggplot2)
 library(Hmisc)
 library(plotrix)
 library(plyr)
+library(dplyr)
+library(lubridate)
+library(hrbrthemes)
+options(hrbrthemes.loadfonts = TRUE)
 
-#Turbidity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-turbidity<-read.csv("turbidity.csv")
+outsidePoundHOBO<-read.csv("HOBOdata.csv")
+outsidePoundHOBO$Date.time<-mdy_hms(outsidePoundHOBO$Date.time)
+outsidePoundHOBO$Location=as.factor(outsidePoundHOBO$Location)
+#outsidePoundHOBO<-outsidePoundHOBO[1:138,]
+hrbrthemes::import_roboto_condensed()
+ggplot(outsidePoundHOBO, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
 
-#Function to calculate mean and standard error
-data_summary <- function(data, varname, groupnames){
-  require(plyr)
-  summary_func <- function(x, col){
-    c(mean = mean(x[[col]], na.rm=TRUE),
-      SE = std.error(x[[col]], na.rm=TRUE))
-  }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
-  data_sum <- rename(data_sum, c("mean" = varname))
-  return(data_sum)
-}
-#Create summary data frame
-df2<-data_summary(turbidity, varname="Turbidity", 
-                    groupnames=c("Date", "Location"))
 
-#Convert date to factor variable
-df2$Date=as.factor(df2$Date)
-head(df2)
+ggplot(outsidePoundHOBO, aes(x=Date.time, y=High.sal, group=Location, color=Location))+ geom_line()+
+  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
 
-#Plot
-ggplot(df2, aes(x=Date, y=Turbidity, group=Location, color=Location)) + 
-  geom_line() +
-  geom_point()+
-  geom_errorbar(aes(ymin=Turbidity-SE, ymax=Turbidity+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
