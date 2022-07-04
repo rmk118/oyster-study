@@ -44,4 +44,51 @@ A one-way ANOVA is considered robust to violations of the normality assumption (
 WidthResults<-aov(Width~Bag, data=FBout)
 summary(WidthResults)
 ```
--->
+
+dtID<-subset(SamplingNew,select = c(Gear,Location,Oyster))
+names(dtID)
+any(duplicated(dtID))
+
+names(gsummary(SamplingNew, form=~Oyster, inv=TRUE))
+names(gsummary(SamplingNew, form=~Treatment, inv=TRUE))
+names(gsummary(SamplingNew, form=~Gear, inv=TRUE))
+
+lmm <- lmer(Cup.ratio ~ Gear + Location + Gear:Location + (1 | Replicate), data = SamplingNew,
+            REML = FALSE)
+summary(lmm)
+Anova(lmm)
+
+lmm3 <- lmer(Cup.ratio ~ Gear + Location + Gear:Location + (1 | Replicate), data = IndividualOysters, REML = FALSE)
+summary(lmm3) #variance explained by replicate indistinguishable from 0
+Anova(lmm3) #same p-value as when treating bags as replicates for FC
+
+lmm4 <- lm(Cup.ratio ~ Gear + Location + Gear:Location, data = IndividualOysters)
+summary(lmm4)
+Anova(lmm4) #very similar to above
+
+plot(fitted(lmm4), resid(lmm4))
+qqnorm(resid(lmm4)); qqline(resid(lmm4))
+
+lmtest::bptest(lmm4)
+
+#ANOVA of negative sqrt cup ratio (better than reciprocal, prob worse than log)
+IndividualOysters$sqrt.Cup.ratio<-(IndividualOysters$Cup.ratio)^(-1/2)
+leveneTest(sqrt.Cup.ratio ~ Gear * Location, data = IndividualOysters) #also good, p=0.1836
+sqrtCupRatioANOVA <- aov(sqrt.Cup.ratio ~ Gear * Location, data = IndividualOysters)
+summary(sqrtCupRatioANOVA)
+plot(sqrtCupRatioANOVA,1)
+plot(sqrtCupRatioANOVA,2)
+qqp(sqrtCupRatioANOVA$residuals)
+shapiro.test(sqrtCupRatioANOVA$residuals) #p=1.823e-5
+
+#ANOVA of log.Shell.Shape
+IndividualOysters$log.Shell.shape<-log(IndividualOysters$Shell.shape+1)
+leveneTest(log.Shell.shape ~ Gear * Location, data = IndividualOysters) #better, p=0.1789
+logShellShapeANOVA <- aov(log.Shell.shape ~ Gear * Location, data = IndividualOysters)
+summary(logShellShapeANOVA)
+plot(logShellShapeANOVA,1)
+plot(logShellShapeANOVA,2)
+qqp(logShellShapeANOVA$residuals)
+shapiro.test(logShellShapeANOVA$residuals) #better, p=1.8e-6
+
+
