@@ -59,7 +59,7 @@ The replacement ADPI bag was filled with 175 oysters selected in the same manner
 Before the placement bag was deployed, a random sample of 32 oysters was collected for comparison to the samples (n=32 for each bag) taken the previous day from the three initial outside ADPI bags. Shapiro-Wilk and Levene's tests were employed to assess the ANOVA assumptions of normality and homoscedasticity, respectively. 
 <!--Testing height for homoscedasticity (no violation)-->
 ```{r include=FALSE, message=FALSE, warning=FALSE}
-SamplingOne<-read.csv("6_14_22_withLostBag.csv")
+SamplingOne<-read.csv("6_14_22_including_lost_bag.csv")
 FBout<-SamplingOne[SamplingOne$Treatment == "FBo",]
 library(car)
 NewBag<-as.character(FBout$Bag)
@@ -206,7 +206,7 @@ Figure #4: Shell length of oysters in inside floating bags
 ### Graphical Results
 
 ```{r echo=FALSE, fig.width=4, fig.height=3, fig.align='center'}
-SamplingNew<-SamplingOne
+SamplingNew<-read.csv("6_14_22.csv")
 ggplot(data = SamplingNew, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,75))
 ```
 Figure #5: Oyster shell height across gear types and locations (n=32 oysters per gear/location combination).
