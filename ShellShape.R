@@ -33,34 +33,33 @@ IndividualOysters$Replicate[IndividualOysters$Cage==6]<-as.factor(12)
 
 str(IndividualOysters)
 
-ggplot(data = SamplingNew, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))+ylab("Cup ratio (shell width/height)")
+ggplot(data = IndividualOysters, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")
 
-bw2 <- ggplot(IndividualOysters, aes(x=Gear, y=Cup.ratio, group=Gear)) + 
+bw2 <- ggplot(IndividualOysters, aes(x=Gear, y=Shell.shape, group=Gear)) + 
   geom_boxplot(aes(fill=Gear))
 bw2 + facet_grid(. ~ Location)
 
 #ANOVA to demonstrate normality assumption not met
-cupRatioANOVA <- aov(Cup.ratio ~ Gear * Location, data = SamplingNew)
-summary(cupRatioANOVA) #location significant
-leveneTest(Cup.ratio ~ Gear * Location, data = SamplingNew) #p=0.4658
-plot(cupRatioANOVA,1)
-plot(cupRatioANOVA,2)
-cupRatioResiduals<-cupRatioANOVA$residuals
-shapiro.test(cupRatioResiduals) #highly non-normal, p=2e-12
+leveneTest(Shell.shape~Gear*Location, data=IndividualOysters) #marginally non-significant, p=0.05086
+ShellShapeANOVA <- aov(Shell.shape ~ Gear * Location, data = IndividualOysters)
+summary(ShellShapeANOVA) #location and interaction significant
+plot(ShellShapeANOVA,1)
+plot(ShellShapeANOVA,2)
+shapiro.test(ShellShapeANOVA$residuals) #bad, p=2.2e-16
 
-#lm with no random effect; both gear and location significant
-alignedOystersCupRatio<-art(Cup.ratio ~ Gear * Location, data=IndividualOysters)
-anova(alignedOystersCupRatio)
+#lm with no random effect; location significant
+alignedOystersShellShape<-art(Shell.shape ~ Gear * Location, data=IndividualOysters)
+anova(alignedOystersShellShape)
 
 #mixed effects linear model with replicate as random effect; location significant
-alignedOystersCupRatio2<-art(Cup.ratio ~ Gear * Location + (1|Replicate), data=IndividualOysters)
-anova(alignedOystersCupRatio2)
+alignedOystersShellShape2<-art(Cup.ratio ~ Gear * Location + (1|Replicate), data=IndividualOysters)
+anova(alignedOystersShellShape2)
 
 #mixed effects linear model with bag as random effect; location significant
-alignedOysters3CupRatio<-art(Cup.ratio ~ Gear * Location + (1|Bag), data=IndividualOysters)
-anova(alignedOystersCupRatio3)
+alignedOystersShellShape3<-art(Cup.ratio ~ Gear * Location + (1|Bag), data=IndividualOysters)
+anova(alignedOystersShellShape3)
 
-art.con(alignedOystersCupRatio, "Gear", adjust="holm") %>%
+art.con(alignedOystersShellShape, "Location", adjust="holm") %>%
   summary() %>%  # add significance stars to the output
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
