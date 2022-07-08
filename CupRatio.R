@@ -5,6 +5,7 @@ library(MASS)
 library(dplyr)
 library(ARTool)
 
+#DAY 1 Cup Ratio ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 IndividualOysters<-read.csv("6_14_22_2.csv", na.strings=c(""," ","NA"))
 IndividualOysters<-subset(IndividualOysters, select = c(Location,Gear,Treatment,Cage,Bag,Oyster,Height,Length,Width,Cup.ratio,Shell.shape))
 
@@ -23,6 +24,12 @@ FC.replicate2<- IndividualOysters[IndividualOysters$Gear == "FC","Bag"]
 replicateColumn2<-c(BP.replicate2, FB.replicate2, FC.replicate2)
 IndividualOysters$Replicate<-replicateColumn2
 
+BP.replicate2<- IndividualOysters[IndividualOysters$Gear == "BP","Bag"]
+FB.replicate2<- IndividualOysters[IndividualOysters$Gear == "FB","Bag"]
+FC.replicate2<- IndividualOysters[IndividualOysters$Gear == "FC","Bag"]
+replicateColumn2<-c(BP.replicate2, FB.replicate2, FC.replicate2)
+IndividualOysters$Replicate<-replicateColumn2
+
 #Treat bags as replicates for FB & cages as replicates for FC
 IndividualOysters$Replicate[IndividualOysters$Cage==1]<-as.factor(7)
 IndividualOysters$Replicate[IndividualOysters$Cage==2]<-as.factor(8)
@@ -30,10 +37,10 @@ IndividualOysters$Replicate[IndividualOysters$Cage==3]<-as.factor(9)
 IndividualOysters$Replicate[IndividualOysters$Cage==4]<-as.factor(10)
 IndividualOysters$Replicate[IndividualOysters$Cage==5]<-as.factor(11)
 IndividualOysters$Replicate[IndividualOysters$Cage==6]<-as.factor(12)
-
+IndividualOysters<-droplevels(IndividualOysters)
 str(IndividualOysters)
 
-ggplot(data = SamplingNew, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))+ylab("Cup ratio (shell width/height)")
+ggplot(data = IndividualOysters, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))+ylab("Cup ratio (shell width/height)")
 
 bw2 <- ggplot(IndividualOysters, aes(x=Gear, y=Cup.ratio, group=Gear)) + 
   geom_boxplot(aes(fill=Gear))
@@ -57,7 +64,7 @@ alignedOystersCupRatio2<-art(Cup.ratio ~ Gear * Location + (1|Replicate), data=I
 anova(alignedOystersCupRatio2)
 
 #mixed effects linear model with bag as random effect; location significant
-alignedOysters3CupRatio<-art(Cup.ratio ~ Gear * Location + (1|Bag), data=IndividualOysters)
+alignedOystersCupRatio3<-art(Cup.ratio ~ Gear * Location + (1|Bag), data=IndividualOysters)
 anova(alignedOystersCupRatio3)
 
 art.con(alignedOystersCupRatio, "Gear", adjust="holm") %>%
