@@ -2,6 +2,7 @@ library(nlme)
 library(lme4)
 library(car)
 library(MASS)
+library(dplyr)
 
 #Read and format data
 SamplingOne<-read.csv("6_14_22.csv", na.strings=c(""," ","NA"))
@@ -74,14 +75,6 @@ plot(cupRatioANOVA,2)
 cupRatioResiduals<-cupRatioANOVA$residuals
 shapiro.test(cupRatioResiduals) #highly non-normal, p=2e-12
 
-cupRatioANOVA2 <- aov(Cup.ratio ~ Gear * Location, data = IndividualOysters)
-summary(cupRatioANOVA2)
-leveneTest(Cup.ratio ~ Gear * Location, data = IndividualOysters) #p=0.4658
-plot(cupRatioANOVA2,1)
-plot(cupRatioANOVA,2)
-cupRatioResiduals<-cupRatioANOVA$residuals
-shapiro.test(cupRatioResiduals)
-
 #ANOVA of log cup ratio - improves normality
 IndividualOysters$log.Cup.ratio<-log(IndividualOysters$Cup.ratio)
 leveneTest(log.Cup.ratio ~ Gear * Location, data = IndividualOysters) #good, p=0.2556
@@ -92,19 +85,23 @@ plot(logCupRatioANOVA,2)
 hist(logCupRatioANOVA$residuals)
 shapiro.test(logCupRatioANOVA$residuals) #p=1.837e-5
 
-library(WRS2)
-t2way(Cup.ratio ~ Gear * Location, data=IndividualOysters)
-postCupRatio<-mcp2atm(Cup.ratio ~ Gear * Location, data=IndividualOysters)
-postCupRatio
 
 library(ARTool)
+
 alignedOysters<-art(Cup.ratio ~ Gear * Location, data=IndividualOysters)
 anova(alignedOysters)
 
-#Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-leveneTest(Height~Gear*Location, data=IndividualOysters) #good
+alignedOysters2<-art(Cup.ratio ~ Gear * Location + (1|Replicate), data=IndividualOysters)
+anova(alignedOysters2)
 
+alignedOysters3<-art(Cup.ratio ~ Gear * Location + (1|Bag), data=IndividualOysters)
+anova(alignedOysters3)
 
+art.con(alignedOysters, "Gear", adjust="holm") %>%  # run ART-C for X1 × X2
+  summary() %>%  # add significance stars to the output
+  mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+                       cutpoints = c(0, .001, .01, .05, .10, 1),
+                       symbols = c("***", "**", "*", ".", " ")))
 
 #Shell Shape ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ggplot(data = IndividualOysters, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")

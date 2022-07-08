@@ -91,4 +91,10 @@ plot(logShellShapeANOVA,2)
 qqp(logShellShapeANOVA$residuals)
 shapiro.test(logShellShapeANOVA$residuals) #better, p=1.8e-6
 
+library(WRS2)
+t2way(Cup.ratio ~ Gear * Location, data=IndividualOysters)
+postCupRatio<-mcp2atm(Cup.ratio ~ Gear * Location, data=IndividualOysters)
+postCupRatio
+-->
+
 
