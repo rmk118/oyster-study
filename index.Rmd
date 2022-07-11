@@ -271,21 +271,21 @@ data_summary <- function(data, varname, groupnames){
   }
   data_sum<-ddply(data, groupnames, .fun=summary_func,
                   varname)
-  data_sum <- rename(data_sum, c("mean" = varname))
+  #data_sum <- rename(data_sum, c("mean" = varname))
   return(data_sum)
 }
 #Create summary data frame
-df2<-data_summary(turbidity, varname="Turbidity", 
+df2<-data_summary(turbidity, "Turbidity", 
                     groupnames=c("Date", "Location"))
 
 #Convert date to factor variable
 df2$Date=as.factor(df2$Date)
 
 #Plot
-ggplot(df2, aes(x=Date, y=Turbidity, group=Location, color=Location)) + 
+ggplot(df2, aes(x=Date, y=mean, group=Location, color=Location)) + 
   geom_line() +
   geom_point()+
-  geom_errorbar(aes(ymin=Turbidity-SE, ymax=Turbidity+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))
+  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))+ylab("Turbidity (NTU)")
 ```
 Figure #9: Average turbidity inside vs. outside the pound (mean±SEM).
