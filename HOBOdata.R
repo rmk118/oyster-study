@@ -93,3 +93,4 @@ salinity.delayedStart.noLowerSal
 
 #Six different salinity plots
 grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
+

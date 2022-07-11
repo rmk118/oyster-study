@@ -286,6 +286,6 @@ ggplot(df2, aes(x=Date, y=mean, group=Location, color=Location)) +
   geom_line() +
   geom_point()+
   geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))+ylab("Turbidity (NTU)")
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))+ylab("Turbidity (NTU)")+xlab("")
 ```
 Figure #9: Average turbidity inside vs. outside the pound (mean±SEM).

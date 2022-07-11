@@ -11,6 +11,8 @@ library(viridis)
 library(mgcv)
 library(visreg)
 library(sm)
+library(Hmisc)
+library(plyr)
 
 # Clears the all the saved data to start a blank workplace
 rm(list = ls())
@@ -86,7 +88,39 @@ data_summary <- function(data, varname, groupnames){
 df2<-data_summary(ChlaDatasheet, "Ave_Chl1", 
                   groupnames=c("Trial_Date", "Location"))
 
-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line() +
   geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+scale_y_continuous(limits=c(0,10))+ylab("Chlorophyll A (ug/L)")+xlab("Sampling Date")
+                position=position_dodge(0.05))+scale_y_continuous(limits=c(0,10))+ylab("Chlorophyll A (ug/L)")+xlab("")
+chlA_graph
+
+
+
+
+
+
+
+###############################################################################
+######################### Turbidity  ########################################
+###############################################################################
+
+turbidity<-read.csv("turbidity.csv")
+
+#Create summary data frame
+df3<-data_summary(turbidity, "Turbidity", 
+                  groupnames=c("Date", "Location"))
+
+df3$Date <- mdy(df3$Date)
+
+#Plot
+turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))+ylab("Turbidity (NTU)")+xlab("")
+
+###############################################################################
+######################### Combined graphs  ########################################
+###############################################################################
+
+grid.arrange(turbidity_graph,chlA_graph, ncol=1)
