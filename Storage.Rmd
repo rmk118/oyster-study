@@ -95,6 +95,72 @@ library(WRS2)
 t2way(Cup.ratio ~ Gear * Location, data=IndividualOysters)
 postCupRatio<-mcp2atm(Cup.ratio ~ Gear * Location, data=IndividualOysters)
 postCupRatio
+
+#With each oyster as individuals, each bag as replicate
+IndividualOysters<-read.csv("6_14_22_2.csv", na.strings=c(""," ","NA"))
+IndividualOysters<-subset(IndividualOysters, select = c(Location,Gear,Treatment,Cage,Bag,Oyster,Height,Length,Width,Cup.ratio,Shell.shape))
+str(IndividualOysters)
+
+#Convert variables to factors
+IndividualOysters<-within(IndividualOysters, {
+  Cage<-as.factor(Cage)
+  Bag<-as.factor(Bag)
+  Location<-as.factor(Location)
+  Gear<-as.factor(Gear)
+  Treatment<-as.factor(Treatment)
+})
+
+#ANOVA of log cup ratio - improves normality
+IndividualOysters$log.Cup.ratio<-log(IndividualOysters$Cup.ratio)
+leveneTest(log.Cup.ratio ~ Gear * Location, data = IndividualOysters) #good, p=0.2556
+logCupRatioANOVA <- aov(log.Cup.ratio ~ Gear * Location, data = IndividualOysters)
+summary(logCupRatioANOVA)
+plot(logCupRatioANOVA,1)
+plot(logCupRatioANOVA,2)
+hist(logCupRatioANOVA$residuals)
+shapiro.test(logCupRatioANOVA$residuals) #p=1.837e-5
+
+#Shell Shape ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+leveneTest(Shell.shape~Gear*Location, data=IndividualOysters) #marginally non-significant, p=0.05086
+ShellShapeANOVA <- aov(Shell.shape ~ Gear * Location, data = IndividualOysters)
+summary(ShellShapeANOVA)
+plot(ShellShapeANOVA,1)
+plot(ShellShapeANOVA,2)
+shapiro.test(ShellShapeANOVA$residuals) #bad, p=2.2e-16
+
+#ANOVA of cube root shell shape (best)
+IndividualOysters$cube.Shell.shape<-abs(IndividualOysters$Shell.shape)^(1/3)
+leveneTest(cube.Shell.shape ~ Gear * Location, data = IndividualOysters) #good, p=0.4136
+cubeShellShapeANOVA <- aov(cube.Shell.shape ~ Gear * Location, data = IndividualOysters)
+summary(cubeShellShapeANOVA)
+plot(cubeShellShapeANOVA,1)
+plot(cubeShellShapeANOVA,2)
+qqp(cubeShellShapeANOVA$residuals)
+shapiro.test(cubeShellShapeANOVA$residuals) #significant at p=0.05 but not p=0.01
+hist(cubeShellShapeANOVA$residuals)
+
+cupRatioANOVA <- aov(Cup.ratio ~ Gear * Location, data = SamplingNew)
+summary(cupRatioANOVA)
+leveneTest(Cup.ratio ~ Gear * Location, data = SamplingNew) #p=0.4658
+plot(cupRatioANOVA,1)
+plot(cupRatioANOVA,2)
+cupRatioResiduals<-cupRatioANOVA$residuals
+shapiro.test(cupRatioResiduals) #highly non-normal, p=2e-12
+
+art.con(alignedOysters, "Gear", adjust="holm") %>%  # run ART-C for X1 × X2
+  summary() %>%  # add significance stars to the output
+  mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+                       cutpoints = c(0, .001, .01, .05, .10, 1),
+                       symbols = c("***", "**", "*", ".", " ")))
+
+###############################################################################
+######################### Graphs  ########################################
+###############################################################################
+
+
+
+
+ggplot(data = IndividualOysters, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")
+
 -->
-
-
