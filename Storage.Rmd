@@ -163,4 +163,9 @@ art.con(alignedOysters, "Gear", adjust="holm") %>%  # run ART-C for X1 × X2
 
 ggplot(data = IndividualOysters, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")
 
+#Temperature plot starting 6/17
+temp.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+temp.delayedStart
 -->

@@ -7,7 +7,7 @@ library(car)
 library(MASS)
 library(dplyr)
 library(ARTool)
-library(WRS2)
+#library(WRS2)
 
 #Read and subset data
 SamplingOne<-read.csv("6_14_22.csv", na.strings=c(""," ","NA"))
@@ -31,6 +31,15 @@ summary(RegCupRatioOne)
 #ART one: no replicates included as random effect
 artCupRatioOne<-art(Cup.ratio ~ Gear * Location, data=SamplingOne)
 anova(artCupRatioOne)
+
+artShellShapeOne<-art(Shell.shape ~ Gear * Location, data=SamplingOne)
+anova(artShellShapeOne)
+
+ postHoc<-art.con(artCupRatioOne, "Location", adjust="holm") %>%  # run ART-C for X1 × X2
+   summary(postHoc) #%>%   add significance stars to the output
+      # mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+      #                  cutpoints = c(0, .001, .01, .05, .10, 1),
+      #                  symbols = c("***", "**", "*", ".", " ")))
 
 #WRS
 wrsCupRatioOne<-t2way(Cup.ratio ~ Gear * Location, data=SamplingOne)

@@ -18,7 +18,6 @@ HOBOdata<-read.csv("HOBOdata.csv")
 HOBOdata$Date.time<-mdy_hms(HOBOdata$Date.time)
 HOBOdata$Location=as.factor(HOBOdata$Location)
 
-HOBOdata<-subset(HOBOdata, select = -c(Low.sal))
 names(HOBOdata)[3]<-"Salinity"
 
 #Temperature ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,14 +37,8 @@ tempNoLowSal
 
 starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
 
-#Temperature plot starting 6/17
-temp.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-temp.delayedStart
-
-#Three different temperature plots
-grid.arrange(allTemps, tempNoLowSal, temp.delayedStart, ncol=1)
+#Two different temperature plots
+grid.arrange(allTemps, tempNoLowSal, ncol=1)
 
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Salinity Plot all data
