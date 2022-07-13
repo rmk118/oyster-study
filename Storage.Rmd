@@ -168,4 +168,15 @@ temp.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Temp, group=Location,
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 temp.delayedStart
+
+
+# ChlaDatasheet = ChlaDatasheet %>%
+#                    mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
+#                                      (ChlaDatasheet$Fo-ChlaDatasheet$Fa)*
+#                                      (((ChlaDatasheet$Acetone_vol/1000)/ChlaDatasheet$Dilution_Factor)/ChlaDatasheet$Vol_Filtered)))
+# 
+# ChlaDatasheet = ChlaDatasheet %>%
+#   mutate(ChlaDatasheet, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
+#                                      ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
+#                                      (((ChlaDatasheet$Acetone_vol/1000)/ChlaDatasheet$Dilution_Factor)/ChlaDatasheet$Vol_Filtered)))
 -->

@@ -1,4 +1,5 @@
 #HOBO Data
+#RK 7/13/22
 
 library(ggplot2)
 library(Hmisc)
@@ -10,6 +11,7 @@ library(gridExtra)
 library(hrbrthemes)
 options(hrbrthemes.loadfonts = TRUE)
 hrbrthemes::import_roboto_condensed()
+library(tidyquant)
 
 #Import data
 HOBOdata<-read.csv("HOBOdata.csv")
@@ -35,7 +37,18 @@ tempNoLowSal<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Lo
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSal
 
-starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
+#Rolling daily Average all temps
+DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+DailyAvgTemp
+
+#Rolling Daily Average no low sal
+noLowSal<- HOBOdata[HOBOdata$Salinity>5,]
+tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+tempNoLowSalRolling
 
 #Two different temperature plots
 grid.arrange(allTemps, tempNoLowSal, ncol=1)
@@ -60,6 +73,7 @@ salinityNoLowerSal<-ggplot(noLowerSal, aes(x=Date.time, y=Salinity, group=Locati
 
 salinityNoLowerSal
 
+starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
 #Salinity plot starting 6/17
 salinity.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data starting 6/17")

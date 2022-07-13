@@ -1,4 +1,4 @@
-# RK 7.11.2022
+# RK 7.13.2022
 
 # Packages
 library(ggplot2)
@@ -52,16 +52,6 @@ ChlFs = 0.000493
 FoFa_max = 1.7039
 
 #Calculating Chla ug/L and Phaeo ug/L from Raw Data
-# ChlaDatasheet = ChlaDatasheet %>%
-#                    mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
-#                                      (ChlaDatasheet$Fo-ChlaDatasheet$Fa)*
-#                                      (((ChlaDatasheet$Acetone_vol/1000)/ChlaDatasheet$Dilution_Factor)/ChlaDatasheet$Vol_Filtered)))
-# 
-# ChlaDatasheet = ChlaDatasheet %>%
-#   mutate(ChlaDatasheet, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
-#                                      ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
-#                                      (((ChlaDatasheet$Acetone_vol/1000)/ChlaDatasheet$Dilution_Factor)/ChlaDatasheet$Vol_Filtered)))
-
 ChlaDatasheet = ChlaDatasheet %>%
   mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
                        (ChlaDatasheet$Fo-ChlaDatasheet$Fa)*
@@ -123,4 +113,4 @@ turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)
 ######################### Combined graphs  ########################################
 ###############################################################################
 
-grid.arrange(turbidity_graph,chlA_graph, ncol=1)
+grid.arrange(turbidity_graph,chlA_graph, ncol=2)
