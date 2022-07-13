@@ -38,7 +38,7 @@ output: html_document
 -->
 
 <!--
-A one-way ANOVA is considered robust to violations of the normality assumption (e.g., Schmider et al., 2010). If an ANOVA is run on the width data despite the noted normality violations, again no significant differences are found.
+
 
 ```{r echo=FALSE}
 WidthResults<-aov(Width~Bag, data=FBout)
