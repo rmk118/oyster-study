@@ -108,7 +108,8 @@ turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)
   geom_line() +
   geom_point()+
   geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4))+ylab("Turbidity (NTU)")+xlab("")
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")
+turbidity_graph
 
 ###############################################################################
 ######################### Combined graphs  ########################################
