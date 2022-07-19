@@ -115,3 +115,4 @@ turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)
 ###############################################################################
 
 grid.arrange(turbidity_graph,chlA_graph, ncol=2)
+

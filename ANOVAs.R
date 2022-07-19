@@ -141,6 +141,18 @@ anova(artHeightThree)
 # IndividualOysters$Replicate[IndividualOysters$Cage==5]<-as.factor(11)
 # IndividualOysters$Replicate[IndividualOysters$Cage==6]<-as.factor(12)
 
+#lm with no random effect; no significance
+alignedOystersHeight<-art(Height ~ Gear * Location, data=IndividualOysters)
+anova(alignedOystersHeight)
+
+#mixed effects linear model with replicate as random effect; no significance
+alignedOystersHeight2<-art(Height ~ Gear * Location + (1|Replicate), data=IndividualOysters)
+anova(alignedOystersHeight2)
+
+#mixed effects linear model with bag as random effect; location significant
+alignedOystersHeight3<-art(Height ~ Gear * Location + (1|Bag), data=IndividualOysters)
+anova(alignedOystersHeight3)
+
 
 
 

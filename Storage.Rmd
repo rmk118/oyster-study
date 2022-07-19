@@ -179,4 +179,7 @@ temp.delayedStart
 #   mutate(ChlaDatasheet, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
 #                                      ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
 #                                      (((ChlaDatasheet$Acetone_vol/1000)/ChlaDatasheet$Dilution_Factor)/ChlaDatasheet$Vol_Filtered)))
+
+short<-SamplingTwo[SamplingTwo$Height < 24,]
+shortOne<-SamplingOne[SamplingOne$Height < 24,]
 -->
