@@ -14,13 +14,15 @@ hrbrthemes::import_roboto_condensed()
 library(tidyquant)
 
 #Import data
-HOBOdata<-read.csv("HOBOdata.csv")
+HOBOdata_unordered<-read.csv("HOBOdata.csv")
 
 #Convert date and location
-HOBOdata$Date.time<-mdy_hms(HOBOdata$Date.time)
+HOBOdata_unordered$Date.time<-mdy_hms(HOBOdata_unordered$Date.time)
+HOBOdata<-HOBOdata_unordered[order(HOBOdata_unordered$Location),]
 HOBOdata$Location=as.factor(HOBOdata$Location)
 
 names(HOBOdata)[3]<-"Salinity"
+
 
 #Temperature ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -44,7 +46,6 @@ DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Lo
 DailyAvgTemp
 
 #Rolling Daily Average no low sal
-noLowSal<- HOBOdata[HOBOdata$Salinity>5,]
 tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
@@ -52,6 +53,53 @@ tempNoLowSalRolling
 
 #Two different temperature plots
 grid.arrange(allTemps, tempNoLowSal, ncol=1)
+
+#Average difference
+
+Inside<-noLowSal[noLowSal$Location=="Inside",]
+Outside<-noLowSal[noLowSal$Location=="Outside",]
+InsideDates<-Inside$Date.time
+OutsideDates<-Outside$Date.time
+commonDates<-base::intersect(InsideDates, OutsideDates)
+common<-noLowSal[(noLowSal$Date.time %in% commonDates),]
+
+InsideCommon<-common[common$Location=='Inside',]
+OutsideCommon<-common[common$Location=='Outside',]
+differences<-InsideCommon$Temp-OutsideCommon$Temp
+meanDiff<-mean(differences)
+meanDiff
+seDiff<-std.error(differences)
+seDiff
+(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer
+
+commonInside2 <- InsideCommon %>%
+  select(Location, Date.time, Temp) %>%
+  mutate(daily_avg= rollmean(Temp, k = 24, fill = NA),
+         daily_03 = rollmean(Temp, k = 72, fill = NA))
+
+commonOutside2 <- OutsideCommon %>%
+  select(Location, Date.time, Temp) %>%
+  mutate(out_daily_avg= rollmean(Temp, k = 24, fill = NA),
+          out_daily_03 = rollmean(Temp, k = 72, fill = NA))
+  
+both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
+common$rolling<-both_rolling
+  
+
+DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
+DailyAvgTemp2
+
+#grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1)
+
+# InsideCommonDay<-InsideCommon[hour(InsideCommon$Date.time) %in% (5:15),]
+# OutsideCommonDay<-OutsideCommon[hour(OutsideCommon$Date.time) %in% (5:15),]
+# diffDay<-InsideCommonDay$Temp-OutsideCommonDay$Temp
+# mean(diffDay)
+# summary(diffDay)
+
+rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg
 
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Salinity Plot all data
