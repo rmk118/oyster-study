@@ -1,4 +1,4 @@
-# RK 7.13.2022
+# RK 7.21.2022
 
 # Packages
 library(ggplot2)
@@ -82,7 +82,7 @@ df2<-data_summary(ChlaDatasheet, "Ave_Chl1",
 chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line() +
   geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+scale_y_continuous(limits=c(0,10))+ylab("Chlorophyll A (ug/L)")+xlab("")
+                position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
 chlA_graph
 
 

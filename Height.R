@@ -101,8 +101,8 @@ TukeyHSD(heightANOVA2, which='Gear:Location')
 height_means <- 
   SamplingTwo %>% 
   group_by(Location, Gear) %>% # <- remember to group by *both* factors
-  summarise(Means = mean(Height))
-## `summarise()` regrouping output by 'Calluna' (override with `.groups` argument)
+    summarise(Means = mean(Height))
+
 height_means
 
 interaction_plot<-ggplot(height_means, aes(x = Gear, y = Means, colour = Location, group = Location)) +
