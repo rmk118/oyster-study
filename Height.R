@@ -156,3 +156,13 @@ heightRepMeansTwo <-
 heightRepMeansTwo
 
 heightRepMeansTwo$Height_diff<-heightRepMeansTwo$Means-heightRepMeansOne$Means
+
+heightDiffs <- 
+  heightRepMeansTwo %>% 
+  group_by(Location, Gear) %>%
+  summarise(Mean.diff = mean(Height_diff))
+heightDiffs
+
+interaction_plot4<-ggplot(heightDiffs, aes(x = Gear, y = Mean.diff, colour = Location, group = Location)) +
+  geom_point(size = 4) + geom_line()
+interaction_plot4

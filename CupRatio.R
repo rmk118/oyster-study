@@ -5,8 +5,9 @@ library(nlme)
 library(lme4)
 library(car)
 library(MASS)
-library(dplyr)
+library(plyr); library(dplyr)
 library(ARTool)
+library(plotrix)
 
 #DAY 1 Cup Ratio ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Import and select data
@@ -86,7 +87,6 @@ SamplingTwo$Day<-"Two"
 SamplingAll<-rbind(SamplingOne,SamplingTwo)
 
 data_summary <- function(data, varname, groupnames){
-  require(plyr)
   summary_func <- function(x, col){
     c(mean = mean(x[[col]], na.rm=TRUE),
       SE = std.error(x[[col]], na.rm=TRUE))

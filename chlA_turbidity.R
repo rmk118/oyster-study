@@ -111,6 +111,17 @@ turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)
                 position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")
 turbidity_graph
 
+
+#Average difference
+Outside<-df3[df3$Location=="Outside",'mean']
+Inside<-df3[df3$Location=="Inside",'mean']
+differences<-data.frame(Outside,Inside)
+differences$Diff<-differences$Outside-differences$Inside
+meanDiff<-mean(differences$Diff)
+meanDiff
+seDiff<-std.error(differences$Diff)
+seDiff
+
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
