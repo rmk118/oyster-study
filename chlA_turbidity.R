@@ -18,22 +18,6 @@ library(plyr)
 # Clears the all the saved data to start a blank workplace
 rm(list = ls())
 
-# Theme for creating extra classy gg plots
-# mytheme <- theme(panel.grid.major = element_blank(),
-#                  panel.grid.minor = element_blank(),
-#                  panel.background = element_blank(), 
-#                  legend.text = element_text(size = 9),
-#                  #legend.title = element_blank(),
-#                  #legend.position = "none",
-#                  legend.key = element_rect(fill = "white"),
-#                  legend.spacing = unit(0.0, "line"),
-#                  #text = element_text(size = 10, color = "black"),
-#                  axis.text.y = element_text(color = "black", size = 8),
-#                  axis.text.x = element_text(color = "black", size = 8),
-#                  panel.border = element_rect(size = 0.5, fill = NA),
-#                  plot.margin=unit(c(3,3,3,3),"mm"),
-#                  strip.background = element_rect(fill="white"))
-
 ###############################################################################
 ######################### Read in Data  ########################################
 
@@ -84,6 +68,7 @@ chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location
   geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
                 position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
 chlA_graph
+
 
 
 
