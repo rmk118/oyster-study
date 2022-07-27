@@ -100,6 +100,11 @@ DailyAvgTemp2
 # summary(diffDay)
 
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg
+length(rolling_diffs)
+length(rolling_diffs[rolling_diffs>0])
+length(rolling_diffs[rolling_diffs>0.5])
+max(rolling_diffs, na.rm = TRUE)
+min(rolling_diffs, na.rm = TRUE)
 
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Salinity Plot all data
@@ -167,3 +172,30 @@ salinity.delayedStart.noLowerSalRolling
 #Six different salinity plots
 grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
 
+sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
+meanSalDiff<-mean(sal_differences)
+meanSalDiff
+se_sal_Diff<-std.error(sal_differences)
+se_sal_Diff
+(length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside was warmer
+
+commonSalInside2 <- InsideCommon %>%
+  select(Location, Date.time, Salinity) %>%
+  mutate(daily_sal_avg= rollmean(Salinity, k = 24, fill = NA))
+
+commonSalOutside2 <- OutsideCommon %>%
+  select(Location, Date.time, Salinity) %>%
+  mutate(out_sal_daily_avg= rollmean(Salinity, k = 24, fill = NA))
+
+both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
+common$sal_rolling<-both_sal_rolling
+
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
+  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
+DailyAvgSal2
+
+rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
+length(rolling_sal_diffs)
+length(rolling_sal_diffs[rolling_sal_diffs>0])
+length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs)
