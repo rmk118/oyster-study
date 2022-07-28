@@ -6,21 +6,31 @@ library(dplyr)
 library(ARTool)
 library(ggplot2)
 library(agricolae)
+library(lubridate)
 
-#DAY 1 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-SamplingOne<-read.csv("6_14_22_2.csv", na.strings=c(""," ","NA"))
-SamplingOne<-subset(SamplingOne, select = c(Location,Gear,Treatment,Cage,Bag,Oyster,Height,Length,Width,Cup.ratio,Shell.shape))
+#Import data
+allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
+
+#Fix date format
+allData$Date<-mdy(allData$Date)
 
 #Convert variables to factors
-SamplingOne<-within(SamplingOne, {
+allData<-within(allData, {
   Cage<-as.factor(Cage)
   Bag<-as.factor(Bag)
   Location<-as.factor(Location)
   Gear<-as.factor(Gear)
   Treatment<-as.factor(Treatment)
 })
+str(allData)
 
+
+
+#DAY 1 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Select data
+SamplingOne<-allData[allData$Date=="2022-06-14",]
 str(SamplingOne)
+table(SamplingOne$Location, SamplingOne$Gear)
 
 heightOneGraph1<-ggplot(data = SamplingOne, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,75))+ylab("Shell height (mm)")
 heightOneGraph1
@@ -63,22 +73,9 @@ shapiro.test(lgrResiduals) #p=0.00023
 artLGROne<-art(LGR ~ Gear * Location, data=SamplingOne)
 anova(artLGROne) #no significant differences, everything the same as height
 
-#DAY 2 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#DAY 2 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SamplingTwo<-read.csv("7_5_22.csv", na.strings=c(""," ","NA"))
-SamplingTwo<-subset(SamplingTwo, select = c(Location,Gear,Treatment,Cage,Bag,Oyster,Height,Length,Width,Cup.ratio,Shell.shape))
-
-#Convert variables to factors
-SamplingTwo<-within(SamplingTwo, {
-  Cage<-as.factor(Cage)
-  Bag<-as.factor(Bag)
-  Location<-as.factor(Location)
-  Gear<-as.factor(Gear)
-  Treatment<-as.factor(Treatment)
-})
-
-str(SamplingTwo)
-summary(SamplingTwo)
+SamplingTwo<-allData[allData$Date=="2022-07-05",]
 
 heightTwoGraph1<-ggplot(data = SamplingTwo, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
 heightTwoGraph1
@@ -98,36 +95,28 @@ shapiro.test(heightResiduals2) #p=0.07
 
 TukeyHSD(heightANOVA2, which='Gear:Location')
 
-height_means <- 
-  SamplingTwo %>% 
-  group_by(Location, Gear) %>% # <- remember to group by *both* factors
-    summarise(Means = mean(Height))
+data_summary <- function(data, varname, groupnames){
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      SE = std.error(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  return(data_sum)
+}
 
-height_means
+#Height time graph
+timeGraphHeightDf<-data_summary(allData, "Height", 
+                                groupnames=c("Date", "Location", "Gear"))
 
-interaction_plot<-ggplot(height_means, aes(x = Gear, y = Means, colour = Location, group = Location)) +
-  geom_point(size = 4) + geom_line()
-interaction_plot
+timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) + 
+  geom_line() +
+  geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
+                                             position=position_dodge(0.05))
+timeGraphHeight
 
+#SamplingDay2
 HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE)
-
-height_stats <- 
-  SamplingOne %>% 
-  group_by(Location,Gear) %>% # <- remember to group by the two factors
-  summarise(Means = mean(Height), SEs = sd(Height)/sqrt(n()))
-height_stats
-
-columns<-ggplot(height_stats, 
-       aes(x = Gear, y = Means, fill = Location,
-           ymin = Means - SEs, ymax = Means + SEs)) +
-  geom_col(position = position_dodge()) +
-  # this adds the error bars
-  geom_errorbar(position = position_dodge(0.9), width=.2)+theme_classic()
-
-interaction_plot2<-ggplot(height_stats, aes(x = Gear, y = Means, color = Location, ymin = Means - SEs, ymax = Means + SEs)) + geom_point(size = 3, position =position_dodge(0.2)) + geom_errorbar(width = 0.1, position =position_dodge(0.2)) + ylab("Mean shell height (mm)")
-interaction_plot2
-
-interaction_plot3<-interaction.plot(x.factor = SamplingTwo$Gear, trace.factor = SamplingTwo$Location,  response = SamplingTwo$Height, fun = median, ylab = "Shell height", xlab = "Gear",col = c("pink", "blue"),lty = 1, lwd = 2,trace.label = "Location")
 
 #DAY 2 Linear Growth Rate ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -137,23 +126,12 @@ FC.replicate1<- SamplingOne[SamplingOne$Gear == "FC","Cage"]
 replicateColumn1<-c(BP.replicate1, FB.replicate1, FC.replicate1)
 SamplingOne$Replicate<-replicateColumn1
 
-heightRepMeansOne <- 
-  SamplingOne %>% 
-  group_by(Location, Gear, Replicate) %>%
-  summarise(Means = mean(Height))
-heightRepMeansOne
-
 BP.replicate2<- SamplingTwo[SamplingTwo$Gear == "BP","Treatment"]
 FB.replicate2<- SamplingTwo[SamplingTwo$Gear == "FB","Bag"]
 FC.replicate2<- SamplingTwo[SamplingTwo$Gear == "FC","Cage"]
 replicateColumn2<-c(BP.replicate2, FB.replicate2, FC.replicate2)
 SamplingTwo$Replicate<-replicateColumn2
 
-heightRepMeansTwo <- 
-  SamplingTwo %>% 
-  group_by(Location, Gear, Replicate) %>%
-  summarise(Means = mean(Height))
-heightRepMeansTwo
 
 heightRepMeansTwo$Height_diff<-heightRepMeansTwo$Means-heightRepMeansOne$Means
 
