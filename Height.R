@@ -22,8 +22,15 @@ allData<-within(allData, {
   Gear<-as.factor(Gear)
   Treatment<-as.factor(Treatment)
 })
-str(allData)
 
+BP.replicate<- allData[allData$Gear == "BP","Treatment"]
+FB.replicate<- allData[allData$Gear == "FB","Bag"]
+FC.replicate<- allData[allData$Gear == "FC","Cage"]
+replicateColumn1<-c(BP.replicate, FB.replicate, FC.replicate)
+allData$Replicate<-replicateColumn1
+allData$Replicate<-droplevels(allData$Replicate)
+
+str(allData)
 
 
 #DAY 1 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,6 +102,9 @@ shapiro.test(heightResiduals2) #p=0.07
 
 TukeyHSD(heightANOVA2, which='Gear:Location')
 
+HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE)
+
+
 data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
     c(mean = mean(x[[col]], na.rm=TRUE),
@@ -105,42 +115,92 @@ data_summary <- function(data, varname, groupnames){
   return(data_sum)
 }
 
-#Height time graph
+#DAY 3 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SamplingThree<-allData[allData$Date=="2022-07-26",]
+
+heightThreeGraph1<-ggplot(data = SamplingThree, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
+heightThreeGraph1
+
+#ANOVA - assumptions not met
+heightANOVA3 <- aov(Height ~ Gear * Location, data = SamplingThree)
+summary(heightANOVA3) #significant location
+leveneTest(Height ~ Gear * Location, data = SamplingThree) #p=0.020
+plot(heightANOVA3,1)
+plot(heightANOVA3,2)
+heightResiduals3<-heightANOVA3$residuals
+shapiro.test(heightResiduals3) #p=0.023
+
+#art ANOVA - location significant
+artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
+anova(artDay3)
+
+#Height over time/Growth Rates ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#time graph both location and gear
 timeGraphHeightDf<-data_summary(allData, "Height", 
                                 groupnames=c("Date", "Location", "Gear"))
 
-timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) + 
-  geom_line() +
-  geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                                             position=position_dodge(0.05))
+timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
 timeGraphHeight
 
-#SamplingDay2
-HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE)
+#time graph just location
+timeGraphLocationDf<-data_summary(allData, "Height", 
+                                groupnames=c("Date", "Location"))
 
-#DAY 2 Linear Growth Rate ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+timeGraphLocation<-ggplot(timeGraphLocationDf, aes(x=Date, y=mean, color=Location)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+timeGraphLocation
 
-BP.replicate1<- SamplingOne[SamplingOne$Gear == "BP","Treatment"]
-FB.replicate1<- SamplingOne[SamplingOne$Gear == "FB","Bag"]
-FC.replicate1<- SamplingOne[SamplingOne$Gear == "FC","Cage"]
-replicateColumn1<-c(BP.replicate1, FB.replicate1, FC.replicate1)
-SamplingOne$Replicate<-replicateColumn1
+heightRepMeansOne<-data_summary(SamplingOne, "Height", 
+                                groupnames=c("Replicate", "Location", "Gear"))
 
-BP.replicate2<- SamplingTwo[SamplingTwo$Gear == "BP","Treatment"]
-FB.replicate2<- SamplingTwo[SamplingTwo$Gear == "FB","Bag"]
-FC.replicate2<- SamplingTwo[SamplingTwo$Gear == "FC","Cage"]
-replicateColumn2<-c(BP.replicate2, FB.replicate2, FC.replicate2)
-SamplingTwo$Replicate<-replicateColumn2
+heightRepMeansTwo<-data_summary(SamplingTwo, "Height", 
+                                groupnames=c("Replicate", "Location", "Gear"))
+
+heightRepMeansThree<-data_summary(SamplingThree, "Height", 
+                                groupnames=c("Replicate", "Location", "Gear"))
 
 
-heightRepMeansTwo$Height_diff<-heightRepMeansTwo$Means-heightRepMeansOne$Means
+heightRepMeansTwo$Height_diff1<-(heightRepMeansTwo$mean-heightRepMeansOne$mean)/21
+heightRepMeansThree$Height_diff0<-(heightRepMeansOne$mean-47.64)/11
+heightRepMeansThree$Height_diff1<-heightRepMeansTwo$Height_diff1
+heightRepMeansThree$Height_diff2<-(heightRepMeansThree$mean-heightRepMeansTwo$mean)/21
 
-heightDiffs <- 
-  heightRepMeansTwo %>% 
-  group_by(Location, Gear) %>%
-  summarise(Mean.diff = mean(Height_diff))
-heightDiffs
+heightDiffs0<-data_summary(heightRepMeansThree, "Height_diff0", 
+                           groupnames=c("Location", "Gear"))
 
-interaction_plot4<-ggplot(heightDiffs, aes(x = Gear, y = Mean.diff, colour = Location, group = Location)) +
+heightDiffs1<-data_summary(heightRepMeansThree, "Height_diff1", 
+                                groupnames=c("Location", "Gear"))
+
+heightDiffs2<-data_summary(heightRepMeansThree, "Height_diff2", 
+                           groupnames=c("Location", "Gear"))
+
+growthRateDay2<-ggplot(heightDiffs1, aes(x = Gear, y = mean, colour = Location, group = Location)) +
   geom_point(size = 4) + geom_line()
-interaction_plot4
+growthRateDay2
+
+growthRateDay3<-ggplot(heightDiffs2, aes(x = Gear, y = mean, colour = Location, group = Location)) +
+  geom_point(size = 4) + geom_line()
+growthRateDay3
+
+heightDiffs0$Date<-mdy("6/14/2022")
+heightDiffs1$Date<-mdy("7/05/2022")
+heightDiffs2$Date<-mdy("7/26/2022")
+bothDays<-rbind(heightDiffs1, heightDiffs2)
+bothDays2<-rbind(heightDiffs0,heightDiffs1, heightDiffs2)
+
+timeGraphLGR<-ggplot(bothDays, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
+timeGraphLGR
+
+bothDays_loc<-data_summary(bothDays, "mean", 
+                           groupnames=c("Location", "Date"))
+timeGraphLGR_loc<-ggplot(bothDays_loc, aes(x=Date, y=mean, group=Location, color=Location)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
+timeGraphLGR_loc
+
+bothDays_gear<-data_summary(bothDays, "mean", 
+                           groupnames=c("Gear", "Date"))
+timeGraphLGR_gear<-ggplot(bothDays_gear, aes(x=Date, y=mean, group=Gear, color=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
+timeGraphLGR_gear
+
+mean(bothDays_loc[bothDays_loc$Location=="Outside", "mean"])
+mean(bothDays_loc[bothDays_loc$Location=="Inside", "mean"])

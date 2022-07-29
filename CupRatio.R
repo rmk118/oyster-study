@@ -124,4 +124,6 @@ timeGraphShellShape<-ggplot(timeGraphShellShapeDf, aes(x=Date, y=mean, color=Loc
 timeGraphShellShape
 
 
-
+artCupRatioAll<-art(Cup.ratio ~ Gear * Location + (1|Date), data=allData)
+summary(artCupRatioAll)
+anova(artCupRatioAll)
