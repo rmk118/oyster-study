@@ -1,7 +1,10 @@
-#HOBO Data
-#RK 7/13/22
+#Environmental Data
+#RK 7/29/22
 
 library(ggplot2)
+library(ggsci)
+library(ggpubr)
+library(gridExtra)
 library(Hmisc)
 library(plotrix)
 library(plyr)
@@ -12,6 +15,10 @@ library(hrbrthemes)
 options(hrbrthemes.loadfonts = TRUE)
 hrbrthemes::import_roboto_condensed()
 library(tidyquant)
+library(viridis)
+library(mgcv)
+library(visreg)
+library(sm)
 
 #Import data
 HOBOdata_unordered<-read.csv("HOBOdata.csv")
@@ -150,9 +157,6 @@ commonSalOutside2 <- OutsideCommon %>%
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
 
-
-
-#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Average difference
 Inside<-noLowSal[noLowSal$Location=="Inside",]
 Outside<-noLowSal[noLowSal$Location=="Outside",]
@@ -199,6 +203,102 @@ length(rolling_sal_diffs)
 length(rolling_sal_diffs[rolling_sal_diffs>0])
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs)
 
+###############################################################################
+######################### ChlA/Turbidity  ########################################
+
+dateFix = function(df) {
+  df$Trial_Date = as.Date(df$Trial, "%m/%d/%y")
+  return(df)
+}
+
+# Reading Data for Algae Chla extracted values data sheet
+
+chlaDatasheet = read.csv("chlA.csv")
+
+ChlaDatasheet = dateFix(chlaDatasheet)
+
+#ChlaDatasheet = select(ChlaDatasheet,-c(21,22,23,24,25))
+ChlFs = 0.000493
+FoFa_max = 1.7039
+
+#Calculating Chla ug/L and Phaeo ug/L from Raw Data
+ChlaDatasheet = ChlaDatasheet %>%
+  mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
+                       (ChlaDatasheet$Fo-ChlaDatasheet$Fa)*
+                       (((ChlaDatasheet$Acetone_vol)/ChlaDatasheet$Vol_Filtered))))
+
+ChlaDatasheet = ChlaDatasheet %>%
+  mutate(ChlaDatasheet, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
+                                        ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
+                                        (((ChlaDatasheet$Acetone_vol)/ChlaDatasheet$Vol_Filtered))))
+
+#Function to calculate mean and standard error
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      SE = std.error(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  return(data_sum)
+}
+
+#Create summary data frame
+df2<-data_summary(ChlaDatasheet, "Ave_Chl1", 
+                  groupnames=c("Trial_Date", "Location"))
+
+
+#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (ug/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+  
+  # theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
+chlA_graph
+
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
+  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+DailyAvgSal2
+
+###############################################################################
+######################### Turbidity  ########################################
+###############################################################################
+
+turbidity<-read.csv("turbidity.csv")
+
+#Create summary data frame
+df3<-data_summary(turbidity, "Turbidity", 
+                  groupnames=c("Date", "Location"))
+
+df3$Date <- mdy(df3$Date)
+
+#Plot
+turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)) + 
+  geom_line() +
+  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")
+turbidity_graph
+
+
+#Average difference
+Outside<-df3[df3$Location=="Outside",'mean']
+Inside<-df3[df3$Location=="Inside",'mean']
+differences<-data.frame(Outside,Inside)
+differences$Diff<-differences$Outside-differences$Inside
+meanDiff<-mean(differences$Diff)
+meanDiff
+seDiff<-std.error(differences$Diff)
+seDiff
+
+###############################################################################
+######################### Combined graphs  ########################################
+###############################################################################
+
 library(patchwork)
-combined <- DailyAvgTemp2/DailyAvgSal2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+combined <- DailyAvgTemp2/(DailyAvgSal2 + chlA_graph) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
 combined
+
+
