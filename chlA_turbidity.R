@@ -63,14 +63,14 @@ data_summary <- function(data, varname, groupnames){
 df2<-data_summary(ChlaDatasheet, "Ave_Chl1", 
                   groupnames=c("Trial_Date", "Location"))
 
+
+#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line() +
   geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
+                                             position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
 chlA_graph
-
-
-
 
 
 

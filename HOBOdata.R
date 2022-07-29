@@ -45,51 +45,11 @@ DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Lo
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgTemp
 
+
 #Rolling Daily Average no low sal
 tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSalRolling
-
-#Two different temperature plots
-grid.arrange(allTemps, tempNoLowSal, ncol=1)
-
-#Average difference
-
-Inside<-noLowSal[noLowSal$Location=="Inside",]
-Outside<-noLowSal[noLowSal$Location=="Outside",]
-InsideDates<-Inside$Date.time
-OutsideDates<-Outside$Date.time
-commonDates<-base::intersect(InsideDates, OutsideDates)
-common<-noLowSal[(noLowSal$Date.time %in% commonDates),]
-
-InsideCommon<-common[common$Location=='Inside',]
-OutsideCommon<-common[common$Location=='Outside',]
-differences<-InsideCommon$Temp-OutsideCommon$Temp
-meanDiff<-mean(differences)
-meanDiff
-seDiff<-std.error(differences)
-seDiff
-(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer
-
-commonInside2 <- InsideCommon %>%
-  select(Location, Date.time, Temp) %>%
-  mutate(daily_avg= rollmean(Temp, k = 24, fill = NA),
-         daily_03 = rollmean(Temp, k = 72, fill = NA))
-
-commonOutside2 <- OutsideCommon %>%
-  select(Location, Date.time, Temp) %>%
-  mutate(out_daily_avg= rollmean(Temp, k = 24, fill = NA),
-          out_daily_03 = rollmean(Temp, k = 72, fill = NA))
-  
-both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
-common$rolling<-both_rolling
-  
-
-DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
-DailyAvgTemp2
 
 #grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1)
 
@@ -190,6 +150,45 @@ commonSalOutside2 <- OutsideCommon %>%
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
 
+
+
+#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#Average difference
+Inside<-noLowSal[noLowSal$Location=="Inside",]
+Outside<-noLowSal[noLowSal$Location=="Outside",]
+InsideDates<-Inside$Date.time
+OutsideDates<-Outside$Date.time
+commonDates<-base::intersect(InsideDates, OutsideDates)
+common<-noLowSal[(noLowSal$Date.time %in% commonDates),]
+
+InsideCommon<-common[common$Location=='Inside',]
+OutsideCommon<-common[common$Location=='Outside',]
+differences<-InsideCommon$Temp-OutsideCommon$Temp
+meanDiff<-mean(differences)
+meanDiff
+seDiff<-std.error(differences)
+seDiff
+(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer
+
+commonInside2 <- InsideCommon %>%
+  select(Location, Date.time, Temp) %>%
+  mutate(daily_avg= rollmean(Temp, k = 24, fill = NA),
+         daily_03 = rollmean(Temp, k = 72, fill = NA))
+
+commonOutside2 <- OutsideCommon %>%
+  select(Location, Date.time, Temp) %>%
+  mutate(out_daily_avg= rollmean(Temp, k = 24, fill = NA),
+         out_daily_03 = rollmean(Temp, k = 72, fill = NA))
+
+both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
+common$rolling<-both_rolling
+
+
+DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
+DailyAvgTemp2
+
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
   ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
@@ -199,3 +198,7 @@ rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_dail
 length(rolling_sal_diffs)
 length(rolling_sal_diffs[rolling_sal_diffs>0])
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs)
+
+library(patchwork)
+combined <- DailyAvgTemp2/DailyAvgSal2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+combined
