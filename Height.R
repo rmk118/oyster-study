@@ -1,3 +1,6 @@
+#Ruby Krasnow
+#7/30/22
+
 library(nlme)
 library(lme4)
 library(car)
@@ -7,6 +10,7 @@ library(ARTool)
 library(ggplot2)
 library(agricolae)
 library(lubridate)
+library(patchwork)
 
 #Import data
 allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))

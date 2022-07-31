@@ -1,5 +1,5 @@
 #Environmental Data
-#RK 7/29/22
+#RK 7/31/22
 
 library(ggplot2)
 library(ggsci)
@@ -19,6 +19,7 @@ library(viridis)
 library(mgcv)
 library(visreg)
 library(sm)
+library(patchwork)
 
 #Import data
 HOBOdata_unordered<-read.csv("HOBOdata.csv")
@@ -28,6 +29,7 @@ HOBOdata_unordered$Date.time<-mdy_hms(HOBOdata_unordered$Date.time)
 HOBOdata<-HOBOdata_unordered[order(HOBOdata_unordered$Location),]
 HOBOdata$Location=as.factor(HOBOdata$Location)
 
+#Rename salinity column
 names(HOBOdata)[3]<-"Salinity"
 
 
@@ -46,44 +48,34 @@ tempNoLowSal<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Lo
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSal
 
-#Rolling daily Average all temps
+#Rolling daily average all temps
 DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgTemp
 
-
-#Rolling Daily Average no low sal
+#Rolling daily average no  salinity <5
 tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSalRolling
 
-#grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1)
-
+#Data from only 05:00 to compare to Leeman et al.
 # InsideCommonDay<-InsideCommon[hour(InsideCommon$Date.time) %in% (5:15),]
 # OutsideCommonDay<-OutsideCommon[hour(OutsideCommon$Date.time) %in% (5:15),]
 # diffDay<-InsideCommonDay$Temp-OutsideCommonDay$Temp
 # mean(diffDay)
 # summary(diffDay)
 
-rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg
-length(rolling_diffs)
-length(rolling_diffs[rolling_diffs>0])
-length(rolling_diffs[rolling_diffs>0.5])
-max(rolling_diffs, na.rm = TRUE)
-min(rolling_diffs, na.rm = TRUE)
-
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #Salinity Plot all data
 allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data")
-
 allSalinity
 
 #Salinity Plot no salinity <5
 salinityNoLowSal<-ggplot(noLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
-
 salinityNoLowSal
 
 #Salinity Plot no salinity <5 ROLLING AVERAGE
@@ -110,7 +102,6 @@ salinity.delayedStart
 
 #Salinity plot starting 6/17 no salinity <5
 starting6.17NoLowSal<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity >5,]
-
 salinity.delayedStart.noLowSal<-ggplot(starting6.17NoLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+
  theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
@@ -124,7 +115,6 @@ salinity.delayedStart.noLowSalRolling
 
 #Salinity plot starting 6/17 no salinity <25
 starting6.17NoLowerSal<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity>25,]
-
 salinity.delayedStart.noLowerSal<-ggplot(starting6.17NoLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+
 theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >25 starting 6/17")
@@ -139,23 +129,7 @@ salinity.delayedStart.noLowerSalRolling
 #Six different salinity plots
 grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
 
-sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
-meanSalDiff<-mean(sal_differences)
-meanSalDiff
-se_sal_Diff<-std.error(sal_differences)
-se_sal_Diff
-(length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside was warmer
 
-commonSalInside2 <- InsideCommon %>%
-  select(Location, Date.time, Salinity) %>%
-  mutate(daily_sal_avg= rollmean(Salinity, k = 24, fill = NA))
-
-commonSalOutside2 <- OutsideCommon %>%
-  select(Location, Date.time, Salinity) %>%
-  mutate(out_sal_daily_avg= rollmean(Salinity, k = 24, fill = NA))
-
-both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
-common$sal_rolling<-both_sal_rolling
 
 #Average difference
 Inside<-noLowSal[noLowSal$Location=="Inside",]
@@ -169,10 +143,10 @@ InsideCommon<-common[common$Location=='Inside',]
 OutsideCommon<-common[common$Location=='Outside',]
 differences<-InsideCommon$Temp-OutsideCommon$Temp
 meanDiff<-mean(differences)
-meanDiff
+meanDiff #inside averaged 0.650 deg. C warmer
 seDiff<-std.error(differences)
 seDiff
-(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer
+(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.3%
 
 commonInside2 <- InsideCommon %>%
   select(Location, Date.time, Temp) %>%
@@ -187,21 +161,49 @@ commonOutside2 <- OutsideCommon %>%
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
 
+rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
+mean(rolling_diffs, na.rm=TRUE) #mean rolling 24h avg. is 0.655 deg. C higher inside
+length(rolling_diffs)
+length(rolling_diffs[rolling_diffs>0]) #inside daily mean always higher
+length(rolling_diffs[rolling_diffs>0.5])/1060 #78.9% diff was >0.5 deg. C
+max(rolling_diffs, na.rm = TRUE) #max 1.19 deg. C higher inside
+min(rolling_diffs, na.rm = TRUE) #min 0.1 deg. C higher inside
 
 DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
 DailyAvgTemp2
 
+grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
+
+#Salinity analysis
+sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
+meanSalDiff<-mean(sal_differences)
+meanSalDiff #inside averages 0.28 mS/L higher
+se_sal_Diff<-std.error(sal_differences)
+se_sal_Diff
+(length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 73.9% 
+
+commonSalInside2 <- InsideCommon %>%
+  select(Location, Date.time, Salinity) %>%
+  mutate(daily_sal_avg= rollmean(Salinity, k = 24, fill = NA))
+
+commonSalOutside2 <- OutsideCommon %>%
+  select(Location, Date.time, Salinity) %>%
+  mutate(out_sal_daily_avg= rollmean(Salinity, k = 24, fill = NA))
+
+both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
+common$sal_rolling<-both_sal_rolling
+
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
-  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
 
 rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
-length(rolling_sal_diffs)
-length(rolling_sal_diffs[rolling_sal_diffs>0])
-length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs)
+length(rolling_sal_diffs) #1060
+length(rolling_sal_diffs[rolling_sal_diffs>0]) #797
+length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
 
 ###############################################################################
 ######################### ChlA/Turbidity  ########################################
@@ -212,10 +214,12 @@ dateFix = function(df) {
 }
 
 # Reading Data for Algae Chla extracted values data sheet
-
 chlaDatasheet = read.csv("chlA.csv")
+chlaDatasheet2 = read.csv("chlA_updated.csv")
 
 ChlaDatasheet = dateFix(chlaDatasheet)
+ChlaDatasheet2 = dateFix(chlaDatasheet2)
+ChlaDatasheet2 = ChlaDatasheet2[ChlaDatasheet2$Major_issue == FALSE,]
 
 #ChlaDatasheet = select(ChlaDatasheet,-c(21,22,23,24,25))
 ChlFs = 0.000493
@@ -232,6 +236,17 @@ ChlaDatasheet = ChlaDatasheet %>%
                                         ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
                                         (((ChlaDatasheet$Acetone_vol)/ChlaDatasheet$Vol_Filtered))))
 
+#Calculating Chla ug/L and Phaeo ug/L from Raw Data
+ChlaDatasheet2 = ChlaDatasheet2 %>%
+  mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
+                       (ChlaDatasheet2$Fo-ChlaDatasheet2$Fa)*
+                       (((ChlaDatasheet2$Acetone_vol)/ChlaDatasheet2$Vol_Filtered))))
+
+ChlaDatasheet2 = ChlaDatasheet2 %>%
+  mutate(ChlaDatasheet2, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
+                                        ((FoFa_max-1)*(ChlaDatasheet2$Fo-ChlaDatasheet2$Fa))*
+                                        (((ChlaDatasheet2$Acetone_vol)/ChlaDatasheet2$Vol_Filtered))))
+
 #Function to calculate mean and standard error
 data_summary <- function(data, varname, groupnames){
   require(plyr)
@@ -246,22 +261,36 @@ data_summary <- function(data, varname, groupnames){
 
 #Create summary data frame
 df2<-data_summary(ChlaDatasheet, "Ave_Chl1", 
-                  groupnames=c("Trial_Date", "Location"))
+                         groupnames=c("Trial_Date", "Location"))
 
+chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (ug/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 15, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+chlA_graph
+
+df_updated<-data_summary(ChlaDatasheet2, "Ave_Chl1", 
+                         groupnames=c("Trial_Date", "Location"))
+#with error bars
+chlA_graph3<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (μg/L)")+
+  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
+                position=position_dodge(0.05))+theme_classic()
+chlA_graph3
 
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (ug/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
+chlA_graph2<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
-  
-  # theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+scale_y_continuous(limits=c(0,12))+ylab("Chlorophyll A (ug/L)")+xlab("")
-chlA_graph
+chlA_graph2
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
   ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgSal2
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+grid.arrange(chlA_graph, chlA_graph2, ncol=2) #updating vol filtered and removing sample data where major spills occurred has minimal impact on graph
 
 ###############################################################################
 ######################### Turbidity  ########################################
@@ -270,35 +299,41 @@ DailyAvgSal2
 turbidity<-read.csv("turbidity.csv")
 
 #Create summary data frame
-df3<-data_summary(turbidity, "Turbidity", 
+df_turbdity<-data_summary(turbidity, "Turbidity", 
                   groupnames=c("Date", "Location"))
 
-df3$Date <- mdy(df3$Date)
+df_turbdity$Date <- mdy(df_turbdity$Date)
 
 #Plot
-turbidity_graph<-ggplot(df3, aes(x=Date, y=mean, group=Location, color=Location)) + 
-  geom_line() +
-  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")
+turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+  #+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+
 turbidity_graph
-
+turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
 
 #Average difference
-Outside<-df3[df3$Location=="Outside",'mean']
-Inside<-df3[df3$Location=="Inside",'mean']
+Outside<-df_turbdity[df_turbdity$Location=="Outside",'mean']
+Inside<-df_turbdity[df_turbdity$Location=="Inside",'mean']
 differences<-data.frame(Outside,Inside)
 differences$Diff<-differences$Outside-differences$Inside
 meanDiff<-mean(differences$Diff)
-meanDiff
+meanDiff #1.09 NTU
 seDiff<-std.error(differences$Diff)
-seDiff
+seDiff #0.34 NTU
 
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
 
-library(patchwork)
+#Temp, salinity, ChlA
 combined <- DailyAvgTemp2/(DailyAvgSal2 + chlA_graph) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
 combined
 
+#Temp, salinity, ChlA, turbidity
+allFour<-DailyAvgTemp2/(DailyAvgSal2 + chlA_graph2 + turbidity_graph_themed) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
+allFour
 
+#ChlA and turbidity
+chlA_graph2 + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
