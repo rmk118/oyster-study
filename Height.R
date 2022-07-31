@@ -108,7 +108,6 @@ TukeyHSD(heightANOVA2, which='Gear:Location')
 
 HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE)
 
-
 data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
     c(mean = mean(x[[col]], na.rm=TRUE),
@@ -116,8 +115,7 @@ data_summary <- function(data, varname, groupnames){
   }
   data_sum<-ddply(data, groupnames, .fun=summary_func,
                   varname)
-  return(data_sum)
-}
+  return(data_sum)}
 
 #DAY 3 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -126,10 +124,11 @@ SamplingThree<-allData[allData$Date=="2022-07-26",]
 heightThreeGraph1<-ggplot(data = SamplingThree, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
 heightThreeGraph1
 
-#just location
+#Just location
 heightThreeGraph2<-ggplot(data = SamplingThree, aes(x = Location, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
 heightThreeGraph2
 
+#Just gear
 heightThreeGraph3<-ggplot(data = SamplingThree, aes(x = Gear, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
 heightThreeGraph3
 
@@ -142,16 +141,13 @@ plot(heightANOVA3,2)
 heightResiduals3<-heightANOVA3$residuals
 shapiro.test(heightResiduals3) #p=0.023
 
-
-
-
 #Height over time/Growth Rates ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #time graph both location and gear 
 timeGraphHeightDf<-data_summary(allData, "Height", 
                                 groupnames=c("Date", "Location", "Gear"))
 
-timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Shell height (mm)")+xlab("")
+timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+theme_classic()+ylab("Shell height (mm)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
 timeGraphHeight
 
 mean(SamplingThree[SamplingThree$Location=="Outside", "Height"])
