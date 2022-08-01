@@ -264,7 +264,7 @@ df2<-data_summary(ChlaDatasheet, "Ave_Chl1",
                          groupnames=c("Trial_Date", "Location"))
 
 chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (ug/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 15, axis_text_size = 10)+xlab("")+
+  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 15, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 chlA_graph
 
@@ -276,6 +276,17 @@ chlA_graph3<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=
   geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
                 position=position_dodge(0.05))+theme_classic()
 chlA_graph3
+
+#Average difference
+OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
+InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
+
+differencesChlA<-data.frame(OutsideChlA,InsideChlA)
+differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
+meanDiffChlA<-mean(differencesChlA$Diff)
+meanDiffChlA #0.784 μg/L
+seDiffChlA<-std.error(differencesChlA$Diff)
+seDiffChlA #0.849
 
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -322,6 +333,10 @@ meanDiff #1.09 NTU
 seDiff<-std.error(differences$Diff)
 seDiff #0.34 NTU
 
+mean(Outside)
+std.error(Outside)
+mean(Inside)
+std.error(Inside)
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
