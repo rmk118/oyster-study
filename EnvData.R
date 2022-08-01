@@ -66,6 +66,12 @@ tempNoLowSalRolling
 # mean(diffDay)
 # summary(diffDay)
 
+mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.10
+sd(noLowSal[noLowSal$Location=="Inside", "Temp"]) #sd inside temp 2.10
+
+mean(noLowSal[noLowSal$Location=="Outside", "Temp"]) #mean outside temp 17.39
+sd(noLowSal[noLowSal$Location=="Outside", "Temp"]) #sd outside temp 1.97
+
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Salinity Plot all data
@@ -160,6 +166,9 @@ commonOutside2 <- OutsideCommon %>%
 
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
+
+min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67
+max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53
 
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
 mean(rolling_diffs, na.rm=TRUE) #mean rolling 24h avg. is 0.655 deg. C higher inside

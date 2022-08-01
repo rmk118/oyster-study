@@ -129,7 +129,8 @@ heightThreeGraph2<-ggplot(data = SamplingThree, aes(x = Location, y = Height))+g
 heightThreeGraph2
 
 #Just gear
-heightThreeGraph3<-ggplot(data = SamplingThree, aes(x = Gear, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
+heightThreeGraph3<-ggplot(data = SamplingThree, aes(x = Gear, y = Height))+geom_boxplot()+ylab("Shell height (mm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),
+       axis.title.x = element_text(margin = margin(t = 10)))#+scale_y_continuous(limits=c(0,85))
 heightThreeGraph3
 
 #ANOVA - assumptions not met
@@ -161,7 +162,7 @@ mean(SamplingThree[SamplingThree$Gear=="FC", "Height"])-47.64
 artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
 anova(artDay3)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #time graph just location
 timeGraphLocationDf<-data_summary(allData, "Height", 
                                 groupnames=c("Date", "Location"))
@@ -213,27 +214,30 @@ bothDays2<-rbind(heightDiffs0,heightDiffs1, heightDiffs2)
 timeGraphLGR<-ggplot(bothDays, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
 timeGraphLGR
 
-bothDays_loc<-data_summary(bothDays, "mean", 
-                           groupnames=c("Location", "Date"))
+bothDays_loc<-data_summary(bothDays, "mean",groupnames=c("Location", "Date"))
 timeGraphLGR_loc<-ggplot(bothDays_loc, aes(x=Date, y=mean, group=Location, color=Location)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
 timeGraphLGR_loc
 
-bothDays_gear<-data_summary(bothDays, "mean", 
-                           groupnames=c("Gear", "Date"))
+bothDays_gear<-data_summary(bothDays, "mean", groupnames=c("Gear", "Date"))
 timeGraphLGR_gear<-ggplot(bothDays_gear, aes(x=Date, y=mean, group=Gear, color=Gear)) +geom_line()+geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Linear growth rate (mm/day)")
 timeGraphLGR_gear
 
-mean(bothDays_loc[bothDays_loc$Location=="Outside", "mean"])
-mean(bothDays_loc[bothDays_loc$Location=="Inside", "mean"])
+mean(bothDays_loc[bothDays_loc$Location=="Outside", "mean"])#mean growth rate outside = 0.163
+mean(bothDays_loc[bothDays_loc$Location=="Inside", "mean"])#mean growth rate inside = 0.201
 
-mean(bothDays[bothDays$Location=="Outside", "mean"])
-mean(bothDays[bothDays$Location=="Inside", "mean"])
+mean(bothDays[bothDays$Location=="Outside", "mean"])#the same number as above
+mean(bothDays[bothDays$Location=="Inside", "mean"])#the same number as above
+
+mean(bothDays_gear[bothDays_gear$Gear=="BP", "mean"]) #0.152
+mean(bothDays_gear[bothDays_gear$Gear=="FB", "mean"]) #0.213
+mean(bothDays_gear[bothDays_gear$Gear=="FC", "mean"]) #0.182
+
+#mean growth rate by gear type boxplot
+avg_growth_by_gear<-ggplot(data = bothDays, aes(x = Gear, y = mean, fill=Location))+geom_boxplot()+ylab("Avg growth rate (mm/day)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+avg_growth_by_gear
 
 artGrowth<-art(mean ~ Gear * Location, data=bothDays)
 anova(artGrowth)
 
 artGrowth2<-art(mean ~ Gear * Location, data=bothDays2)
 anova(artGrowth2)
-
-artGrowth3<-art(mean ~ Gear * Location, data=heightDiffs2)
-anova(artGrowth3)
