@@ -1,5 +1,5 @@
 #Environmental Data
-#RK 7/31/22
+#RK 8/1/22
 
 library(ggplot2)
 library(ggsci)
@@ -66,12 +66,6 @@ tempNoLowSalRolling
 # mean(diffDay)
 # summary(diffDay)
 
-mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.10
-sd(noLowSal[noLowSal$Location=="Inside", "Temp"]) #sd inside temp 2.10
-
-mean(noLowSal[noLowSal$Location=="Outside", "Temp"]) #mean outside temp 17.39
-sd(noLowSal[noLowSal$Location=="Outside", "Temp"]) #sd outside temp 1.97
-
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Salinity Plot all data
@@ -135,9 +129,7 @@ salinity.delayedStart.noLowerSalRolling
 #Six different salinity plots
 grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
 
-
-
-#Average difference
+#Temperature differences
 Inside<-noLowSal[noLowSal$Location=="Inside",]
 Outside<-noLowSal[noLowSal$Location=="Outside",]
 InsideDates<-Inside$Date.time
@@ -148,10 +140,10 @@ common<-noLowSal[(noLowSal$Date.time %in% commonDates),]
 InsideCommon<-common[common$Location=='Inside',]
 OutsideCommon<-common[common$Location=='Outside',]
 differences<-InsideCommon$Temp-OutsideCommon$Temp
-meanDiff<-mean(differences)
-meanDiff #inside averaged 0.650 deg. C warmer
-seDiff<-std.error(differences)
-seDiff
+meanTempDiff<-mean(differences)
+meanTempDiff #inside averaged 0.650 deg. C warmer
+seTempDiff<-std.error(differences)
+seTempDiff #0.0187
 (length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.3%
 
 commonInside2 <- InsideCommon %>%
@@ -167,11 +159,22 @@ commonOutside2 <- OutsideCommon %>%
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
 
+
+mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.09568
+sd(noLowSal[noLowSal$Location=="Inside", "Temp"]) #sd inside temp 2.10
+
+mean(noLowSal[noLowSal$Location=="Outside", "Temp"]) #mean outside temp 17.39034
+sd(noLowSal[noLowSal$Location=="Outside", "Temp"]) #sd outside temp 1.97
+
+
 min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67
 max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53
 
+mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
+mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
+
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
-mean(rolling_diffs, na.rm=TRUE) #mean rolling 24h avg. is 0.655 deg. C higher inside
+mean(rolling_diffs, na.rm=TRUE) #mean rolling daily avg. is 0.655 deg. C higher inside
 length(rolling_diffs)
 length(rolling_diffs[rolling_diffs>0]) #inside daily mean always higher
 length(rolling_diffs[rolling_diffs>0.5])/1060 #78.9% diff was >0.5 deg. C
@@ -189,8 +192,8 @@ grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1) #shows that using the ge
 sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
 meanSalDiff<-mean(sal_differences)
 meanSalDiff #inside averages 0.28 mS/L higher
-se_sal_Diff<-std.error(sal_differences)
-se_sal_Diff
+sd_sal_Diff<-sd(sal_differences)
+sd_sal_Diff #2.136
 (length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 73.9% 
 
 commonSalInside2 <- InsideCommon %>%
@@ -231,8 +234,8 @@ ChlaDatasheet2 = dateFix(chlaDatasheet2)
 ChlaDatasheet2 = ChlaDatasheet2[ChlaDatasheet2$Major_issue == FALSE,]
 
 #ChlaDatasheet = select(ChlaDatasheet,-c(21,22,23,24,25))
-ChlFs = 0.000493
-FoFa_max = 1.7039
+ChlFs = 0.000482
+FoFa_max = 1.7718
 
 #Calculating Chla ug/L and Phaeo ug/L from Raw Data
 ChlaDatasheet = ChlaDatasheet %>%
@@ -293,15 +296,19 @@ InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
 meanDiffChlA<-mean(differencesChlA$Diff)
-meanDiffChlA #0.784 μg/L
-seDiffChlA<-std.error(differencesChlA$Diff)
-seDiffChlA #0.849
+meanDiffChlA #0.73 μg/L
+sdDiffChlA<-sd(differencesChlA$Diff)
+sdDiffChlA #2.08
 
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 chlA_graph2<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))#+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
 chlA_graph2
+
+chlA_graph2_themed<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+scale_y_continuous(limits=c(0,10.5))
+chlA_graph2_themed
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
   ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
@@ -333,19 +340,19 @@ turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axi
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 
 #Average difference
-Outside<-df_turbdity[df_turbdity$Location=="Outside",'mean']
-Inside<-df_turbdity[df_turbdity$Location=="Inside",'mean']
-differences<-data.frame(Outside,Inside)
-differences$Diff<-differences$Outside-differences$Inside
-meanDiff<-mean(differences$Diff)
-meanDiff #1.09 NTU
-seDiff<-std.error(differences$Diff)
-seDiff #0.34 NTU
+OutsideTurbidity<-df_turbdity[df_turbdity$Location=="Outside",'mean']
+InsideTurbidity<-df_turbdity[df_turbdity$Location=="Inside",'mean']
+differences_turbidity<-data.frame(OutsideTurbidity,InsideTurbidity)
+differences_turbidity$Diff<-differences_turbidity$OutsideTurbidity-differences_turbidity$InsideTurbidity
+meanTurbidityDiff<-mean(differences_turbidity$Diff)
+meanTurbidityDiff #1.07 NTU
+sdTurbidityDiff<-sd(differences_turbidity$Diff)
+sdTurbidityDiff #0.84 NTU
 
-mean(Outside)
-std.error(Outside)
-mean(Inside)
-std.error(Inside)
+mean(OutsideTurbidity) #2.91
+sd(OutsideTurbidity) #1.06
+mean(InsideTurbidity) #1.84
+sd(InsideTurbidity) #0.79
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
@@ -360,3 +367,6 @@ allFour
 
 #ChlA and turbidity, theme_classic
 chlA_graph2 + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+
+#ChlA and turbidity, theme_ipsum
+chlA_graph2_themed + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
