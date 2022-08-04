@@ -161,17 +161,19 @@ common$rolling<-both_rolling
 
 
 mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.09568
+max(noLowSal[noLowSal$Location=="Inside", "Temp"]) #24.07
 sd(noLowSal[noLowSal$Location=="Inside", "Temp"]) #sd inside temp 2.10
 
 mean(noLowSal[noLowSal$Location=="Outside", "Temp"]) #mean outside temp 17.39034
+max(noLowSal[noLowSal$Location=="Outside", "Temp"]) #22.53
 sd(noLowSal[noLowSal$Location=="Outside", "Temp"]) #sd outside temp 1.97
-
 
 min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67
 max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53
 
-mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
+a<-mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
+b<-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
+a-b # 0.655
 
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
 mean(rolling_diffs, na.rm=TRUE) #mean rolling daily avg. is 0.655 deg. C higher inside
@@ -207,15 +209,22 @@ commonSalOutside2 <- OutsideCommon %>%
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
 
-DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
-  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
 
 rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
+mean(rolling_sal_diffs, na.rm = TRUE) #0.290
 length(rolling_sal_diffs) #1060
 length(rolling_sal_diffs[rolling_sal_diffs>0]) #797
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
+
+mean(commonSalInside2$daily_sal_avg, na.rm=TRUE) #31.68435
+sd(commonSalInside2$daily_sal_avg, na.rm=TRUE) #1.44
+mean(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #31.39409
+sd(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #0.43
+
+min(both_sal_rolling, na.rm=TRUE) #min mean daily sal = 26.48
+max(both_sal_rolling, na.rm=TRUE) #max mean daily sal = 33.96
 
 ###############################################################################
 ######################### ChlA/Turbidity  ########################################
@@ -280,15 +289,24 @@ chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 chlA_graph
 
+#INCLUDING 8/2
 df_updated<-data_summary(ChlaDatasheet2, "Ave_Chl1", 
                          groupnames=c("Trial_Date", "Location"))
 #with error bars
 chlA_graph3<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+
   geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()
+                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,17))
 chlA_graph3
 
+chlA_graph4<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+scale_y_continuous(limits=c(0,16))
+#+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+
+chlA_graph4
+
+df_updated<-df_updated[c(1:14),]
 #Average difference
 OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
 InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
@@ -307,11 +325,11 @@ chlA_graph2<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=
 chlA_graph2
 
 chlA_graph2_themed<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+scale_y_continuous(limits=c(0,10.5))
+  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)#scale_y_continuous(limits=c(0,10.5))
 chlA_graph2_themed
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
-  ylab("Salinity")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
+  ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgSal2
 
@@ -369,4 +387,5 @@ allFour
 chlA_graph2 + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 
 #ChlA and turbidity, theme_ipsum
-chlA_graph2_themed + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+combined2<-chlA_graph2_themed + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+combined2+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))

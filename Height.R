@@ -11,6 +11,7 @@ library(ggplot2)
 library(agricolae)
 library(lubridate)
 library(patchwork)
+library(multcompView)
 
 #Import data
 allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
@@ -95,6 +96,11 @@ heightTwoGraph2<- ggplot(SamplingTwo, aes(x=Gear, y=Height, group=Gear)) +
   geom_boxplot(aes(fill=Gear))
 heightTwoGraph2 + facet_grid(. ~ Location)
 
+#Just location
+heightTwoGraph3<-ggplot(data = SamplingTwo, aes(x = Location, y = Height))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
+heightTwoGraph3
+
+
 #ANOVA - assumptions met!
 heightANOVA2 <- aov(Height ~ Gear * Location, data = SamplingTwo)
 summary(heightANOVA2) #significant location and interaction
@@ -104,9 +110,12 @@ plot(heightANOVA2,2)
 heightResiduals2<-heightANOVA2$residuals
 shapiro.test(heightResiduals2) #p=0.07
 
-TukeyHSD(heightANOVA2, which='Gear:Location')
 
-HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE)
+HSD1<-TukeyHSD(heightANOVA2, which='Gear:Location')
+
+HSDresults<-(HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE))
+HSDresults
+
 
 data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
@@ -199,11 +208,15 @@ heightDiffs1<-data_summary(heightRepMeansThree, "Height_diff1",
 heightDiffs2<-data_summary(heightRepMeansThree, "Height_diff2", 
                            groupnames=c("Location", "Gear"))
 
-growthRateDay2<-ggplot(heightDiffs1, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()
+growthRateDay2<-ggplot(heightDiffs1, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
 growthRateDay2
 
-growthRateDay3<-ggplot(heightDiffs2, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()
+growthRateDay3<-ggplot(heightDiffs2, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))+ylim(0,0.35)
 growthRateDay3
+
+#Day 2 and 3 growth rates, theme_ipsum
+combined<-growthRateDay2 + growthRateDay3 + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+combined+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
 
 heightDiffs0$Date<-mdy("6/14/2022")
 heightDiffs1$Date<-mdy("7/05/2022")
@@ -241,3 +254,11 @@ anova(artGrowth)
 
 artGrowth2<-art(mean ~ Gear * Location, data=bothDays2)
 anova(artGrowth2)
+
+
+
+
+
+mean(SamplingTwo[SamplingTwo$Treatment=="FCi", "Height"]) #52.97917
+mean(SamplingTwo[SamplingTwo$Treatment=="FCo", "Height"]) #46.70833
+mean(SamplingTwo[SamplingTwo$Treatment=="FBo", "Height"]) #45.375
