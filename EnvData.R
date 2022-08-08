@@ -293,38 +293,46 @@ chlA_graph
 df_updated<-data_summary(ChlaDatasheet2, "Ave_Chl1", 
                          groupnames=c("Trial_Date", "Location"))
 #with error bars
-chlA_graph3<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+
-  geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
-                position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,17))
-chlA_graph3
+chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) +geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+ geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,16.5))+ theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))
 
+chlA_updated_errorbars
+
+#no error bars
 chlA_graph4<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+scale_y_continuous(limits=c(0,16))
-#+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
-
+  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+ theme(axis.title.y = element_text(margin = margin(r = 10)))+scale_y_continuous(limits=c(0,16))
 chlA_graph4
 
-df_updated<-df_updated[c(1:14),]
-#Average difference
 OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
 InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
 
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
 meanDiffChlA<-mean(differencesChlA$Diff)
-meanDiffChlA #0.73 μg/L
+meanDiffChlA #1.38 μg/L
 sdDiffChlA<-sd(differencesChlA$Diff)
-sdDiffChlA #2.08
+sdDiffChlA #2.66 μg/L
+
+
+#### NOT INCLUDING 8/2 ##################################
+df_old<-df_updated[c(1:14),]
+#Average difference
+OutsideChlA_old<-df_old[df_old$Location=="Outside",'mean']
+InsideChlA_old<-df_old[df_old$Location=="Inside",'mean']
+
+differencesChlA_old<-data.frame(OutsideChlA_old,InsideChlA_old)
+differencesChlA_old$Diff<-differencesChlA_old$InsideChlA_old-differencesChlA_old$OutsideChlA_old
+meanDiffChlA_old<-mean(differencesChlA_old$Diff)
+meanDiffChlA_old #0.73 μg/L
+sdDiffChlA_old<-sd(differencesChlA_old$Diff)
+sdDiffChlA_old #2.08
 
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-chlA_graph2<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))#+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
 chlA_graph2
 
-chlA_graph2_themed<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)#scale_y_continuous(limits=c(0,10.5))
 chlA_graph2_themed
 
@@ -354,6 +362,10 @@ turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=L
   theme(axis.title.y = element_text(margin = margin(r = 10)))
   #+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+
 turbidity_graph
+
+turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+turbidity_graph_errorbars
+
 turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 
@@ -389,3 +401,7 @@ chlA_graph2 + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(
 #ChlA and turbidity, theme_ipsum
 combined2<-chlA_graph2_themed + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 combined2+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
+
+#ChlA and turbidity, error bars
+combined_errorbars<- chlA_updated_errorbars + turbidity_graph_errorbars + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+combined_errorbars+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))

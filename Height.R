@@ -1,10 +1,12 @@
 #Ruby Krasnow
-#8/5/22
+#8/7/22
 
 library(nlme)
 library(lme4)
 library(car)
 library(MASS)
+library(plotrix)
+library(plyr)
 library(dplyr)
 library(ARTool)
 library(ggplot2)
@@ -12,6 +14,9 @@ library(agricolae)
 library(lubridate)
 library(patchwork)
 library(multcompView)
+library(hrbrthemes)
+options(hrbrthemes.loadfonts = TRUE)
+hrbrthemes::import_roboto_condensed()
 
 #Import data
 allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
@@ -311,15 +316,15 @@ mean(heightDiffs2B[,"mean"]) #mean LGR interval 2 = 0.20
 mean(bothDays_loc[bothDays_loc$Location=="Outside", "mean"])#mean LGR outside days 1-3= 0.163
 mean(bothDays_loc[bothDays_loc$Location=="Inside", "mean"])#mean LGR inside days 1-3= 0.201
 
-mean(bothDays[bothDays$Location=="Outside", "mean"])#the same number as above
-mean(bothDays[bothDays$Location=="Inside", "mean"])#the same number as above
+mean(bothDaysB[bothDaysB$Location=="Outside", "mean"])#the same number as above
+mean(bothDaysB[bothDaysB$Location=="Inside", "mean"])#the same number as above
 
 mean(bothDays_gear[bothDays_gear$Gear=="BP", "mean"]) #0.152
 mean(bothDays_gear[bothDays_gear$Gear=="FB", "mean"]) #0.213
 mean(bothDays_gear[bothDays_gear$Gear=="FC", "mean"]) #0.182
 
 #Mean growth rate by gear type boxplot
-avg_growth_by_gear<-ggplot(data = bothDays, aes(x = Gear, y = mean, fill=Location))+geom_boxplot()+ylab("Avg growth rate (mm/day)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+avg_growth_by_gear<-ggplot(data = bothDaysB, aes(x = Gear, y = mean, fill=Location))+geom_boxplot()+ylab("Avg growth rate (mm/day)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
 avg_growth_by_gear
 
 #ART ANOVA growth rates b/w sampling days 1 and 2; same results as height
