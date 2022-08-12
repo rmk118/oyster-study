@@ -308,9 +308,9 @@ InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
 meanDiffChlA<-mean(differencesChlA$Diff)
-meanDiffChlA #1.38 μg/L
+meanDiffChlA #1.05 μg/L
 sdDiffChlA<-sd(differencesChlA$Diff)
-sdDiffChlA #2.66 μg/L
+sdDiffChlA #2.69 μg/L
 
 
 #### NOT INCLUDING 8/2 ##################################
@@ -358,12 +358,12 @@ df_turbdity$Date <- mdy(df_turbdity$Date)
 
 #Plot
 turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")+
+  geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
   #+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+
 turbidity_graph
 
-turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,4.5))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
 turbidity_graph_errorbars
 
 turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
@@ -375,14 +375,14 @@ InsideTurbidity<-df_turbdity[df_turbdity$Location=="Inside",'mean']
 differences_turbidity<-data.frame(OutsideTurbidity,InsideTurbidity)
 differences_turbidity$Diff<-differences_turbidity$OutsideTurbidity-differences_turbidity$InsideTurbidity
 meanTurbidityDiff<-mean(differences_turbidity$Diff)
-meanTurbidityDiff #1.07 NTU
+meanTurbidityDiff #2.12 NTU
 sdTurbidityDiff<-sd(differences_turbidity$Diff)
-sdTurbidityDiff #0.84 NTU
+sdTurbidityDiff #3.25 NTU
 
-mean(OutsideTurbidity) #2.91
-sd(OutsideTurbidity) #1.06
-mean(InsideTurbidity) #1.84
-sd(InsideTurbidity) #0.79
+mean(OutsideTurbidity) #4.07
+sd(OutsideTurbidity) #3.61
+mean(InsideTurbidity) #1.95
+sd(InsideTurbidity) #0.81
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
