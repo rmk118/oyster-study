@@ -182,4 +182,11 @@ temp.delayedStart
 
 short<-SamplingTwo[SamplingTwo$Height < 24,]
 shortOne<-SamplingOne[SamplingOne$Height < 24,]
+
+#Data from only 05:00 to compare to Leeman et al.
+# InsideCommonDay<-InsideCommon[hour(InsideCommon$Date.time) %in% (5:15),]
+# OutsideCommonDay<-OutsideCommon[hour(OutsideCommon$Date.time) %in% (5:15),]
+# diffDay<-InsideCommonDay$Temp-OutsideCommonDay$Temp
+# mean(diffDay)
+# summary(diffDay)
 -->

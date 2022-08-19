@@ -59,12 +59,7 @@ tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, c
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSalRolling
 
-#Data from only 05:00 to compare to Leeman et al.
-# InsideCommonDay<-InsideCommon[hour(InsideCommon$Date.time) %in% (5:15),]
-# OutsideCommonDay<-OutsideCommon[hour(OutsideCommon$Date.time) %in% (5:15),]
-# diffDay<-InsideCommonDay$Temp-OutsideCommonDay$Temp
-# mean(diffDay)
-# summary(diffDay)
+
 
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -236,13 +231,10 @@ dateFix = function(df) {
 
 # Reading Data for Algae Chla extracted values data sheet
 chlaDatasheet = read.csv("chlA.csv")
-chlaDatasheet2 = read.csv("chlA_updated.csv")
 
 ChlaDatasheet = dateFix(chlaDatasheet)
-ChlaDatasheet2 = dateFix(chlaDatasheet2)
-ChlaDatasheet2 = ChlaDatasheet2[ChlaDatasheet2$Major_issue == FALSE,]
+ChlaDatasheet = ChlaDatasheet[ChlaDatasheet$Major_issue == FALSE,]
 
-#ChlaDatasheet = select(ChlaDatasheet,-c(21,22,23,24,25))
 ChlFs = 0.000482
 FoFa_max = 1.7718
 
@@ -257,17 +249,6 @@ ChlaDatasheet = ChlaDatasheet %>%
                                         ((FoFa_max-1)*(ChlaDatasheet$Fo-ChlaDatasheet$Fa))*
                                         (((ChlaDatasheet$Acetone_vol)/ChlaDatasheet$Vol_Filtered))))
 
-#Calculating Chla ug/L and Phaeo ug/L from Raw Data
-ChlaDatasheet2 = ChlaDatasheet2 %>%
-  mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
-                       (ChlaDatasheet2$Fo-ChlaDatasheet2$Fa)*
-                       (((ChlaDatasheet2$Acetone_vol)/ChlaDatasheet2$Vol_Filtered))))
-
-ChlaDatasheet2 = ChlaDatasheet2 %>%
-  mutate(ChlaDatasheet2, Ave_Phaeo1 = ((ChlFs*(FoFa_max/(FoFa_max-1)))*
-                                        ((FoFa_max-1)*(ChlaDatasheet2$Fo-ChlaDatasheet2$Fa))*
-                                        (((ChlaDatasheet2$Acetone_vol)/ChlaDatasheet2$Vol_Filtered))))
-
 #Function to calculate mean and standard error
 data_summary <- function(data, varname, groupnames){
   require(plyr)
@@ -280,17 +261,8 @@ data_summary <- function(data, varname, groupnames){
   return(data_sum)
 }
 
-#Create summary data frame
-df2<-data_summary(ChlaDatasheet, "Ave_Chl1", 
-                         groupnames=c("Trial_Date", "Location"))
-
-chlA_graph<-ggplot(df2, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 15, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-chlA_graph
-
-#INCLUDING 8/2
-df_updated<-data_summary(ChlaDatasheet2, "Ave_Chl1", 
+#Create summary data frame (INCLUDING 8/2)
+df_updated<-data_summary(ChlaDatasheet, "Ave_Chl1", 
                          groupnames=c("Trial_Date", "Location"))
 #with error bars
 chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) +geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+ geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,16.5))+ theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))
@@ -298,9 +270,9 @@ chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Locat
 chlA_updated_errorbars
 
 #no error bars
-chlA_graph4<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+chlA_graph<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+ theme(axis.title.y = element_text(margin = margin(r = 10)))+scale_y_continuous(limits=c(0,16))
-chlA_graph4
+chlA_graph
 
 OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
 InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
@@ -311,7 +283,6 @@ meanDiffChlA<-mean(differencesChlA$Diff)
 meanDiffChlA #1.05 μg/L
 sdDiffChlA<-sd(differencesChlA$Diff)
 sdDiffChlA #2.69 μg/L
-
 
 #### NOT INCLUDING 8/2 ##################################
 df_old<-df_updated[c(1:14),]
@@ -332,8 +303,7 @@ chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Loca
   geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))#+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
 chlA_graph2
 
-chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)#scale_y_continuous(limits=c(0,10.5))
+chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)#scale_y_continuous(limits=c(0,10.5))
 chlA_graph2_themed
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
@@ -342,7 +312,6 @@ DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, col
 DailyAvgSal2
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-grid.arrange(chlA_graph, chlA_graph2, ncol=2) #updating vol filtered and removing sample data where major spills occurred has minimal impact on graph
 
 ###############################################################################
 ######################### Turbidity  ########################################
