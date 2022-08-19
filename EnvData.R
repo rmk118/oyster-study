@@ -21,45 +21,38 @@ library(visreg)
 library(sm)
 library(patchwork)
 
-#Import data
+######################### Part 1: HOBO Data  ########################################
+#Import HOBO data
 HOBOdata_unordered<-read.csv("HOBOdata.csv")
 
 #Convert date and location
 HOBOdata_unordered$Date.time<-mdy_hms(HOBOdata_unordered$Date.time)
 HOBOdata<-HOBOdata_unordered[order(HOBOdata_unordered$Location),]
-HOBOdata$Location=as.factor(HOBOdata$Location)
+HOBOdata$Location<-as.factor(HOBOdata$Location)
 
 #Rename salinity column
 names(HOBOdata)[3]<-"Salinity"
 
-
-#Temperature ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Part 1a: Temperature Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Temperature Plot all data
-allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
+allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
 allTemps
 
 #Temperature Plot no salinity <5
-noLowSal<- HOBOdata[HOBOdata$Salinity>5,]
-tempNoLowSal<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-tempNoLowSal
+noAir<- HOBOdata[HOBOdata$Salinity>5,]
+tempNoAir<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+tempNoAir
 
 #Rolling daily average all temps
-DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
+DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgTemp
 
-#Rolling daily average no  salinity <5
-tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
-tempNoLowSalRolling
+#Rolling daily average temp no  salinity <5
+tempNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+tempNoAirRolling
 
-#Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Part 1b: Salinity Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Salinity Plot all data
 allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
@@ -67,101 +60,68 @@ allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color
 allSalinity
 
 #Salinity Plot no salinity <5
-salinityNoLowSal<-ggplot(noLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
-salinityNoLowSal
+salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
+salinityNoAir
 
 #Salinity Plot no salinity <5 ROLLING AVERAGE
-salinityNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
-salinityNoLowSalRolling
-
-#Salinity Plot no salinity <25
-noLowerSal<- HOBOdata[HOBOdata$Salinity>25,]
-salinityNoLowerSal<-ggplot(noLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >25")
-salinityNoLowerSal
-
-#Salinity Plot no salinity <25 ROLLING AVERAGE
-salinityNoLowerSalRolling<-ggplot(noLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >25")
-salinityNoLowerSalRolling
+salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
+salinityNoAirRolling
 
 #Salinity plot starting 6/17
 starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
-salinity.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data starting 6/17")
+salinity.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Salinity, group=Location, color=Location))+geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data starting 6/17")
 salinity.delayedStart
 
 #Salinity plot starting 6/17 no salinity <5
-starting6.17NoLowSal<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity >5,]
-salinity.delayedStart.noLowSal<-ggplot(starting6.17NoLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+
- theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
-salinity.delayedStart.noLowSal
+starting6.17NoAir<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity >5,]
+salinity.delayedStart.noAir<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
+salinity.delayedStart.noAir
 
 #Salinity plot starting 6/17 no salinity <5 ROLLING AVERAGE
-salinity.delayedStart.noLowSalRolling<-ggplot(starting6.17NoLowSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
-  theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
-salinity.delayedStart.noLowSalRolling
+salinity.delayedStart.noAirRolling<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
+salinity.delayedStart.noAirRolling
 
-#Salinity plot starting 6/17 no salinity <25
-starting6.17NoLowerSal<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity>25,]
-salinity.delayedStart.noLowerSal<-ggplot(starting6.17NoLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+
-theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >25 starting 6/17")
-salinity.delayedStart.noLowerSal
+#Part 1c: Temperature Analysis ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#Salinity plot starting 6/17 no salinity <25 ROLLING AVERAGE
-salinity.delayedStart.noLowerSalRolling<-ggplot(starting6.17NoLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
-  theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >25 starting 6/17")
-salinity.delayedStart.noLowerSalRolling
-
-#Six different salinity plots
-grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
-
-#Temperature differences
-Inside<-noLowSal[noLowSal$Location=="Inside",]
-Outside<-noLowSal[noLowSal$Location=="Outside",]
+#Find hours when both sensors logged with no issues
+Inside<-noAir[noAir$Location=="Inside",]
+Outside<-noAir[noAir$Location=="Outside",]
 InsideDates<-Inside$Date.time
 OutsideDates<-Outside$Date.time
 commonDates<-base::intersect(InsideDates, OutsideDates)
-common<-noLowSal[(noLowSal$Date.time %in% commonDates),]
+common<-noAir[(noAir$Date.time %in% commonDates),]
 
 InsideCommon<-common[common$Location=='Inside',]
 OutsideCommon<-common[common$Location=='Outside',]
-differences<-InsideCommon$Temp-OutsideCommon$Temp
+differences<-InsideCommon$Temp-OutsideCommon$Temp #difference inside minus outside: each hour
 meanTempDiff<-mean(differences)
-meanTempDiff #inside averaged 0.650 deg. C warmer
+meanTempDiff #inside averaged 0.650°C warmer
 seTempDiff<-std.error(differences)
 seTempDiff #0.0187
 (length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.3%
 
+mean(noAir[noAir$Location=="Inside", "Temp"]) #mean inside = 18.10°C
+max(noAir[noAir$Location=="Inside", "Temp"]) #max inside = 24.07°C
+sd(noAir[noAir$Location=="Inside", "Temp"]) #standard deviation inside = 2.10°C
+
+mean(noAir[noAir$Location=="Outside", "Temp"]) #mean outside = 17.39034°C
+max(noAir[noAir$Location=="Outside", "Temp"]) #max outside = 22.53°C
+sd(noAir[noAir$Location=="Outside", "Temp"]) #standard deviation outside = 1.97°C
+
+#Calculate rolling 24-hour means
 commonInside2 <- InsideCommon %>%
   select(Location, Date.time, Temp) %>%
-  mutate(daily_avg= rollmean(Temp, k = 24, fill = NA),
-         daily_03 = rollmean(Temp, k = 72, fill = NA))
+  mutate(daily_avg= rollmean(Temp, k = 24, fill = NA))
 
 commonOutside2 <- OutsideCommon %>%
   select(Location, Date.time, Temp) %>%
-  mutate(out_daily_avg= rollmean(Temp, k = 24, fill = NA),
-         out_daily_03 = rollmean(Temp, k = 72, fill = NA))
+  mutate(out_daily_avg= rollmean(Temp, k = 24, fill = NA))
 
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
 
-mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.09568
-max(noLowSal[noLowSal$Location=="Inside", "Temp"]) #24.07
-sd(noLowSal[noLowSal$Location=="Inside", "Temp"]) #sd inside temp 2.10
-
-mean(noLowSal[noLowSal$Location=="Outside", "Temp"]) #mean outside temp 17.39034
-max(noLowSal[noLowSal$Location=="Outside", "Temp"]) #22.53
-sd(noLowSal[noLowSal$Location=="Outside", "Temp"]) #sd outside temp 1.97
-
-min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67
-max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53
+min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67°C (outside, June 19)
+max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53°C (inside, July 24)
 
 a<-mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
 b<-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
@@ -175,14 +135,13 @@ length(rolling_diffs[rolling_diffs>0.5])/1060 #78.9% diff was >0.5 deg. C
 max(rolling_diffs, na.rm = TRUE) #max 1.19 deg. C higher inside
 min(rolling_diffs, na.rm = TRUE) #min 0.1 deg. C higher inside
 
-DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+
-  ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
+DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=Location))+geom_line()+ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
 DailyAvgTemp2
 
-grid.arrange(tempNoLowSalRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
+grid.arrange(tempNoAirRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
 
-#Salinity analysis
+#Part 1d: Salinity Analysis ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
 meanSalDiff<-mean(sal_differences)
 meanSalDiff #inside averages 0.28 mS/L higher
@@ -190,6 +149,7 @@ sd_sal_Diff<-sd(sal_differences)
 sd_sal_Diff #2.136
 (length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 73.9% 
 
+#Calculate rolling mean
 commonSalInside2 <- InsideCommon %>%
   select(Location, Date.time, Salinity) %>%
   mutate(daily_sal_avg= rollmean(Salinity, k = 24, fill = NA))
@@ -206,8 +166,6 @@ DailyAvgSal2
 
 rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
 mean(rolling_sal_diffs, na.rm = TRUE) #0.290
-length(rolling_sal_diffs) #1060
-length(rolling_sal_diffs[rolling_sal_diffs>0]) #797
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
 
 mean(commonSalInside2$daily_sal_avg, na.rm=TRUE) #31.68435
@@ -218,8 +176,10 @@ sd(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #0.43
 min(both_sal_rolling, na.rm=TRUE) #min mean daily sal = 26.48
 max(both_sal_rolling, na.rm=TRUE) #max mean daily sal = 33.96
 
-###############################################################################
-######################### ChlA/Turbidity  ########################################
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+DailyAvgSal2
+
+######################### Part 2: ChlA  ########################################
 
 dateFix = function(df) {
   df$Trial_Date = as.Date(df$Trial, "%m/%d/%y")
@@ -263,7 +223,6 @@ df_updated<-data_summary(ChlaDatasheet, "Ave_Chl1",
                          groupnames=c("Trial_Date", "Location"))
 #with error bars
 chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) +geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+ geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,16.5))+ theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))
-
 chlA_updated_errorbars
 
 #no error bars
@@ -294,38 +253,31 @@ meanDiffChlA_old #0.73 μg/L
 sdDiffChlA_old<-sd(differencesChlA_old$Diff)
 sdDiffChlA_old #2.08
 
-#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
   geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))
 chlA_graph2
 
-chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
+chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location))+ geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
 chlA_graph2_themed
 
-DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
-  ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-DailyAvgSal2
+######################### Part 3: Turbidity  ########################################
 
-###############################################################################
-######################### Turbidity  ########################################
-###############################################################################
-
+#Import data
 turbidity<-read.csv("turbidity.csv")
 
 #Create summary data frame
 df_turbdity<-data_summary(turbidity, "Turbidity", 
                   groupnames=c("Date", "Location"))
-
+#Convert date format
 df_turbdity$Date <- mdy(df_turbdity$Date)
 
-#Plot
+#Standard plot
 turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + 
   geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 turbidity_graph
 
+#Plot with error bars
 turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
 turbidity_graph_errorbars
 
@@ -345,6 +297,7 @@ mean(OutsideTurbidity) #4.00
 sd(OutsideTurbidity) #3.41
 mean(InsideTurbidity) #1.95
 sd(InsideTurbidity) #0.76
+
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################

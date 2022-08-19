@@ -1,50 +1,74 @@
----
-title: "Storage for OysterCode"
-author: "Ruby K"
-date: '2022-06-18'
-output: html_document
----
-<!--
-#### Table #1: Height 
-
-|                  Test                 | P-value | Violation? |
-|:-------------------------------------:|:-------:|:----------:|
-| Levene's test (equality of variances) |    `r round(height.levene[1,3], digits=4)`     |     No     |
-|          Bag 1: Shapiro-Wilk          |   `r round(bag1height.normality$p.value, digits=3)`     |     No     |
-|          Bag 2: Shapiro-Wilk          |   `r round(bag2height.normality$p.value, digits=3)`      |     No     |
-|          Bag 3: Shapiro-Wilk          |    `r round(bag3height.normality$p.value, digits=3)`     |     No     |
-|          Bag 4: Shapiro-Wilk          |     `r round(bag4height.normality$p.value, digits=3)`    |     No     |
--->
-<!--
-#### Table #2: Length 
-
-|                  Test                 | P-value | Violation? |
-|:-------------------------------------:|:-------:|:----------:|
-| Levene's test (equality of variances) |    `r round(length.levene[1,3], digits=4)`     |     No     |
-|          Bag 1: Shapiro-Wilk          |   `r round(bag1length.normality$p.value, digits=3)`     |     No     |
-|          Bag 2: Shapiro-Wilk          |   `r round(bag2length.normality$p.value, digits=3)`      |     No     |
-|          Bag 3: Shapiro-Wilk          |    `r round(bag3length.normality$p.value, digits=3)`     |     No     |
-|          Bag 4: Shapiro-Wilk          |     `r round(bag4length.normality$p.value, digits=3)`    |     No     |
-
-#### Table #3: Width 
-
-|                  Test                 | P-value | Violation? |
-|:-------------------------------------:|:-------:|:----------:|
-| Levene's test (equality of variances) |    `r round(width.levene[1,3], digits=4)`     |     No     |
-|          Bag 1: Shapiro-Wilk          |   `r round(bag1width.normality$p.value, digits=3)`     |     No     |
-|          Bag 2: Shapiro-Wilk          |   `r round(bag2width.normality$p.value, digits=3)`      |     Yes     |
-|          Bag 3: Shapiro-Wilk          |    `r round(bag3width.normality$p.value, digits=3)`     |     No     |
-|          Bag 4: Shapiro-Wilk          |     `r round(bag4width.normality$p.value, digits=3)`    |     Yes     |
--->
-
-<!--
+#Storage document
+#Updated 8/19/22
 
 
-```{r echo=FALSE}
-WidthResults<-aov(Width~Bag, data=FBout)
-summary(WidthResults)
-```
+#Salinity data <25 (too harsh of a cutoff)
 
+#Salinity Plot no salinity <25
+noLowerSal<- HOBOdata[HOBOdata$Salinity>25,]
+salinityNoLowerSal<-ggplot(noLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >25")
+salinityNoLowerSal
+
+#Salinity Plot no salinity <25 ROLLING AVERAGE
+salinityNoLowerSalRolling<-ggplot(noLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >25")
+salinityNoLowerSalRolling
+
+#Salinity plot starting 6/17 no salinity <25
+starting6.17NoLowerSal<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity>25,]
+salinity.delayedStart.noLowerSal<-ggplot(starting6.17NoLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+
+  theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >25 starting 6/17")
+salinity.delayedStart.noLowerSal
+
+#Salinity plot starting 6/17 no salinity <25 ROLLING AVERAGE
+salinity.delayedStart.noLowerSalRolling<-ggplot(starting6.17NoLowerSal, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
+  theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >25 starting 6/17")
+salinity.delayedStart.noLowerSalRolling
+
+#Six different salinity plots
+grid.arrange(allSalinity, salinityNoLowSal, salinityNoLowerSal, salinity.delayedStart, salinity.delayedStart.noLowerSal, salinity.delayedStart.noLowSal, ncol=2)
+
+
+
+
+
+
+
+#### R markdown tables
+
+# |                  Test                 | P-value | Violation? |
+#   |:-------------------------------------:|:-------:|:----------:|
+#   | Levene's test (equality of variances) |    `r round(height.levene[1,3], digits=4)`     |     No     |
+# |          Bag 1: Shapiro-Wilk          |   `r round(bag1height.normality$p.value, digits=3)`     |     No     |
+# |          Bag 2: Shapiro-Wilk          |   `r round(bag2height.normality$p.value, digits=3)`      |     No     |
+# |          Bag 3: Shapiro-Wilk          |    `r round(bag3height.normality$p.value, digits=3)`     |     No     |
+# |          Bag 4: Shapiro-Wilk          |     `r round(bag4height.normality$p.value, digits=3)`    |     No     |
+# 
+# #### Table #2: Length 
+# 
+# |                  Test                 | P-value | Violation? |
+# |:-------------------------------------:|:-------:|:----------:|
+# | Levene's test (equality of variances) |    `r round(length.levene[1,3], digits=4)`     |     No     |
+#   |          Bag 1: Shapiro-Wilk          |   `r round(bag1length.normality$p.value, digits=3)`     |     No     |
+#   |          Bag 2: Shapiro-Wilk          |   `r round(bag2length.normality$p.value, digits=3)`      |     No     |
+#   |          Bag 3: Shapiro-Wilk          |    `r round(bag3length.normality$p.value, digits=3)`     |     No     |
+#   |          Bag 4: Shapiro-Wilk          |     `r round(bag4length.normality$p.value, digits=3)`    |     No     |
+#   
+#   #### Table #3: Width 
+#   
+#   |                  Test                 | P-value | Violation? |
+#   |:-------------------------------------:|:-------:|:----------:|
+#   | Levene's test (equality of variances) |    `r round(width.levene[1,3], digits=4)`     |     No     |
+# |          Bag 1: Shapiro-Wilk          |   `r round(bag1width.normality$p.value, digits=3)`     |     No     |
+# |          Bag 2: Shapiro-Wilk          |   `r round(bag2width.normality$p.value, digits=3)`      |     Yes     |
+# |          Bag 3: Shapiro-Wilk          |    `r round(bag3width.normality$p.value, digits=3)`     |     No     |
+# |          Bag 4: Shapiro-Wilk          |     `r round(bag4width.normality$p.value, digits=3)`    |     Yes     |
+
+
+#Old linear models
 dtID<-subset(SamplingNew,select = c(Gear,Location,Oyster))
 names(dtID)
 any(duplicated(dtID))
@@ -156,10 +180,6 @@ art.con(alignedOysters, "Gear", adjust="holm") %>%  # run ART-C for X1 × X2
 
 ###############################################################################
 ######################### Graphs  ########################################
-###############################################################################
-
-
-
 
 ggplot(data = IndividualOysters, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")
 
@@ -168,7 +188,6 @@ temp.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Temp, group=Location,
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 temp.delayedStart
-
 
 # ChlaDatasheet = ChlaDatasheet %>%
 #                    mutate(Ave_Chl1 = (ChlFs*(FoFa_max/(FoFa_max-1))* 
@@ -189,4 +208,3 @@ shortOne<-SamplingOne[SamplingOne$Height < 24,]
 # diffDay<-InsideCommonDay$Temp-OutsideCommonDay$Temp
 # mean(diffDay)
 # summary(diffDay)
--->
