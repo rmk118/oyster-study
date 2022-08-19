@@ -1,5 +1,5 @@
 #Environmental Data
-#RK 8/1/22
+#RK 8/19/22
 
 library(ggplot2)
 library(ggsci)
@@ -58,8 +58,6 @@ DailyAvgTemp
 tempNoLowSalRolling<-ggplot(noLowSal, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+
   ylab("Temperature (°C)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoLowSalRolling
-
-
 
 #Salinity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -153,7 +151,6 @@ commonOutside2 <- OutsideCommon %>%
 
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
-
 
 mean(noLowSal[noLowSal$Location=="Inside", "Temp"]) #mean inside temp 18.09568
 max(noLowSal[noLowSal$Location=="Inside", "Temp"]) #24.07
@@ -280,9 +277,9 @@ InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
 meanDiffChlA<-mean(differencesChlA$Diff)
-meanDiffChlA #1.05 μg/L
+meanDiffChlA #1.60 μg/L
 sdDiffChlA<-sd(differencesChlA$Diff)
-sdDiffChlA #2.69 μg/L
+sdDiffChlA #3.09 μg/L
 
 #### NOT INCLUDING 8/2 ##################################
 df_old<-df_updated[c(1:14),]
@@ -300,18 +297,16 @@ sdDiffChlA_old #2.08
 #USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))#+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
+  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))
 chlA_graph2
 
-chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)#scale_y_continuous(limits=c(0,10.5))
+chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
 chlA_graph2_themed
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+
   ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgSal2
-
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ###############################################################################
 ######################### Turbidity  ########################################
@@ -329,14 +324,12 @@ df_turbdity$Date <- mdy(df_turbdity$Date)
 turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + 
   geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+
   theme(axis.title.y = element_text(margin = margin(r = 10)))
-  #+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+
 turbidity_graph
 
 turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
 turbidity_graph_errorbars
 
-turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
+turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
 
 #Average difference
 OutsideTurbidity<-df_turbdity[df_turbdity$Location=="Outside",'mean']
@@ -344,14 +337,14 @@ InsideTurbidity<-df_turbdity[df_turbdity$Location=="Inside",'mean']
 differences_turbidity<-data.frame(OutsideTurbidity,InsideTurbidity)
 differences_turbidity$Diff<-differences_turbidity$OutsideTurbidity-differences_turbidity$InsideTurbidity
 meanTurbidityDiff<-mean(differences_turbidity$Diff)
-meanTurbidityDiff #2.12 NTU
+meanTurbidityDiff #2.04 NTU
 sdTurbidityDiff<-sd(differences_turbidity$Diff)
-sdTurbidityDiff #3.25 NTU
+sdTurbidityDiff #3.07 NTU
 
-mean(OutsideTurbidity) #4.07
-sd(OutsideTurbidity) #3.61
+mean(OutsideTurbidity) #4.00
+sd(OutsideTurbidity) #3.41
 mean(InsideTurbidity) #1.95
-sd(InsideTurbidity) #0.81
+sd(InsideTurbidity) #0.76
 ###############################################################################
 ######################### Combined graphs  ########################################
 ###############################################################################
