@@ -1,5 +1,5 @@
 #Ruby Krasnow
-#8/7/22
+#8/20/22
 
 library(nlme)
 library(lme4)
@@ -172,34 +172,49 @@ timeGraphHeightDf<-data_summary(allData, "Height",
 timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+theme_classic()+ylab("Shell height (mm)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
 timeGraphHeight
 
+SamplingFour<-allData[allData$Date=="2022-08-15",]
+
 #Mean final heights by location
-mean(SamplingThree[SamplingThree$Location=="Outside", "Height"]) #52.14
-mean(SamplingThree[SamplingThree$Location=="Inside", "Height"]) #53.85
+mean(SamplingFour[SamplingFour$Location=="Outside", "Height"]) #57.30
+mean(SamplingFour[SamplingFour$Location=="Inside", "Height"]) #60.41
 
 
-day3BP<-mean(SamplingThree[SamplingThree$Gear=="BP", "Height"]) #51.92
-day3FB<-mean(SamplingThree[SamplingThree$Gear=="FB", "Height"]) #53.40
-day3FC<-mean(SamplingThree[SamplingThree$Gear=="FC", "Height"]) #53.68
+day3BP<-mean(SamplingFour[SamplingFour$Gear=="BP", "Height"]) #56.34
+day3FC<-mean(SamplingFour[SamplingFour$Gear=="FC", "Height"]) #58.99
+day3FB<-mean(SamplingFour[SamplingFour$Gear=="FB", "Height"]) #61.24
+
 
 #Mean final heights minus initial pop. mean by gear
-day3BP-47.64 #4.277
-day3FB-47.64 #5.756
-day3FC-47.64 #6.042
+day3BP-47.64 #8.699
+day3FC-47.64 #11.355
+day3FB-47.64 #13.596
 
 #Mean final heights minus initial treatment means by gear
-BP_heightdiff<-mean(SamplingThree[SamplingThree$Gear=="BP", "Height"])-mean(SamplingOne[SamplingOne$Gear=="BP", "Height"]) #6.42
-BP_heightdiff/42 #0.15
+BP_heightdiff<-mean(SamplingFour[SamplingFour$Gear=="BP", "Height"])-
+  mean(SamplingOne[SamplingOne$Gear=="BP", "Height"]) #10.84
+BP_heightdiff/62 #0.17
 
-FC_heightdiff<-mean(SamplingThree[SamplingThree$Gear=="FC", "Height"])-mean(SamplingOne[SamplingOne$Gear=="FC", "Height"]) #7.63
-FC_heightdiff/42 #0.18
+FC_heightdiff<-mean(SamplingFour[SamplingFour$Gear=="FC", "Height"])-mean(SamplingOne[SamplingOne$Gear=="FC", "Height"]) #12.94
+FC_heightdiff/62 #0.21
 
-FB_heightdiff<-mean(SamplingThree[SamplingThree$Gear=="FB", "Height"])-mean(SamplingOne[SamplingOne$Gear=="FB", "Height"]) #8.93
-FB_heightdiff/42 #0.21
+FB_heightdiff<-mean(SamplingFour[SamplingFour$Gear=="FB", "Height"])-mean(SamplingOne[SamplingOne$Gear=="FB", "Height"]) #16.77
+FB_heightdiff/62 #0.27
 
 #art ANOVA - location significant
 artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
 artDay3 #appropriate
 anova(artDay3)
+
+#art ANOVA
+artFinal<-art(Height ~ Gear * Location, data=SamplingFour)
+artFinal #not appropriate?
+anova(artDay3)
+
+bags<-SamplingFour[SamplingFour$Gear=="FB",]
+cages<-SamplingFour[SamplingFour$Gear=="FC",]
+replicateTest<-ggplot(data = bags, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
+replicateTestCages<-ggplot(data = cages, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
+
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Height over time graph just location
