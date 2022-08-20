@@ -312,7 +312,6 @@ sd(heightDiffs2B[heightDiffs2B$Location=="Inside", "mean"]) #SD inside = 0.07
 mean(heightDiffs1B[,"mean"]) #mean LGR interval 1 = 0.16
 mean(heightDiffs2B[,"mean"]) #mean LGR interval 2 = 0.20
 
-
 mean(bothDays_loc[bothDays_loc$Location=="Outside", "mean"])#mean LGR outside days 1-3= 0.163
 mean(bothDays_loc[bothDays_loc$Location=="Inside", "mean"])#mean LGR inside days 1-3= 0.201
 
