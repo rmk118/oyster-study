@@ -495,3 +495,20 @@ str(SamplingTwo)
 #ART seven: replicates 1-30 for floating gear (bags for both), BP replicate = BPi/BPo
 artCupRatioSeven<-art(Cup.ratio ~ Gear * Location+ (1|Replicate4), data=SamplingTwo)
 anova(artCupRatioSeven)
+
+###############################################################################
+######################### RGR: essentially the same as LGR ########################################
+
+# heightRepMeansThree$RGR0<-((heightRepMeansOne$mean-47.64)/47.64)*100/11
+# heightRepMeansThree$RGR1<-((heightRepMeansTwo$mean-heightRepMeansOne$mean)/heightRepMeansOne$mean)*100/21
+# heightRepMeansThree$RGR2<-((heightRepMeansThree$mean-heightRepMeansTwo$mean)/heightRepMeansTwo$mean)*100/21
+# 
+# RGR0<-data_summary(heightRepMeansThree, "RGR0",groupnames=c("Location", "Gear"))
+# RGR1<-data_summary(heightRepMeansThree, "RGR1",groupnames=c("Location", "Gear"))
+# RGR2<-data_summary(heightRepMeansThree, "RGR2",groupnames=c("Location", "Gear"))
+# 
+# RGRday1<-ggplot(RGR1, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Relative growth rate (% change/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+# RGRday1
+# 
+# RGRday2<-ggplot(RGR2, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Relative growth rate (% change/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+# RGRday2

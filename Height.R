@@ -42,7 +42,7 @@ allData<-within(allData, {
 # allData$Replicate<-droplevels(allData$Replicate)
 
 allData$Replicate2<-paste0(allData$Treatment,".",allData$Replicate)
-
+allData$Replicate2<-as.factor(allData$Replicate2)
 str(allData)
 
 
@@ -206,9 +206,9 @@ artDay3 #appropriate
 anova(artDay3)
 
 #art ANOVA
-artFinal<-art(Height ~ Gear * Location, data=SamplingFour)
-artFinal #not appropriate?
-anova(artDay3)
+artFinal<-art(Height ~ Gear * Location, data=allData)
+artFinal #not appropriate
+anova(artFinal)
 
 bags<-SamplingFour[SamplingFour$Gear=="FB",]
 cages<-SamplingFour[SamplingFour$Gear=="FC",]
@@ -247,6 +247,9 @@ heightRepMeansThreeB<-data_summary(SamplingThree, "Height",
                                   groupnames=c("Replicate2", "Location", "Gear"))
 
 
+heightRepMeansFourB<-data_summary(SamplingFour, "Height", groupnames=c("Replicate2", "Location", "Gear"))
+
+
 #Replicates 1,2,3
 # heightRepMeansThree$LGR0<-(heightRepMeansOne$mean-47.64)/11
 # heightRepMeansThree$LGR1<-(heightRepMeansTwo$mean-heightRepMeansOne$mean)/21
@@ -256,7 +259,8 @@ heightRepMeansThreeB<-data_summary(SamplingThree, "Height",
 heightRepMeansThreeB$LGR0<-(heightRepMeansOneB$mean-47.64)/11
 heightRepMeansThreeB$LGR1<-(heightRepMeansTwoB$mean-heightRepMeansOneB$mean)/21
 heightRepMeansThreeB$LGR2<-(heightRepMeansThreeB$mean-heightRepMeansTwoB$mean)/21
-heightRepMeansThreeB$LGR_overall<-(heightRepMeansThreeB$mean-heightRepMeansOneB$mean)/42
+heightRepMeansFourB$LGR3<-(heightRepMeansFourB$mean-heightRepMeansThreeB$mean)/23
+heightRepMeansFourB$LGR_overall<-(heightRepMeansFourB$mean-heightRepMeansOneB$mean)/62
 
 # #Replicates 1,2,3
 # heightDiffs0<-data_summary(heightRepMeansThree, "LGR0", 
@@ -278,11 +282,23 @@ heightDiffs1B<-data_summary(heightRepMeansThreeB, "LGR1",
 heightDiffs2B<-data_summary(heightRepMeansThreeB, "LGR2", 
                            groupnames=c("Location", "Gear"))
 
+heightDiffs3B<-data_summary(heightRepMeansFourB, "LGR3", 
+                            groupnames=c("Location", "Gear"))
+
+heightDiffsOverall<-data_summary(heightRepMeansFourB, "LGR_overall", 
+                            groupnames=c("Location", "Gear"))
+
 growthRateDay2B<-ggplot(heightDiffs1B, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
 growthRateDay2B
 
 growthRateDay3B<-ggplot(heightDiffs2B, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))+ylim(0,0.35)
 growthRateDay3B
+
+growthRateDay4B<-ggplot(heightDiffs3B, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+growthRateDay4B
+
+overallGrowth<-ggplot(heightDiffsOverall, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))+ylim(0,0.3)
+overallGrowth
 
 #Day 2 and 3 growth rates, theme_ipsum
 combinedB<-growthRateDay2B + growthRateDay3B + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
@@ -367,19 +383,18 @@ mean(SamplingTwo[SamplingTwo$Treatment=="FCi", "Height"]) #52.97917
 mean(SamplingTwo[SamplingTwo$Treatment=="FCo", "Height"]) #46.70833
 mean(SamplingTwo[SamplingTwo$Treatment=="FBo", "Height"]) #45.375
 
-###############################################################################
-######################### RGR: essentially the same as LGR ########################################
+#ART ANOVA growth rate b/w sampling days 1 and 4: both gear and loc significant
+artGrowthRep_overall2<-art(LGR_overall ~ Gear * Location + Error(Replicate2), data=heightRepMeansFourB) #appropriate
+artGrowthRep_overall2
+anova(artGrowthRep_overall2)
 
-# heightRepMeansThree$RGR0<-((heightRepMeansOne$mean-47.64)/47.64)*100/11
-# heightRepMeansThree$RGR1<-((heightRepMeansTwo$mean-heightRepMeansOne$mean)/heightRepMeansOne$mean)*100/21
-# heightRepMeansThree$RGR2<-((heightRepMeansThree$mean-heightRepMeansTwo$mean)/heightRepMeansTwo$mean)*100/21
-# 
-# RGR0<-data_summary(heightRepMeansThree, "RGR0",groupnames=c("Location", "Gear"))
-# RGR1<-data_summary(heightRepMeansThree, "RGR1",groupnames=c("Location", "Gear"))
-# RGR2<-data_summary(heightRepMeansThree, "RGR2",groupnames=c("Location", "Gear"))
-# 
-# RGRday1<-ggplot(RGR1, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Relative growth rate (% change/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
-# RGRday1
-# 
-# RGRday2<-ggplot(RGR2, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Relative growth rate (% change/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
-# RGRday2
+
+heightlmer<-lmer(Height ~ Date + Gear + Location + Gear:Location + (1|Replicate2), data=allData)
+summary(heightlmer, cor=T)
+hist(resid(heightlmer))
+confint(heightlmer)
+hist(allData$Height)
+qqp(allData$Height)
+
+Anova(heightlmer)
+display(heightlmer)

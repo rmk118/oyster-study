@@ -45,9 +45,9 @@ fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Loc
 fouling_Graph1
 
 #both Levene's test and Shapiro-Wilk were significant for weight & fouling ratio, so using nonparametric ANOVA
+#location significant for weight, p=0.01
 artWeight<-art(Weight ~ Gear * Location, data=fouling)
-artWeight
-anova(artWeight) #location significant, p=0.01
+anova(artWeight)
 
 artFouling<-art(Fouling_ratio ~ Gear * Location, data=fouling)
 artFouling
@@ -64,8 +64,22 @@ artCI<-art(Condition_index ~ Gear * Location, data=fouling)
 artCI
 anova(artCI)
 
-art.con(artCI, "Gear:Location", adjust="bonferroni") %>%  #post-hoc fouling
+art.con(artCI, "Gear:Location", adjust = "bonferroni") %>%  #post-hoc condition index
   summary() %>%  # add significance stars to the output
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
                        symbols = c("***", "**", "*", ".", " ")))
+
+data_summary <- function(data, varname, groupnames){
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      SE = std.error(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  return(data_sum)}
+
+CIgraphDf<-data_summary(fouling, "Condition_index", groupnames=c("Location", "Gear"))
+
+CIline_graph<-ggplot(CIgraphDf, aes(x=Gear, y=mean, color=Location, group=Location))+geom_line()+geom_point()+theme_classic()+ylab("Condition index")+xlab("Gear")+theme(axis.title.y = element_text(margin = margin(r = 15)))+ylim(8,13)#+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+CIline_graph
