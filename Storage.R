@@ -1,5 +1,21 @@
-#Storage document
-#Updated 8/19/22
+#Storage/working document
+#Updated 8/21/22
+
+library(nlme)
+library(lme4)
+library(car)
+library(MASS)
+library(plotrix)
+library(ARTool)
+library(dplyr)
+library(ggplot2)
+library(agricolae)
+library(lubridate)
+library(patchwork)
+library(multcompView)
+library(hrbrthemes)
+options(hrbrthemes.loadfonts = TRUE)
+hrbrthemes::import_roboto_condensed()
 
 #Salinity data <25 (too harsh of a cutoff)
 
@@ -354,14 +370,6 @@ anova(alignedOystersHeight3)
 ####################################################################
 ######################### ModelOptions.R  ########################################
 
-# library(nlme)
-# library(lme4)
-# library(car)
-# library(MASS)
-# library(dplyr)
-# library(ARTool)
-# #library(WRS2)
-
 #Read and subset data
 SamplingOne<-read.csv("6_14_22.csv", na.strings=c(""," ","NA"))
 SamplingOne<-subset(SamplingOne, select = c(Location,Gear,Treatment,Cage,Bag,Oyster,Height,Length,Width,Cup.ratio,Shell.shape))
@@ -512,3 +520,59 @@ anova(artCupRatioSeven)
 # 
 # RGRday2<-ggplot(RGR2, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Relative growth rate (% change/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
 # RGRday2
+
+#import and subset data
+foulingCI<-read.csv("BiofoulingCI.csv")
+foulingCI<-subset(foulingCI, select=c(Location,Gear,Treatment,Oyster,Fouling_weight, Whole_wet_weight, Fouling_ratio, Dry_tissue, Dry_shell, Condition_index))
+foulingCI<-dplyr::rename(foulingCI, Weight=Whole_wet_weight)
+
+#Convert variables to factors
+foulingCI<-within(foulingCI, {
+  Location<-as.factor(Location)
+  Gear<-as.factor(Gear)
+  Treatment<-as.factor(Treatment)
+})
+
+head(foulingCI)
+#only comparing final treatments
+fouling<-foulingCI[foulingCI$Location=="Inside" | foulingCI$Location=="Outside",]
+
+leveneTest(Weight~Gear*Location, data=fouling) #non-significant, p=0.144
+weightANOVA <- aov(Weight ~ Gear * Location, data = fouling)
+summary(weightANOVA)
+plot(weightANOVA,1)
+plot(weightANOVA,2)
+hist(weightANOVA$residuals)
+shapiro.test(weightANOVA$residuals) #bad, p=3.4e-05
+
+leveneTest(Fouling_ratio~Gear*Location, data=fouling) #bad, p=4.3e-09
+foulingANOVA <- aov(Fouling_ratio ~ Gear * Location, data = fouling)
+summary(foulingANOVA)
+plot(foulingANOVA,1)
+plot(foulingANOVA,2)
+hist(foulingANOVA$residuals)
+shapiro.test(foulingANOVA$residuals) #bad, p=1.4e-07
+
+leveneTest(Condition_index~Gear*Location, data=fouling) #good, p=0.81
+conditionANOVA <- aov(Condition_index ~ Gear * Location, data = fouling)
+summary(conditionANOVA)
+plot(conditionANOVA,1)
+plot(conditionANOVA,2)
+hist(conditionANOVA$residuals)
+shapiro.test(conditionANOVA$residuals) #bad, p=2.3e-11
+
+initialMean<-mean(foulingCI[foulingCI$Location=="Initial", "Weight"]) #9.04
+mean(foulingCI[foulingCI$Gear=="BP", "Weight"])-initialMean #9.98
+sd(foulingCI[foulingCI$Gear=="BP", "Weight"]) #7.94
+mean(foulingCI[foulingCI$Gear=="FB", "Weight"])-initialMean #12.32
+sd(foulingCI[foulingCI$Gear=="FB", "Weight"]) #8.94
+mean(foulingCI[foulingCI$Gear=="FC", "Weight"])-initialMean #14.04
+sd(foulingCI[foulingCI$Gear=="FC", "Weight"]) #9.79
+
+initialShell<-mean(foulingCI[foulingCI$Location=="Initial", "Dry_shell"]) #5.70
+mean(foulingCI[foulingCI$Gear=="BP", "Dry_shell"])-initialShell #7.31
+sd(foulingCI[foulingCI$Gear=="BP", "Dry_shell"]) #5.74
+mean(foulingCI[foulingCI$Gear=="FB", "Dry_shell"])-initialShell #8.14
+sd(foulingCI[foulingCI$Gear=="FB", "Dry_shell"]) #5.98
+mean(foulingCI[foulingCI$Gear=="FC", "Dry_shell"])-initialShell #9.35
+sd(foulingCI[foulingCI$Gear=="FC", "Dry_shell"]) #6.67

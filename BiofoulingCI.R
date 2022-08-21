@@ -44,7 +44,8 @@ CI_Graph1
 fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Location))+geom_boxplot()+ylab("Fouling ratio")
 fouling_Graph1
 
-#both Levene's test and Shapiro-Wilk were significant for weight & fouling ratio, so using nonparametric ANOVA
+#all residuals highly non-normal plus significant Levene's tests for fouling ratio, so using nonparametric ANOVA
+
 #location significant for weight, p=0.01
 artWeight<-art(Weight ~ Gear * Location, data=fouling)
 anova(artWeight)
@@ -70,6 +71,13 @@ art.con(artCI, "Gear:Location", adjust = "bonferroni") %>%  #post-hoc condition 
                        cutpoints = c(0, .001, .01, .05, .10, 1),
                        symbols = c("***", "**", "*", ".", " ")))
 
+
+art.con(artCI, "Gear") %>%  #post-hoc condition index
+  summary() %>%  # add significance stars to the output
+  mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+                       cutpoints = c(0, .001, .01, .05, .10, 1),
+                       symbols = c("***", "**", "*", ".", " ")))
+
 data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
     c(mean = mean(x[[col]], na.rm=TRUE),
@@ -78,6 +86,13 @@ data_summary <- function(data, varname, groupnames){
   data_sum<-ddply(data, groupnames, .fun=summary_func,
                   varname)
   return(data_sum)}
+
+mean(fouling[fouling$Gear=="BP", "Condition_index"]) #11.00
+sd(fouling[fouling$Gear=="BP", "Condition_index"]) #2.32
+mean(fouling[fouling$Gear=="FC", "Condition_index"]) #10.28
+sd(fouling[fouling$Gear=="FC", "Condition_index"]) #2.35
+mean(fouling[fouling$Gear=="FB", "Condition_index"]) #9.81
+sd(fouling[fouling$Gear=="FB", "Condition_index"]) #3.66
 
 CIgraphDf<-data_summary(fouling, "Condition_index", groupnames=c("Location", "Gear"))
 
