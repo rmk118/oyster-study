@@ -428,6 +428,53 @@ SamplingOne$Replicate<-replicateColumn
 SamplingOne<-droplevels(SamplingOne)
 str(SamplingOne)
 
+# BP.replicate<- allData[allData$Gear == "BP","Treatment"]
+# FB.replicate<- allData[allData$Gear == "FB","Bag"]
+# FC.replicate<- allData[allData$Gear == "FC","Cage"]
+# replicateColumn1<-c(BP.replicate, FB.replicate, FC.replicate)
+# allData$Replicate<-replicateColumn1
+# allData$Replicate<-droplevels(allData$Replicate)
+
+#Replicates 1,2,3
+# heightRepMeansThree$LGR0<-(heightRepMeansOne$mean-47.64)/11
+# heightRepMeansThree$LGR1<-(heightRepMeansTwo$mean-heightRepMeansOne$mean)/21
+# heightRepMeansThree$LGR2<-(heightRepMeansThree$mean-heightRepMeansTwo$mean)/21
+
+# #Replicates 1,2,3
+# heightDiffs0<-data_summary(heightRepMeansThree, "LGR0", 
+#                            groupnames=c("Location", "Gear"))
+# 
+# heightDiffs1<-data_summary(heightRepMeansThree, "LGR1", 
+#                                 groupnames=c("Location", "Gear"))
+# 
+# heightDiffs2<-data_summary(heightRepMeansThree, "LGR2", 
+#                            groupnames=c("Location", "Gear"))
+
+#DAY 1 Linear Growth Rate same trends/sig. as height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# heightChange<-(SamplingOne$Height-47.64)
+# SamplingOne$LGR<-heightChange/11
+# 
+# summary(SamplingOne$LGR)
+# 
+# LGROneGraph1<-ggplot(data = SamplingOne, aes(x = Gear, y = LGR, fill=Location))+geom_boxplot()+ylab("LGR (mm/day)")
+# LGROneGraph1
+# 
+# #ANOVA - everything the same as height, since just adding and multiplying by a constant
+# lgrANOVA <- aov(LGR ~ Gear * Location, data = SamplingOne)
+# summary(lgrANOVA) #nothing significant
+# leveneTest(LGR ~ Gear * Location, data = SamplingOne) #p=0.2035
+# plot(lgrANOVA,1)
+# plot(lgrANOVA,2)
+# lgrResiduals<-lgrANOVA$residuals
+# shapiro.test(lgrResiduals) #p=0.00023
+
+# artLGROne<-art(LGR ~ Gear * Location, data=SamplingOne)
+# artLGROne #appropriate
+# anova(artLGROne) #no significant differences, everything the same as height
+
+
+
 #Regular LM (REML true or false?) -- modify this formula to try parametric LM with other random effect configurations
 RegCupRatioTwo <- lmer(Cup.ratio ~ Gear + Location + Gear:Location + (1 | Replicate), data = SamplingOne, REML = FALSE)
 summary(RegCupRatioTwo)
@@ -576,3 +623,10 @@ mean(foulingCI[foulingCI$Gear=="FB", "Dry_shell"])-initialShell #8.14
 sd(foulingCI[foulingCI$Gear=="FB", "Dry_shell"]) #5.98
 mean(foulingCI[foulingCI$Gear=="FC", "Dry_shell"])-initialShell #9.35
 sd(foulingCI[foulingCI$Gear=="FC", "Dry_shell"]) #6.67
+
+fouling$shellChange<-fouling$Dry_shell-initialShell
+shellChangeGraph1<-ggplot(data = fouling, aes(x = Gear, y = shellChange, fill=Location))+geom_boxplot()+ylab("Change in dry shell weight (g)")
+shellChangeGraph1
+
+artShellChange<-art(shellChange ~ Gear * Location, data=fouling)
+anova(artShellChange)

@@ -1,5 +1,5 @@
 #Ruby Krasnow
-#8/20/22
+#8/21/22
 
 library(nlme)
 library(lme4)
@@ -18,6 +18,15 @@ library(hrbrthemes)
 options(hrbrthemes.loadfonts = TRUE)
 hrbrthemes::import_roboto_condensed()
 
+data_summary <- function(data, varname, groupnames){
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      SE = std.error(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  return(data_sum)}
+
 #Import data
 allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
 
@@ -34,19 +43,11 @@ allData<-within(allData, {
   Replicate<-as.factor(Replicate)
 })
 
-# BP.replicate<- allData[allData$Gear == "BP","Treatment"]
-# FB.replicate<- allData[allData$Gear == "FB","Bag"]
-# FC.replicate<- allData[allData$Gear == "FC","Cage"]
-# replicateColumn1<-c(BP.replicate, FB.replicate, FC.replicate)
-# allData$Replicate<-replicateColumn1
-# allData$Replicate<-droplevels(allData$Replicate)
-
 allData$Replicate2<-paste0(allData$Treatment,".",allData$Replicate)
 allData$Replicate2<-as.factor(allData$Replicate2)
 str(allData)
 
-
-#DAY 1 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#DAY 1 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Select data
 SamplingOne<-allData[allData$Date=="2022-06-14",]
 str(SamplingOne)
@@ -72,29 +73,6 @@ artHeightOne<-art(Height ~ Gear * Location, data=SamplingOne)
 artHeightOne #appropriate
 anova(artHeightOne) #no significant differences
 
-#DAY 1 Linear Growth Rate ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# heightChange<-(SamplingOne$Height-47.64)
-# SamplingOne$LGR<-heightChange/11
-# 
-# summary(SamplingOne$LGR)
-# 
-# LGROneGraph1<-ggplot(data = SamplingOne, aes(x = Gear, y = LGR, fill=Location))+geom_boxplot()+ylab("LGR (mm/day)")
-# LGROneGraph1
-# 
-# #ANOVA - everything the same as height, since just adding and multiplying by a constant
-# lgrANOVA <- aov(LGR ~ Gear * Location, data = SamplingOne)
-# summary(lgrANOVA) #nothing significant
-# leveneTest(LGR ~ Gear * Location, data = SamplingOne) #p=0.2035
-# plot(lgrANOVA,1)
-# plot(lgrANOVA,2)
-# lgrResiduals<-lgrANOVA$residuals
-# shapiro.test(lgrResiduals) #p=0.00023
-
-# artLGROne<-art(LGR ~ Gear * Location, data=SamplingOne)
-# artLGROne #appropriate
-# anova(artLGROne) #no significant differences, everything the same as height
-
 #DAY 2 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SamplingTwo<-allData[allData$Date=="2022-07-05",]
@@ -110,7 +88,6 @@ heightTwoGraph2 + facet_grid(. ~ Location)
 heightTwoGraph3<-ggplot(data = SamplingTwo, aes(x = Location, y = Height))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
 heightTwoGraph3
 
-
 #ANOVA - assumptions met!
 heightANOVA2 <- aov(Height ~ Gear * Location, data = SamplingTwo)
 summary(heightANOVA2) #significant location and interaction
@@ -120,21 +97,10 @@ plot(heightANOVA2,2)
 heightResiduals2<-heightANOVA2$residuals
 shapiro.test(heightResiduals2) #p=0.07
 
-
 HSD1<-TukeyHSD(heightANOVA2, which='Gear:Location')
 
 HSDresults<-(HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE))
 HSDresults
-
-
-data_summary <- function(data, varname, groupnames){
-  summary_func <- function(x, col){
-    c(mean = mean(x[[col]], na.rm=TRUE),
-      SE = std.error(x[[col]], na.rm=TRUE))
-  }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
-  return(data_sum)}
 
 #DAY 3 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -162,8 +128,12 @@ plot(heightANOVA3,2)
 heightResiduals3<-heightANOVA3$residuals
 shapiro.test(heightResiduals3) #p=0.023
 
+#art ANOVA July 26 heights - location significant
+artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
+artDay3 #appropriate
+anova(artDay3)
+
 #Height over time/LGR ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#USE THIS SECTION IN POSTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #Height over time graph both location and gear 
 timeGraphHeightDf<-data_summary(allData, "Height", 
@@ -178,11 +148,13 @@ SamplingFour<-allData[allData$Date=="2022-08-15",]
 mean(SamplingFour[SamplingFour$Location=="Outside", "Height"]) #57.30
 mean(SamplingFour[SamplingFour$Location=="Inside", "Height"]) #60.41
 
-
+#Mean final heights by gear
 day3BP<-mean(SamplingFour[SamplingFour$Gear=="BP", "Height"]) #56.34
 day3FC<-mean(SamplingFour[SamplingFour$Gear=="FC", "Height"]) #58.99
 day3FB<-mean(SamplingFour[SamplingFour$Gear=="FB", "Height"]) #61.24
-
+sd(SamplingFour[SamplingFour$Gear=="BP", "Height"]) #8.32
+sd(SamplingFour[SamplingFour$Gear=="FC", "Height"]) #9.99
+sd(SamplingFour[SamplingFour$Gear=="FB", "Height"]) #10.04
 
 #Mean final heights minus initial pop. mean by gear
 day3BP-47.64 #8.699
@@ -200,13 +172,8 @@ FC_heightdiff/62 #0.21
 FB_heightdiff<-mean(SamplingFour[SamplingFour$Gear=="FB", "Height"])-mean(SamplingOne[SamplingOne$Gear=="FB", "Height"]) #16.77
 FB_heightdiff/62 #0.27
 
-#art ANOVA - location significant
-artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
-artDay3 #appropriate
-anova(artDay3)
-
-#art ANOVA
-artFinal<-art(Height ~ Gear * Location, data=allData)
+#art ANOVA final heights - model not appropriate?
+artFinal<-art(Height ~ Gear * Location, data=SamplingFour)
 artFinal #not appropriate
 anova(artFinal)
 
@@ -215,8 +182,7 @@ cages<-SamplingFour[SamplingFour$Gear=="FC",]
 replicateTest<-ggplot(data = bags, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
 replicateTestCages<-ggplot(data = cages, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
 
-
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Height over time graph just location
 timeGraphLocationDf<-data_summary(allData, "Height", 
                                 groupnames=c("Date", "Location"))
@@ -230,30 +196,17 @@ timeGraphGear<-ggplot(timeGraphGearDf, aes(x=Date, y=mean, color=Gear)) +geom_li
 timeGraphGear
 
 #Calculating LGR
-# heightRepMeansOne<-data_summary(SamplingOne, "Height",groupnames=c("Replicate", "Location", "Gear"))
-
 heightRepMeansOneB<-data_summary(SamplingOne, "Height", 
                                 groupnames=c("Replicate2", "Location", "Gear"))
-
-
-#heightRepMeansTwo<-data_summary(SamplingTwo, "Height",groupnames=c("Replicate", "Location", "Gear"))
 
 heightRepMeansTwoB<-data_summary(SamplingTwo, "Height", 
                                 groupnames=c("Replicate2", "Location", "Gear"))
 
-#heightRepMeansThree<-data_summary(SamplingThree, "Height",groupnames=c("Replicate", "Location", "Gear"))
-
 heightRepMeansThreeB<-data_summary(SamplingThree, "Height", 
                                   groupnames=c("Replicate2", "Location", "Gear"))
 
-
-heightRepMeansFourB<-data_summary(SamplingFour, "Height", groupnames=c("Replicate2", "Location", "Gear"))
-
-
-#Replicates 1,2,3
-# heightRepMeansThree$LGR0<-(heightRepMeansOne$mean-47.64)/11
-# heightRepMeansThree$LGR1<-(heightRepMeansTwo$mean-heightRepMeansOne$mean)/21
-# heightRepMeansThree$LGR2<-(heightRepMeansThree$mean-heightRepMeansTwo$mean)/21
+heightRepMeansFourB<-data_summary(SamplingFour, "Height", 
+                                  groupnames=c("Replicate2", "Location", "Gear"))
 
 #Replicates BPi.BP, FB.1, FB.2, etc.
 heightRepMeansThreeB$LGR0<-(heightRepMeansOneB$mean-47.64)/11
@@ -262,17 +215,6 @@ heightRepMeansThreeB$LGR2<-(heightRepMeansThreeB$mean-heightRepMeansTwoB$mean)/2
 heightRepMeansFourB$LGR3<-(heightRepMeansFourB$mean-heightRepMeansThreeB$mean)/23
 heightRepMeansFourB$LGR_overall<-(heightRepMeansFourB$mean-heightRepMeansOneB$mean)/62
 
-# #Replicates 1,2,3
-# heightDiffs0<-data_summary(heightRepMeansThree, "LGR0", 
-#                            groupnames=c("Location", "Gear"))
-# 
-# heightDiffs1<-data_summary(heightRepMeansThree, "LGR1", 
-#                                 groupnames=c("Location", "Gear"))
-# 
-# heightDiffs2<-data_summary(heightRepMeansThree, "LGR2", 
-#                            groupnames=c("Location", "Gear"))
-
-#Replicates BPi.BP, FB.1, FB.2, etc.
 heightDiffs0B<-data_summary(heightRepMeansThreeB, "LGR0", 
                            groupnames=c("Location", "Gear"))
 
@@ -300,7 +242,7 @@ growthRateDay4B
 overallGrowth<-ggplot(heightDiffsOverall, aes(x = Gear, y = mean, colour = Location, group = Location)) +geom_point(size = 4) + geom_line()+ylab("Linear growth rate (mm/day)")+theme_ipsum(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))+ylim(0,0.3)
 overallGrowth
 
-#Day 2 and 3 growth rates, theme_ipsum
+#Day 2 and 3 growth rates
 combinedB<-growthRateDay2B + growthRateDay3B + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 combinedB+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
 
@@ -387,7 +329,6 @@ mean(SamplingTwo[SamplingTwo$Treatment=="FBo", "Height"]) #45.375
 artGrowthRep_overall2<-art(LGR_overall ~ Gear * Location + Error(Replicate2), data=heightRepMeansFourB) #appropriate
 artGrowthRep_overall2
 anova(artGrowthRep_overall2)
-
 
 heightlmer<-lmer(Height ~ Date + Gear + Location + Gear:Location + (1|Replicate2), data=allData)
 summary(heightlmer, cor=T)
