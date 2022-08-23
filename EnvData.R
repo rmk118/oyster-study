@@ -33,6 +33,8 @@ HOBOdata$Location<-as.factor(HOBOdata$Location)
 #Rename salinity column
 names(HOBOdata)[3]<-"Salinity"
 
+noAir<- HOBOdata[HOBOdata$Salinity>5,]
+
 #Part 1a: Temperature Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Temperature Plot all data
@@ -40,7 +42,6 @@ allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Locati
 allTemps
 
 #Temperature Plot no salinity <5
-noAir<- HOBOdata[HOBOdata$Salinity>5,]
 tempNoAir<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
 tempNoAir
 
@@ -98,15 +99,25 @@ meanTempDiff<-mean(differences)
 meanTempDiff #inside averaged 0.650°C warmer
 seTempDiff<-std.error(differences)
 seTempDiff #0.0187
+sd(differences) #0.61
 (length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.3%
+max(differences) #4.49
+min(differences) #-3.61
 
-mean(noAir[noAir$Location=="Inside", "Temp"]) #mean inside = 18.10°C
-max(noAir[noAir$Location=="Inside", "Temp"]) #max inside = 24.07°C
-sd(noAir[noAir$Location=="Inside", "Temp"]) #standard deviation inside = 2.10°C
+inMean<-mean(noAir[noAir$Location=="Inside", "Temp"])#mean inside = 18.10°C
+inMax<-max(noAir[noAir$Location=="Inside", "Temp"]) #max inside = 24.07°C
+inMin<-min(noAir[noAir$Location=="Inside", "Temp"]) #min inside = 13.29°C
+inSD<-sd(noAir[noAir$Location=="Inside", "Temp"]) #standard deviation inside = 2.10°C
 
-mean(noAir[noAir$Location=="Outside", "Temp"]) #mean outside = 17.39034°C
-max(noAir[noAir$Location=="Outside", "Temp"]) #max outside = 22.53°C
-sd(noAir[noAir$Location=="Outside", "Temp"]) #standard deviation outside = 1.97°C
+outMean<-mean(noAir[noAir$Location=="Outside", "Temp"]) #mean outside = 17.39034°C
+outMax<-max(noAir[noAir$Location=="Outside", "Temp"]) #max outside = 22.53°C
+outMin<-min(noAir[noAir$Location=="Outside", "Temp"]) #min outside = 12.80°C
+outSD<-sd(noAir[noAir$Location=="Outside", "Temp"]) #standard deviation outside = 1.97°C
+
+inMean-outMean
+inMax-outMax
+inMin-outMin
+sqrt((inSD)^2+(outSD)^2)
 
 #Calculate rolling 24-hour means
 commonInside2 <- InsideCommon %>%
@@ -120,15 +131,25 @@ commonOutside2 <- OutsideCommon %>%
 both_rolling<-c(commonInside2$daily_avg, commonOutside2$out_daily_avg)
 common$rolling<-both_rolling
 
+inMeanMin<-min(commonInside2$daily_avg, na.rm=TRUE) #min inside mean daily temp = 13.92°C
+outMeanMin<-min(commonOutside2$out_daily_avg, na.rm=TRUE) #min outside mean daily temp = 13.67°C
+inMeanMin-outMeanMin
+inMeanMax<-max(commonInside2$daily_avg, na.rm=TRUE) #max inside mean daily temp = 21.54°C
+outMeanMax<-max(commonOutside2$out_daily_avg, na.rm=TRUE) #max outside mean daily temp = 20.85°C
+inMeanMax-outMeanMax
 min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67°C (outside, June 19)
 max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53°C (inside, July 24)
 
 a<-mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
 b<-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
 a-b # 0.655
+c<-(sd(commonInside2$daily_avg, na.rm=TRUE))^2 #3.42
+d<-(sd(commonOutside2$out_daily_avg, na.rm=TRUE))^2 #3.11
+sqrt(d+c) #2.55
 
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
 mean(rolling_diffs, na.rm=TRUE) #mean rolling daily avg. is 0.655 deg. C higher inside
+sd(rolling_diffs, na.rm = TRUE) #0.20
 length(rolling_diffs)
 length(rolling_diffs[rolling_diffs>0]) #inside daily mean always higher
 length(rolling_diffs[rolling_diffs>0.5])/1060 #78.9% diff was >0.5 deg. C
