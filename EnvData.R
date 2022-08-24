@@ -163,11 +163,28 @@ DailyAvgTemp2
 grid.arrange(tempNoAirRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
 
 #Part 1d: Salinity Analysis ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+inSalMean<-mean(noAir[noAir$Location=="Inside", "Salinity"])#mean inside = 31.66 mS/cm
+inSalMax<-max(noAir[noAir$Location=="Inside", "Salinity"]) #max inside = 35.42 mS/cm
+inSalMin<-min(noAir[noAir$Location=="Inside", "Salinity"]) #min inside = 5.07 mS/cm
+inSalSD<-sd(noAir[noAir$Location=="Inside", "Salinity"]) #standard dev inside = 2.21 mS/cm
+
+outSalMean<-mean(noAir[noAir$Location=="Outside", "Salinity"]) #mean outside = 31.38 mS/cm
+outSalMax<-max(noAir[noAir$Location=="Outside", "Salinity"]) #max outside = 32.85 mS/cm
+outSalMin<-min(noAir[noAir$Location=="Outside", "Salinity"]) #min outside = 22.11 mS/cm
+outSalSD<-sd(noAir[noAir$Location=="Outside", "Salinity"]) #standard dev outside = 0.69 mS/cm
+
+inSalMean-outSalMean
+inSalMax-outSalMax
+inSalMin-outSalMin
+sqrt((inSalSD)^2+(outSalSD)^2)
+
 sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
 meanSalDiff<-mean(sal_differences)
 meanSalDiff #inside averages 0.28 mS/L higher
 sd_sal_Diff<-sd(sal_differences)
 sd_sal_Diff #2.136
+max(sal_differences) #9.58
+min(sal_differences) #-26.12
 (length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 73.9% 
 
 #Calculate rolling mean
@@ -187,17 +204,29 @@ DailyAvgSal2
 
 grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
 
-rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
-mean(rolling_sal_diffs, na.rm = TRUE) #0.290
-length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
+inSalMeanAvg<-mean(commonSalInside2$daily_sal_avg, na.rm=TRUE) #31.68435
+inSalMeanSD<-sd(commonSalInside2$daily_sal_avg, na.rm=TRUE) #1.44
+inSalMeanMax<-max(commonSalInside2$daily_sal_avg, na.rm=TRUE) #33.96
+inSalMeanMin<-min(commonSalInside2$daily_sal_avg, na.rm=TRUE) #26.48
+outSalMeanAvg<-mean(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #31.39
+outSalMeanMax<-max(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #32.02
+outSalMeanMin<-min(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #30.36
+outSalMeanSD<-sd(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #0.43
 
-mean(commonSalInside2$daily_sal_avg, na.rm=TRUE) #31.68435
-sd(commonSalInside2$daily_sal_avg, na.rm=TRUE) #1.44
-mean(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #31.39409
-sd(commonSalOutside2$out_sal_daily_avg, na.rm=TRUE) #0.43
+inSalMeanAvg-outSalMeanAvg
+inSalMeanMax-outSalMeanMax
+inSalMeanMin-outSalMeanMin
+sqrt((inSalMeanSD)^2+(outSalMeanSD)^2) #1.50
 
 min(both_sal_rolling, na.rm=TRUE) #min mean daily sal = 26.48
 max(both_sal_rolling, na.rm=TRUE) #max mean daily sal = 33.96
+
+rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
+mean(rolling_sal_diffs, na.rm = TRUE) #0.290
+sd(rolling_sal_diffs, na.rm = TRUE) #1.24
+max(rolling_sal_diffs, na.rm = TRUE) #2.06
+min(rolling_sal_diffs, na.rm = TRUE) #-4.66
+length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+theme(axis.title.y = element_text(margin = margin(r = 10)))
 DailyAvgSal2
@@ -241,11 +270,25 @@ data_summary <- function(data, varname, groupnames){
   return(data_sum)
 }
 
-#Create summary data frame (INCLUDING 8/2)
+inMeanChl<-mean(ChlaDatasheet[ChlaDatasheet$Location=="Inside", "Ave_Chl1"]) #7.49
+inMaxChl<-max(ChlaDatasheet[ChlaDatasheet$Location=="Inside", "Ave_Chl1"]) #14.60
+inMinChl<-min(ChlaDatasheet[ChlaDatasheet$Location=="Inside", "Ave_Chl1"]) #2.22
+inSDChl<-sd(ChlaDatasheet[ChlaDatasheet$Location=="Inside", "Ave_Chl1"]) #3.52
+outMeanChl<-mean(ChlaDatasheet[ChlaDatasheet$Location=="Outside", "Ave_Chl1"]) #6.07
+outMaxChl<-max(ChlaDatasheet[ChlaDatasheet$Location=="Outside", "Ave_Chl1"]) #13.18
+outMinChl<-min(ChlaDatasheet[ChlaDatasheet$Location=="Outside", "Ave_Chl1"]) #2.80
+outSDChl<-sd(ChlaDatasheet[ChlaDatasheet$Location=="Outside", "Ave_Chl1"]) #2.38
+
+inMeanChl-outMeanChl
+inMaxChl-outMaxChl
+inMinChl-outMinChl
+sqrt((inSDChl)^2+(outSDChl)^2) #4.25
+
+#Create summary data frame
 df_updated<-data_summary(ChlaDatasheet, "Ave_Chl1", 
                          groupnames=c("Trial_Date", "Location"))
 #with error bars
-chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) +geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+ geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,16.5))+ theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))
+chlA_updated_errorbars<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=Location)) +geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+ geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2, position=position_dodge(0.05))+theme_classic()+scale_y_continuous(limits=c(0,16.5))+ theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 15)))
 chlA_updated_errorbars
 
 #no error bars
@@ -255,6 +298,18 @@ chlA_graph
 
 OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
 InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
+mean(InsideChlA) #7.63
+mean(OutsideChlA) #6.03
+mean(InsideChlA)-mean(OutsideChlA) #1.60
+sd(InsideChlA) #3.47
+sd(OutsideChlA) #2.28
+sqrt((sd(InsideChlA))^2+(sd(OutsideChlA))^2) #4.15
+max(InsideChlA) #14.45
+max(OutsideChlA) #10.16
+max(InsideChlA)-max(OutsideChlA) #4.29
+min(InsideChlA) #2.35
+min(OutsideChlA) #2.97
+min(InsideChlA)-min(OutsideChlA)
 
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
@@ -262,26 +317,9 @@ meanDiffChlA<-mean(differencesChlA$Diff)
 meanDiffChlA #1.60 μg/L
 sdDiffChlA<-sd(differencesChlA$Diff)
 sdDiffChlA #3.09 μg/L
-
-#### NOT INCLUDING 8/2 ##################################
-df_old<-df_updated[c(1:14),]
-#Average difference
-OutsideChlA_old<-df_old[df_old$Location=="Outside",'mean']
-InsideChlA_old<-df_old[df_old$Location=="Inside",'mean']
-
-differencesChlA_old<-data.frame(OutsideChlA_old,InsideChlA_old)
-differencesChlA_old$Diff<-differencesChlA_old$InsideChlA_old-differencesChlA_old$OutsideChlA_old
-meanDiffChlA_old<-mean(differencesChlA_old$Diff)
-meanDiffChlA_old #0.73 μg/L
-sdDiffChlA_old<-sd(differencesChlA_old$Diff)
-sdDiffChlA_old #2.08
-
-chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))
-chlA_graph2
-
-chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location))+ geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
-chlA_graph2_themed
+max(differencesChlA$Diff) #6.62
+min(differencesChlA$Diff) #-1.62
+length(differencesChlA$Diff[differencesChlA$Diff>0])/length(differencesChlA$Diff) #50.0%
 
 ######################### Part 3: Turbidity  ########################################
 
@@ -301,7 +339,7 @@ turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=L
 turbidity_graph
 
 #Plot with error bars
-turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
+turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 15)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))
 turbidity_graph_errorbars
 
 turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
@@ -320,6 +358,10 @@ mean(OutsideTurbidity) #4.00
 sd(OutsideTurbidity) #3.41
 mean(InsideTurbidity) #1.95
 sd(InsideTurbidity) #0.76
+
+max(OutsideTurbidity) #13.32
+min(OutsideTurbidity)
+
 
 ###############################################################################
 ######################### Combined graphs  ########################################

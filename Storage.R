@@ -630,3 +630,23 @@ shellChangeGraph1
 
 artShellChange<-art(shellChange ~ Gear * Location, data=fouling)
 anova(artShellChange)
+
+#### NOT INCLUDING 8/2 ##################################
+df_old<-df_updated[c(1:14),]
+#Average difference
+OutsideChlA_old<-df_old[df_old$Location=="Outside",'mean']
+InsideChlA_old<-df_old[df_old$Location=="Inside",'mean']
+
+differencesChlA_old<-data.frame(OutsideChlA_old,InsideChlA_old)
+differencesChlA_old$Diff<-differencesChlA_old$InsideChlA_old-differencesChlA_old$OutsideChlA_old
+meanDiffChlA_old<-mean(differencesChlA_old$Diff)
+meanDiffChlA_old #0.73 μg/L
+sdDiffChlA_old<-sd(differencesChlA_old$Diff)
+sdDiffChlA_old #2.08
+
+chlA_graph2<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location)) + 
+  geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 10)))
+chlA_graph2
+
+chlA_graph2_themed<-ggplot(df_old, aes(x=Trial_Date, y=mean, group=Location, color=Location))+ geom_line()+ylab("Chlorophyll A (μg/L)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)
+chlA_graph2_themed
