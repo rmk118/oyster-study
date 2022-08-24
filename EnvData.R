@@ -57,15 +57,15 @@ tempNoAirRolling
 
 #Salinity Plot all data
 allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data")
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data")
 allSalinity
 
 #Salinity Plot no salinity <5
-salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
+salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data >5")
 salinityNoAir
 
 #Salinity Plot no salinity <5 ROLLING AVERAGE
-salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data >5")
+salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)") #, subtitle="All salinity data >5")
 salinityNoAirRolling
 
 #Salinity plot starting 6/17
@@ -184,6 +184,8 @@ common$sal_rolling<-both_sal_rolling
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
+
+grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
 
 rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
 mean(rolling_sal_diffs, na.rm = TRUE) #0.290
