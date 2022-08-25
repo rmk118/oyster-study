@@ -1,5 +1,5 @@
 #Environmental Data
-#RK 8/19/22
+#RK 8/25/22
 
 library(ggplot2)
 library(ggsci)
@@ -199,8 +199,7 @@ commonSalOutside2 <- OutsideCommon %>%
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
 
-DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
-DailyAvgSal2
+
 
 grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
 
@@ -228,7 +227,7 @@ max(rolling_sal_diffs, na.rm = TRUE) #2.06
 min(rolling_sal_diffs, na.rm = TRUE) #-4.66
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
 
-DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ylim(25,35)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
 
 ######################### Part 2: ChlA  ########################################
@@ -343,6 +342,7 @@ turbidity_graph_errorbars<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Locatio
 turbidity_graph_errorbars
 
 turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
+turbidity_graph_themed
 
 #Average difference
 OutsideTurbidity<-df_turbdity[df_turbdity$Location=="Outside",'mean']
@@ -353,15 +353,23 @@ meanTurbidityDiff<-mean(differences_turbidity$Diff)
 meanTurbidityDiff #2.04 NTU
 sdTurbidityDiff<-sd(differences_turbidity$Diff)
 sdTurbidityDiff #3.07 NTU
+max(differences_turbidity$Diff) #10.52
+min(differences_turbidity$Diff) #0.05
 
 mean(OutsideTurbidity) #4.00
 sd(OutsideTurbidity) #3.41
 mean(InsideTurbidity) #1.95
 sd(InsideTurbidity) #0.76
 
-max(OutsideTurbidity) #13.32
-min(OutsideTurbidity)
+mean(OutsideTurbidity)-mean(InsideTurbidity) #2.04
+sqrt((sd(OutsideTurbidity))^2+(sd(InsideTurbidity))^2) #3.49
 
+max(OutsideTurbidity) #13.32
+min(OutsideTurbidity) #1.37
+max(InsideTurbidity) #3.03
+min(InsideTurbidity) #0.87
+max(OutsideTurbidity)-max(InsideTurbidity) #10.29
+min(OutsideTurbidity)-min(InsideTurbidity) #0.504
 
 ###############################################################################
 ######################### Combined graphs  ########################################
@@ -372,15 +380,15 @@ combined <- DailyAvgTemp2/(DailyAvgSal2 + chlA_graph) + plot_layout(nrow=2, byro
 combined
 
 #Temp, salinity, ChlA, turbidity
-allFour<-DailyAvgTemp2/(DailyAvgSal2 + chlA_graph2 + turbidity_graph_themed) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
+allFour<-DailyAvgTemp2/(DailyAvgSal2 + chlA_graph + turbidity_graph_themed) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
 allFour
 
 #ChlA and turbidity, theme_classic
 chlA_graph2 + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 
 #ChlA and turbidity, theme_ipsum
-combined2<-chlA_graph2_themed + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
-combined2+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
+combined2<-chlA_graph + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+combined2#+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
 
 #ChlA and turbidity, error bars
 combined_errorbars<- chlA_updated_errorbars + turbidity_graph_errorbars + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
