@@ -339,3 +339,31 @@ qqp(allData$Height)
 
 Anova(heightlmer)
 display(heightlmer)
+
+#Mean height cages replicates
+cages<-SamplingFour[SamplingFour$Gear=="FC",]
+cagesGrowth<-ggplot(data = cages, aes(x = Cage, y = Height, fill=Location))+geom_boxplot()+ylab("Shell height (mm)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+cagesGrowth
+
+finalCagesGraph2 <- ggplot(cages, aes(x=Cage, y=Height, group=Cage)) + 
+  geom_boxplot(aes(fill=Gear))
+finalCagesGraph2 + facet_grid(. ~ Location)
+
+#art ANOVA final cage heights
+artCagesFinal<-art(Height ~ Replicate * Location, data=cages)
+artCagesFinal #not appropriate
+anova(artCagesFinal)
+
+outsideCages<-cages[cages$Location=="Outside",]
+kruskal.test(Height~Cage, data=outsideCages)
+
+
+FC2<-SamplingOne[SamplingOne$Gear=="FC",]
+ggplot(data = FC2, aes(x = Location, y = Height, fill=Cage))+geom_boxplot()+scale_y_continuous(limits=c(0,80))+ylab("Height")+theme_classic()
+
+FC4<-SamplingFour[SamplingFour$Gear=="FC",]
+ggplot(data = FC4, aes(x = Location, y = Height, fill=Cage))+geom_boxplot()+scale_y_continuous(limits=c(0,80))+ylab("Height")+theme_classic()
+
+
+FB4<-SamplingFour[SamplingFour$Gear=="FB",]
+ggplot(data = FB4, aes(x = Location, y = Cup.ratio, fill=Bag))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))+ylab("Cup ratio")+theme_classic()
