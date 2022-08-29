@@ -114,11 +114,6 @@ heightThreeGraph1
 heightThreeGraph2<-ggplot(data = SamplingThree, aes(x = Location, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
 heightThreeGraph2
 
-#Just gear
-heightThreeGraph3<-ggplot(data = SamplingThree, aes(x = Gear, y = Height))+geom_boxplot()+ylab("Shell height (mm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+ theme(axis.title.y = element_text(margin = margin(r = 10)),
-       axis.title.x = element_text(margin = margin(t = 10)))#+scale_y_continuous(limits=c(0,85))
-heightThreeGraph3
-
 #ANOVA - assumptions not met
 heightANOVA3 <- aov(Height ~ Gear * Location, data = SamplingThree)
 summary(heightANOVA3) #significant location
