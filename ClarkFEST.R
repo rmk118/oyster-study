@@ -1,5 +1,5 @@
-#Manuscript figures
-#Updated 9/5/22
+#ClarkFEST Poster figures - Ruby Krasnow
+#Updated 9/11/22
 
 library(ggplot2)
 library(ggsci)
@@ -84,11 +84,6 @@ SamplingFour$Change<-(SamplingFour$Height-47.64)/47.64/73
 heightChange1<-ggplot(data = SamplingFour, aes(x = Gear, y = Change, fill=Location))+geom_boxplot()+ylab("RGR (% per day) ")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))
 heightChange1
 
-SamplingFour$Change2<-SamplingFour$Height-47.64
-change2df<-data_summary(SamplingFour, "Change2", 
-                                groupnames=c("Location", "Gear"))
-
-
 #Figure 1c: Change in condition index from initial population (by treatment), as % change
 
 initialCImean<-mean(foulingCI[foulingCI$Treatment=="Initial","Condition_index"])
@@ -97,24 +92,6 @@ fouling<-foulingCI[foulingCI$Location=="Inside" | foulingCI$Location=="Outside",
 fouling$Change<-(fouling$Condition_index-initialCImean)/initialCImean/60
 CIChange1<-ggplot(data = fouling, aes(x = Gear, y = Change, fill=Location))+geom_boxplot()+ylab("Change in condition index (% per day) ")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 15)))+scale_y_continuous(limits=c(-0.02,0.03))#+scale_fill_manual(breaks = fouling$Location, values = c("white", "gray"))
 CIChange1
-
-fouling$Change2<-fouling$Condition_index-initialCImean
-fouling2df<-data_summary(fouling, "Change2", 
-                        groupnames=c("Location", "Gear"))
-names(fouling2df)[3]<-"CI"
-names(fouling2df)[4]<-"CISE"
-
-change2df = change2df %>% 
-  left_join(fouling2df, by = c("Location", "Gear"))
-
-ggplot(data = change2df, aes(x = mean, y = CI, color=Location))+geom_point()+ylab("Change in CI")+ylab("Change in SH")+theme_classic()
-
-ggplot(data = change2df) +
-  geom_point(aes(x = mean, y = CI, color = Gear, shape=Location), size=3) +
-  theme_bw() +geom_smooth(aes(x = mean, y = CI),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ condition index")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
-
-lm.temp = lm(CI ~ mean, data = change2df)
-summary(lm.temp)
 
 #Figure 1 - all
 figure1.1<- heightChange1 + CIChange1 + plot_layout(nrow=1, guides = "collect")
@@ -200,9 +177,7 @@ common$sal_rolling<-both_sal_rolling
 DailyAvgSal<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal
 
-#Fig. 2c - TCM
-
-#Fig. 2d - ChlA
+#Fig. 2c - ChlA
 dateFix = function(df) {
   df$Trial_Date = as.Date(df$Trial, "%m/%d/%y")
   return(df)
@@ -236,24 +211,6 @@ chlA_graph<-ggplot(df_updated, aes(x=Trial_Date, y=mean, group=Location, color=L
   geom_line()+ylab("Chlorophyll A (μg/L)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+ theme(axis.title.y = element_text(margin = margin(r = 10)))+scale_y_continuous(limits=c(0,16))
 chlA_graph
 
-#Fig. 2e - Turbidity
-#Import data
-turbidity<-read.csv("turbidity.csv")
-
-#Create summary data frame
-df_turbdity<-data_summary(turbidity, "Turbidity", 
-                          groupnames=c("Date", "Location"))
-#Convert date format
-df_turbdity$Date <- mdy(df_turbdity$Date)
-
-#Standard plot
-turbidity_graph<-ggplot(df_turbdity, aes(x=Date, y=mean, group=Location, color=Location)) + 
-  geom_line()+theme_classic()+scale_y_continuous(limits=c(0,15))+ylab("Turbidity (NTU)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
-turbidity_graph
-
-turbidity_graph_themed<-turbidity_graph+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))
-turbidity_graph_themed
-
-#Temp, salinity, ChlA, turbidity
-allFour<-DailyAvgTemp/(DailyAvgSal + chlA_graph + turbidity_graph_themed) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
-allFour
+#Temp, salinity, ChlA
+allThree<-DailyAvgTemp/(DailyAvgSal + chlA_graph) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
+allThree

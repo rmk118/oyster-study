@@ -1,5 +1,5 @@
 #Environmental Data
-#RK 8/25/22
+#RK 9/9/22
 
 library(ggplot2)
 library(ggsci)
@@ -393,3 +393,26 @@ combined2#+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(si
 #ChlA and turbidity, error bars
 combined_errorbars<- chlA_updated_errorbars + turbidity_graph_errorbars + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 combined_errorbars+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
+
+
+###############################################################################
+######################### Bottom Conditions  ########################################
+###############################################################################
+
+#Import HOBO data
+bottom<-read.csv("bottomHOBO.csv")
+bottom<- bottom[bottom$Salinity>5,]
+
+#Convert date and location
+bottom$Time<-hms::as_hms(bottom$Time)
+bottom$Location<-as.factor(bottom$Location)
+
+ggplot(bottom, aes(x=Time, y=Temp, group=Location, color=Location)) + 
+  geom_line()+theme_classic()+ylab("Temperature")+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+
+ggplot(bottom, aes(x=Time, y=Salinity, group=Location, color=Location)) + 
+  geom_line()+theme_classic()+ylab("Salinity")+xlab("")+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))
+
+rm(bottom)
