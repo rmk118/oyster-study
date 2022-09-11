@@ -106,14 +106,15 @@ names(fouling2df)[4]<-"CISE"
 
 change2df = change2df %>% 
   left_join(fouling2df, by = c("Location", "Gear"))
+names(change2df)[3:4]<-c("heightChange","heightSE")
 
-ggplot(data = change2df, aes(x = mean, y = CI, color=Location))+geom_point()+ylab("Change in CI")+ylab("Change in SH")+theme_classic()
+ggplot(data = change2df, aes(x = heightChange, y = CI, color=Location))+geom_point()+ylab("Change in CI")+ylab("Change in SH")+theme_classic()
 
 ggplot(data = change2df) +
-  geom_point(aes(x = mean, y = CI, color = Gear, shape=Location), size=3) +
-  theme_bw() +geom_smooth(aes(x = mean, y = CI),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ condition index")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+  geom_point(aes(x = heightChange, y = CI, color = Location, shape=Gear), size=3) +
+  theme_bw() +geom_smooth(aes(x = heightChange, y = CI),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ condition index")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
 
-lm.temp = lm(CI ~ mean, data = change2df)
+lm.temp = lm(CI ~ heightChange, data = change2df)
 summary(lm.temp)
 
 #Figure 1 - all
@@ -143,6 +144,27 @@ figure2
 
 figure2.2<- RatioTwo + ShapeTwo + plot_layout(nrow=1, guides = "collect")
 figure2.2
+
+initialCupDf<-data_summary(SamplingOne, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
+names(initialCupDf)[4:5]<-c("initialCupRatio", "initialSE")
+finalCupDf<-data_summary(SamplingFour, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
+names(finalCupDf)[4:5]<-c("finalCupRatio", "finalSE")
+
+finalCupDf = finalCupDf %>% 
+  left_join(initialCupDf, by = c("Location", "Gear"))
+finalCupDf$CupChange<-finalCupDf$finalCupRatio-finalCupDf$initialCupRatio
+
+finalCupDf = finalCupDf %>% 
+  left_join(change2df, by = c("Location", "Gear"))
+
+ggplot(data = finalCupDf, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+ylab("Change in SH")+theme_classic()
+
+ggplot(data = finalCupDf) +
+  geom_point(aes(x = heightChange, y = CupChange, color = Location, shape=Gear), size=3) +
+  theme_bw() +geom_smooth(aes(x = heightChange, y = CupChange),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ cup ratio")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+
+lm.cup = lm(CupChange ~ heightChange, data = finalCupDf)
+summary(lm.cup)
 
 ############################## Figure 4 - Biofouling ###########
 
