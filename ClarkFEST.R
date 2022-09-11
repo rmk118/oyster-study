@@ -79,7 +79,7 @@ timeGraphHeight
 
 #Figure 1b: Change in shell height from initial population, as RGR
 
-SamplingFour$Change<-(SamplingFour$Height-47.64)/47.64/73
+SamplingFour$Change<-(SamplingFour$Height-47.64)
 
 heightChange1<-ggplot(data = SamplingFour, aes(x = Gear, y = Change, fill=Location))+geom_boxplot()+ylab("RGR (% per day) ")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))
 heightChange1
