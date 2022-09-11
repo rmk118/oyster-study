@@ -177,6 +177,8 @@ cages<-SamplingFour[SamplingFour$Gear=="FC",]
 replicateTest<-ggplot(data = bags, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
 replicateTestCages<-ggplot(data = cages, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
 
+
+
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Height over time graph just location
 timeGraphLocationDf<-data_summary(allData, "Height", 

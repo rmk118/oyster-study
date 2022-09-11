@@ -1,5 +1,5 @@
 #Manuscript figures
-#Updated 9/5/22
+#Updated 9/11/22
 
 library(ggplot2)
 library(ggsci)
@@ -157,7 +157,7 @@ finalCupDf$CupChange<-finalCupDf$finalCupRatio-finalCupDf$initialCupRatio
 finalCupDf = finalCupDf %>% 
   left_join(change2df, by = c("Location", "Gear"))
 
-ggplot(data = finalCupDf, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+ylab("Change in SH")+theme_classic()
+ggplot(data = finalCupDf, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+xlab("Change in SH")+theme_classic()
 
 ggplot(data = finalCupDf) +
   geom_point(aes(x = heightChange, y = CupChange, color = Location, shape=Gear), size=3) +
@@ -165,6 +165,36 @@ ggplot(data = finalCupDf) +
 
 lm.cup = lm(CupChange ~ heightChange, data = finalCupDf)
 summary(lm.cup)
+
+#With replicates
+initialCupDfRep<-data_summary(SamplingOne, "Cup.ratio", groupnames=c("Date", "Location", "Gear", "Replicate2"))
+names(initialCupDfRep)[5:6]<-c("initialCupRatio", "initialSE")
+finalCupDfRep<-data_summary(SamplingFour, "Cup.ratio", groupnames=c("Date", "Location", "Gear", "Replicate2"))
+names(finalCupDfRep)[5:6]<-c("finalCupRatio", "finalSE")
+
+finalCupDfRep = finalCupDfRep %>% 
+  left_join(initialCupDfRep, by = c("Location", "Gear", "Replicate2"))
+finalCupDfRep$CupChange<-finalCupDfRep$finalCupRatio-finalCupDfRep$initialCupRatio
+
+change3df<-data_summary(SamplingFour, "Change2", 
+                        groupnames=c("Location", "Gear", "Replicate2"))
+names(change3df)[4:5]<-c("heightChange","heightSE")
+
+finalCupDfRep = finalCupDfRep %>% 
+  left_join(change3df, by = c("Location", "Gear","Replicate2"))
+
+ggplot(data = finalCupDfRep, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+xlab("Change in SH")+theme_classic()
+
+ggplot(data = finalCupDfRep) +
+  geom_point(aes(x = heightChange, y = CupChange, color = Location, shape=Gear), size=3) +
+  theme_bw() +geom_smooth(aes(x = heightChange, y = CupChange, color=Location),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ cup ratio")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+
+lm.cup = lm(CupChange ~ heightChange * Location * Gear, data = finalCupDfRep)
+selectedCup<-step(lm.cup) #CupChange ~ heightChange + Location + Gear + heightChange:Gear
+summary(selectedCup)
+
+summary(lm.cup)
+gvlma(selectedCup)
 
 ############################## Figure 4 - Biofouling ###########
 

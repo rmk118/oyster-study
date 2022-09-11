@@ -50,8 +50,30 @@ str(allData)
 SamplingFour<-allData[allData$Date=="2022-08-15",]
 table(SamplingFour$Location,SamplingFour$Gear)
 
+# heightlmer<-lmer(Height ~ Date + Gear + Location + Gear:Location + (1|Replicate2), data=allData)
+# summary(heightlmer, cor=T)
+# hist(resid(heightlmer))
+# confint(heightlmer)
+# hist(allData$Height)
+# qqp(allData$Height)
+# 
+# Anova(heightlmer)
 
-#art ANOVA final heights - model not appropriate?
-artFinal<-art(Height ~ Gear * Location, data=SamplingFour)
+heightANOVA3 <- aov(Height ~ Gear * Location, data = SamplingFour)
+summary(heightANOVA3) #significant location
+leveneTest(Height ~ Gear * Location, data = SamplingFour) #p=0.020
+plot(heightANOVA3,1)
+plot(heightANOVA3,2)
+heightResiduals3<-heightANOVA3$residuals
+hist(heightResiduals3)
+shapiro.test(heightResiduals3) #p=0.023
+
+#art ANOVA final heights replicate
+artFinal<-art(Height ~ Gear * Location + (1|Replicate2), data=SamplingFour)
 artFinal #appropriate!
 anova(artFinal)
+
+#art ANOVA final heights no replicate
+artFinal2<-art(Height ~ Gear * Location, data=SamplingFour)
+artFinal2 #appropriate!
+anova(artFinal2)

@@ -96,28 +96,28 @@ InsideCommon<-common[common$Location=='Inside',]
 OutsideCommon<-common[common$Location=='Outside',]
 differences<-InsideCommon$Temp-OutsideCommon$Temp #difference inside minus outside: each hour
 meanTempDiff<-mean(differences)
-meanTempDiff #inside averaged 0.650°C warmer
+meanTempDiff #inside averaged 0.653°C warmer
 seTempDiff<-std.error(differences)
-seTempDiff #0.0187
-sd(differences) #0.61
-(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.3%
+seTempDiff #0.0153
+sd(differences) #0.58
+(length(differences[differences>0]))/(length(differences)) #percentage of hours where inside was warmer = 94.9%
 max(differences) #4.49
 min(differences) #-3.61
 
-inMean<-mean(noAir[noAir$Location=="Inside", "Temp"])#mean inside = 18.10°C
-inMax<-max(noAir[noAir$Location=="Inside", "Temp"]) #max inside = 24.07°C
+inMean<-mean(noAir[noAir$Location=="Inside", "Temp"])#mean inside = 18.80°C
+inMax<-max(noAir[noAir$Location=="Inside", "Temp"]) #max inside = 24.76°C
 inMin<-min(noAir[noAir$Location=="Inside", "Temp"]) #min inside = 13.29°C
-inSD<-sd(noAir[noAir$Location=="Inside", "Temp"]) #standard deviation inside = 2.10°C
+inSD<-sd(noAir[noAir$Location=="Inside", "Temp"]) #standard deviation inside = 2.25°C
 
-outMean<-mean(noAir[noAir$Location=="Outside", "Temp"]) #mean outside = 17.39034°C
-outMax<-max(noAir[noAir$Location=="Outside", "Temp"]) #max outside = 22.53°C
+outMean<-mean(noAir[noAir$Location=="Outside", "Temp"]) #mean outside = 18.10°C
+outMax<-max(noAir[noAir$Location=="Outside", "Temp"]) #max outside = 23.23°C
 outMin<-min(noAir[noAir$Location=="Outside", "Temp"]) #min outside = 12.80°C
-outSD<-sd(noAir[noAir$Location=="Outside", "Temp"]) #standard deviation outside = 1.97°C
+outSD<-sd(noAir[noAir$Location=="Outside", "Temp"]) #standard deviation outside = 2.16°C
 
-inMean-outMean
-inMax-outMax
-inMin-outMin
-sqrt((inSD)^2+(outSD)^2)
+inMean-outMean #0.697
+inMax-outMax #1.53
+inMin-outMin #0.49
+sqrt((inSD)^2+(outSD)^2) #3.12
 
 #Calculate rolling 24-hour means
 commonInside2 <- InsideCommon %>%
@@ -134,25 +134,25 @@ common$rolling<-both_rolling
 inMeanMin<-min(commonInside2$daily_avg, na.rm=TRUE) #min inside mean daily temp = 13.92°C
 outMeanMin<-min(commonOutside2$out_daily_avg, na.rm=TRUE) #min outside mean daily temp = 13.67°C
 inMeanMin-outMeanMin
-inMeanMax<-max(commonInside2$daily_avg, na.rm=TRUE) #max inside mean daily temp = 21.54°C
-outMeanMax<-max(commonOutside2$out_daily_avg, na.rm=TRUE) #max outside mean daily temp = 20.85°C
+inMeanMax<-max(commonInside2$daily_avg, na.rm=TRUE) #max inside mean daily temp = 22.44°C
+outMeanMax<-max(commonOutside2$out_daily_avg, na.rm=TRUE) #max outside mean daily temp = 21.67°C
 inMeanMax-outMeanMax
 min(both_rolling, na.rm=TRUE) #min mean daily temp = 13.67°C (outside, June 19)
-max(both_rolling, na.rm=TRUE) #max mean daily temp = 21.53°C (inside, July 24)
+max(both_rolling, na.rm=TRUE) #max mean daily temp = 22.44°C
 
-a<-mean(commonInside2$daily_avg, na.rm=TRUE) #18.10601
-b<-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #17.45055
-a-b # 0.655
-c<-(sd(commonInside2$daily_avg, na.rm=TRUE))^2 #3.42
-d<-(sd(commonOutside2$out_daily_avg, na.rm=TRUE))^2 #3.11
-sqrt(d+c) #2.55
+a<-mean(commonInside2$daily_avg, na.rm=TRUE) #18.840
+b<-mean(commonOutside2$out_daily_avg, na.rm=TRUE) #18.18
+a-b # 0.659
+c<-(sd(commonInside2$daily_avg, na.rm=TRUE))^2 #4.204
+d<-(sd(commonOutside2$out_daily_avg, na.rm=TRUE))^2 #3.941
+sqrt(d+c) #2.85
 
 rolling_diffs<-commonInside2$daily_avg-commonOutside2$out_daily_avg #difference in rolling daily mean between locations
-mean(rolling_diffs, na.rm=TRUE) #mean rolling daily avg. is 0.655 deg. C higher inside
-sd(rolling_diffs, na.rm = TRUE) #0.20
+mean(rolling_diffs, na.rm=TRUE) #mean rolling daily avg. is 0.659 deg. C higher inside
+sd(rolling_diffs, na.rm = TRUE) #0.18
 length(rolling_diffs)
 length(rolling_diffs[rolling_diffs>0]) #inside daily mean always higher
-length(rolling_diffs[rolling_diffs>0.5])/1060 #78.9% diff was >0.5 deg. C
+length(rolling_diffs[rolling_diffs>0.5])/1421 #83.4% diff was >0.5 deg. C
 max(rolling_diffs, na.rm = TRUE) #max 1.19 deg. C higher inside
 min(rolling_diffs, na.rm = TRUE) #min 0.1 deg. C higher inside
 
@@ -180,12 +180,12 @@ sqrt((inSalSD)^2+(outSalSD)^2)
 
 sal_differences<-InsideCommon$Salinity-OutsideCommon$Salinity
 meanSalDiff<-mean(sal_differences)
-meanSalDiff #inside averages 0.28 mS/L higher
+meanSalDiff #inside averages 0.65 mS/L higher
 sd_sal_Diff<-sd(sal_differences)
-sd_sal_Diff #2.136
+sd_sal_Diff #1.96
 max(sal_differences) #9.58
 min(sal_differences) #-26.12
-(length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 73.9% 
+(length(sal_differences[sal_differences>0]))/(length(sal_differences)) #percentage of hours where inside had higher salinity = 80.44% 
 
 #Calculate rolling mean
 commonSalInside2 <- InsideCommon %>%
@@ -198,8 +198,6 @@ commonSalOutside2 <- OutsideCommon %>%
 
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
-
-
 
 grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
 
@@ -221,11 +219,11 @@ min(both_sal_rolling, na.rm=TRUE) #min mean daily sal = 26.48
 max(both_sal_rolling, na.rm=TRUE) #max mean daily sal = 33.96
 
 rolling_sal_diffs<-commonSalInside2$daily_sal_avg-commonSalOutside2$out_sal_daily_avg
-mean(rolling_sal_diffs, na.rm = TRUE) #0.290
-sd(rolling_sal_diffs, na.rm = TRUE) #1.24
-max(rolling_sal_diffs, na.rm = TRUE) #2.06
+mean(rolling_sal_diffs, na.rm = TRUE) #0.666
+sd(rolling_sal_diffs, na.rm = TRUE) #1.25
+max(rolling_sal_diffs, na.rm = TRUE) #2.17
 min(rolling_sal_diffs, na.rm = TRUE) #-4.66
-length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #75.2%
+length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #81.5%
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
