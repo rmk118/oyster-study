@@ -1,5 +1,5 @@
 #Ruby Krasnow
-#8/21/22
+#10/2/22
 
 library(nlme)
 library(lme4)
@@ -364,3 +364,56 @@ ggplot(data = FC4, aes(x = Location, y = Height, fill=Cage))+geom_boxplot()+scal
 
 FB4<-SamplingFour[SamplingFour$Gear=="FB",]
 ggplot(data = FB4, aes(x = Location, y = Cup.ratio, fill=Bag))+geom_boxplot()+scale_y_continuous(limits=c(0,0.5))+ylab("Cup ratio")+theme_classic()
+
+#September data ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Import data
+sept<-read.csv("septData.csv", na.strings=c(""," ","NA"))
+
+#Convert variables to factors
+sept<-within(sept, {
+  Cage<-as.factor(Cage)
+  Bag<-as.factor(Bag)
+  Location<-as.factor(Location)
+  Gear<-as.factor(Gear)
+  Treatment<-as.factor(Treatment)
+  Replicate<-as.factor(Replicate)
+})
+
+sept$Replicate2<-paste0(sept$Treatment,".",sept$Replicate)
+sept$Replicate2<-as.factor(sept$Replicate2)
+sept$Date<-"09-13-2022"
+sept$Date<-mdy(sept$Date)
+
+sept<- sept %>% select("Date","Location","Gear","Treatment","Cage","Bag","Oyster","Height","Length","Width","Cup.ratio","Shell.shape","Replicate","Replicate2")
+
+str(sept)
+
+ggplot(data = sept, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+ylab("Shell height (mm)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+
+heightSept <- ggplot(sept, aes(x=Gear, y=Height, group=Gear)) + 
+  geom_boxplot(aes(fill=Gear))
+heightSept + facet_grid(. ~ Location)
+
+ggplot(data = sept, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (SW/SH)")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+
+ggplot(data = sept, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)),axis.title.x = element_text(margin = margin(t = 10)))
+
+plusSept<-rbind(allData,sept)
+
+#Height over time graph both location and gear 
+septHeightTime<-data_summary(plusSept, "Height", 
+                                groupnames=c("Date", "Location", "Gear"))
+
+septHeightTimeGraph<-ggplot(septHeightTime, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+theme_classic()+ylab("Shell height (mm)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
+septHeightTimeGraph
+
+heightRepMeansSept<-data_summary(sept, "Height",groupnames=c("Replicate2", "Location", "Gear"))
+heightRepMeansSept$LGR<-(heightRepMeansSept$mean-heightRepMeansFourB$mean)/29
+
+septGrowth<-ggplot(heightRepMeansSept, aes(x=Gear, y=LGR, color=Location))+geom_bar(stat = "identity")+theme_classic()+ylab("Growth rate (mm/day)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
+septGrowth
+
+septGrowth2<-data_summary(heightRepMeansSept, "LGR",groupnames=c("Location", "Gear"))
+septGrowth2graph<-ggplot(septGrowth2, aes(x=Gear, y=mean, fill=Location))+geom_bar(stat = "identity", position=position_dodge())+theme_classic()+ylab("Growth rate (mm/day)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
+septGrowth2graph
