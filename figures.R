@@ -1,5 +1,5 @@
 #Manuscript figures
-#Updated 9/11/22
+#Updated 10/4/22
 
 library(ggplot2)
 library(ggsci)
@@ -50,10 +50,35 @@ allData$Replicate2<-paste0(allData$Treatment,".",allData$Replicate)
 allData$Replicate2<-as.factor(allData$Replicate2)
 str(allData)
 
-SamplingOne<-allData[allData$Date=="2022-06-14",]
-SamplingTwo<-allData[allData$Date=="2022-07-05",]
-SamplingThree<-allData[allData$Date=="2022-07-26",]
-SamplingFour<-allData[allData$Date=="2022-08-15",]
+#Import data
+sept1<-read.csv("septData.csv", na.strings=c(""," ","NA"))
+
+#Convert variables to factors
+sept1<-within(sept1, {
+  Cage<-as.factor(Cage)
+  Bag<-as.factor(Bag)
+  Location<-as.factor(Location)
+  Gear<-as.factor(Gear)
+  Treatment<-as.factor(Treatment)
+  Replicate<-as.factor(Replicate)
+})
+
+sept1$Replicate2<-paste0(sept1$Treatment,".",sept1$Replicate)
+sept1$Replicate2<-as.factor(sept1$Replicate2)
+sept1$Date<-"09-13-2022"
+sept1$Date<-mdy(sept1$Date)
+
+sept<- sept1 %>% dplyr::select("Date","Location","Gear","Treatment","Cage","Bag","Oyster","Height","Length","Width","Cup.ratio","Shell.shape","Replicate","Replicate2")
+
+
+plusSept<-rbind(allData,sept)
+str(plusSept)
+
+SamplingOne<-plusSept[plusSept$Date=="2022-06-14",]
+SamplingTwo<-plusSept[plusSept$Date=="2022-07-05",]
+SamplingThree<-plusSept[plusSept$Date=="2022-07-26",]
+SamplingFour<-plusSept[plusSept$Date=="2022-08-15",]
+SamplingFive<-plusSept[plusSept$Date=="2022-09-13",]
 
 #import and subset data
 foulingCI<-read.csv("BiofoulingCI.csv")
@@ -71,7 +96,7 @@ table(foulingCI$Location, foulingCI$Gear)
 
 ############################## Figure 1 - growth/condition index trade-off ###########
 #Figure 1a: Shell height over time
-timeGraphHeightDf<-data_summary(allData, "Height", 
+timeGraphHeightDf<-data_summary(plusSept, "Height", 
                                 groupnames=c("Date", "Location", "Gear"))
 
 timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+theme_classic()+ylab("Shell height (mm)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
@@ -87,6 +112,15 @@ heightChange1
 SamplingFour$Change2<-SamplingFour$Height-47.64
 change2df<-data_summary(SamplingFour, "Change2", 
                                 groupnames=c("Location", "Gear"))
+
+SamplingFive$Change<-(SamplingFive$Height-47.64)/47.64
+
+heightChangeSept<-ggplot(data = SamplingFive, aes(x = Gear, y = Change, fill=Location))+geom_boxplot()+ylab("GR (mm per day) ")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))
+heightChangeSept
+
+SamplingFive$Change2<-SamplingFive$Height-47.64
+change2dfSept<-data_summary(SamplingFive, "Change2", 
+                        groupnames=c("Location", "Gear"))
 
 
 #Figure 1c: Change in condition index from initial population (by treatment), as % change
@@ -123,12 +157,12 @@ figure1.2<-timeGraphHeight/figure1.1
 figure1.2+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14)) #Fig. 1
 
 ############################# Fig. 3 - Appearance (cup ratio, shell shape deviation) ###########
-timeGraphCupRatioDf<-data_summary(allData, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
+timeGraphCupRatioDf<-data_summary(plusSept, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
 
 timeGraphCupRatio<-ggplot(timeGraphCupRatioDf, aes(x=Date, y=mean, color=Location, linetype=Gear))+geom_line()+geom_point()+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Cup ratio (SW/SH)")+xlab("")
 timeGraphCupRatio
 
-timeGraphShellShapeDf<-data_summary(allData, "Shell.shape", groupnames=c("Date", "Location", "Gear"))
+timeGraphShellShapeDf<-data_summary(plusSept, "Shell.shape", groupnames=c("Date", "Location", "Gear"))
 
 timeGraphShellShape<-ggplot(timeGraphShellShapeDf, aes(x=Date, y=mean, color=Location, linetype=Gear))+geom_line() +geom_point()+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+ylab("Shell shape deviation")+xlab("")
 timeGraphShellShape
@@ -150,6 +184,9 @@ names(initialCupDf)[4:5]<-c("initialCupRatio", "initialSE")
 finalCupDf<-data_summary(SamplingFour, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
 names(finalCupDf)[4:5]<-c("finalCupRatio", "finalSE")
 
+septCupDf<-data_summary(SamplingFive, "Cup.ratio", groupnames=c("Date", "Location", "Gear"))
+names(septCupDf)[4:5]<-c("septCupRatio", "septSE")
+
 finalCupDf = finalCupDf %>% 
   left_join(initialCupDf, by = c("Location", "Gear"))
 finalCupDf$CupChange<-finalCupDf$finalCupRatio-finalCupDf$initialCupRatio
@@ -165,6 +202,22 @@ ggplot(data = finalCupDf) +
 
 lm.cup = lm(CupChange ~ heightChange, data = finalCupDf)
 summary(lm.cup)
+
+septCupDf = septCupDf %>% 
+  left_join(initialCupDf, by = c("Location", "Gear"))
+septCupDf$CupChange<-septCupDf$septCupRatio-septCupDf$initialCupRatio
+
+septCupDf = septCupDf %>% 
+  left_join(change2dfSept, by = c("Location", "Gear"))
+
+ggplot(data = septCupDf, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+xlab("Change in SH")+theme_classic()
+
+ggplot(data = septCupDf) +
+  geom_point(aes(x = heightChange, y = CupChange, color = Location, shape=Gear), size=3) +
+  theme_bw() +geom_smooth(aes(x = heightChange, y = CupChange),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ cup ratio")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+
+lm.cupSept = lm(CupChange ~ heightChange, data = septCupDf)
+summary(lm.cupSept)
 
 #With replicates
 initialCupDfRep<-data_summary(SamplingOne, "Cup.ratio", groupnames=c("Date", "Location", "Gear", "Replicate2"))
@@ -196,6 +249,33 @@ summary(selectedCup)
 summary(lm.cup)
 gvlma(selectedCup)
 
+#With replicates - Sept
+
+septCupDfRep<-data_summary(SamplingFive, "Cup.ratio", groupnames=c("Date", "Location", "Gear", "Replicate2"))
+names(septCupDfRep)[5:6]<-c("finalCupRatio", "finalSE")
+
+septCupDfRep = septCupDfRep %>% 
+  left_join(initialCupDfRep, by = c("Location", "Gear", "Replicate2"))
+septCupDfRep$CupChange<-septCupDfRep$finalCupRatio-septCupDfRep$initialCupRatio
+
+changeSeptdf<-data_summary(SamplingFive, "Change2", 
+                        groupnames=c("Location", "Gear", "Replicate2"))
+names(changeSeptdf)[4:5]<-c("heightChange","heightSE")
+
+septCupDfRep = septCupDfRep %>% 
+  left_join(changeSeptdf, by = c("Location", "Gear","Replicate2"))
+
+ggplot(data = septCupDfRep, aes(x = heightChange, y = CupChange, color=Location))+geom_point()+ylab("Change in Cup Ratio")+xlab("Change in SH")+theme_classic()
+
+ggplot(data = septCupDfRep) +
+  geom_point(aes(x = heightChange, y = CupChange, color = Location, shape=Gear), size=3) +
+  theme_bw() +geom_smooth(aes(x = heightChange, y = CupChange, color=Location),method = "lm")+xlab("Δ shell height (mm)")+ylab("Δ cup ratio")+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+
+lm.cupSept2 = lm(CupChange ~ heightChange * Location * Gear, data = septCupDfRep)
+selectedCupSept<-step(lm.cupSept2) #CupChange ~ heightChange + Location + Gear + heightChange:Gear
+summary(selectedCupSept)
+
+summary(lm.cupSept2)
 ############################## Figure 4 - Biofouling ###########
 
 fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Location))+geom_boxplot()+ylab("Fouling ratio")+theme_classic()

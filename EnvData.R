@@ -38,8 +38,8 @@ noAir<- HOBOdata[HOBOdata$Salinity>5,]
 #Part 1a: Temperature Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Temperature Plot all data
-allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
-allTemps
+# allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+# allTemps
 
 #Temperature Plot no salinity <5
 tempNoAir<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
@@ -56,9 +56,9 @@ tempNoAirRolling
 #Part 1b: Salinity Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Salinity Plot all data
-allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data")
-allSalinity
+# allSalinity<-ggplot(HOBOdata, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+
+#   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data")
+# allSalinity
 
 #Salinity Plot no salinity <5
 salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data >5")
@@ -68,19 +68,19 @@ salinityNoAir
 salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)") #, subtitle="All salinity data >5")
 salinityNoAirRolling
 
-#Salinity plot starting 6/17
-starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
-salinity.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Salinity, group=Location, color=Location))+geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data starting 6/17")
-salinity.delayedStart
-
-#Salinity plot starting 6/17 no salinity <5
-starting6.17NoAir<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity >5,]
-salinity.delayedStart.noAir<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
-salinity.delayedStart.noAir
-
-#Salinity plot starting 6/17 no salinity <5 ROLLING AVERAGE
-salinity.delayedStart.noAirRolling<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
-salinity.delayedStart.noAirRolling
+# #Salinity plot starting 6/17
+# starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
+# salinity.delayedStart<-ggplot(starting6.17, aes(x=Date.time, y=Salinity, group=Location, color=Location))+geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="All salinity data starting 6/17")
+# salinity.delayedStart
+# 
+# #Salinity plot starting 6/17 no salinity <5
+# starting6.17NoAir<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00" & HOBOdata$Salinity >5,]
+# salinity.delayedStart.noAir<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
+# salinity.delayedStart.noAir
+# 
+# #Salinity plot starting 6/17 no salinity <5 ROLLING AVERAGE
+# salinity.delayedStart.noAirRolling<-ggplot(starting6.17NoAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Salinity", subtitle="Salinity data >5 starting 6/17")
+# salinity.delayedStart.noAirRolling
 
 #Part 1c: Temperature Analysis ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -199,8 +199,6 @@ commonSalOutside2 <- OutsideCommon %>%
 both_sal_rolling<-c(commonSalInside2$daily_sal_avg, commonSalOutside2$out_sal_daily_avg)
 common$sal_rolling<-both_sal_rolling
 
-grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
-
 inSalMeanAvg<-mean(commonSalInside2$daily_sal_avg, na.rm=TRUE) #31.68435
 inSalMeanSD<-sd(commonSalInside2$daily_sal_avg, na.rm=TRUE) #1.44
 inSalMeanMax<-max(commonSalInside2$daily_sal_avg, na.rm=TRUE) #33.96
@@ -227,6 +225,8 @@ length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #81.5%
 
 DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
 DailyAvgSal2
+
+grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
 
 ######################### Part 2: ChlA  ########################################
 
@@ -375,14 +375,14 @@ min(OutsideTurbidity)-min(InsideTurbidity) #0.504
 
 #Temp, salinity, ChlA
 combined <- DailyAvgTemp2/(DailyAvgSal2 + chlA_graph) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
-combined
+combined+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
 
 #Temp, salinity, ChlA, turbidity
 allFour<-DailyAvgTemp2/(DailyAvgSal2 + chlA_graph + turbidity_graph_themed) + plot_layout(nrow=2, byrow=FALSE, guides = "collect") & theme(legend.position = "bottom")
-allFour
+allFour+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 14))
 
 #ChlA and turbidity, theme_classic
-chlA_graph2 + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
+chlA_graph + turbidity_graph + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
 
 #ChlA and turbidity, theme_ipsum
 combined2<-chlA_graph + turbidity_graph_themed + plot_layout(nrow=1, guides = "collect") & theme(legend.position = "bottom")
@@ -397,20 +397,20 @@ combined_errorbars+ plot_annotation(tag_levels = 'A') & theme(plot.tag = element
 ######################### Bottom Conditions  ########################################
 ###############################################################################
 
-#Import HOBO data
-bottom<-read.csv("bottomHOBO.csv")
-bottom<- bottom[bottom$Salinity>5,]
-
-#Convert date and location
-bottom$Time<-hms::as_hms(bottom$Time)
-bottom$Location<-as.factor(bottom$Location)
-
-ggplot(bottom, aes(x=Time, y=Temp, group=Location, color=Location)) + 
-  geom_line()+theme_classic()+ylab("Temperature")+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-
-ggplot(bottom, aes(x=Time, y=Salinity, group=Location, color=Location)) + 
-  geom_line()+theme_classic()+ylab("Salinity")+xlab("")+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))
-
-rm(bottom)
+# #Import HOBO data
+# bottom<-read.csv("bottomHOBO.csv")
+# bottom<- bottom[bottom$Salinity>5,]
+# 
+# #Convert date and location
+# bottom$Time<-hms::as_hms(bottom$Time)
+# bottom$Location<-as.factor(bottom$Location)
+# 
+# ggplot(bottom, aes(x=Time, y=Temp, group=Location, color=Location)) + 
+#   geom_line()+theme_classic()+ylab("Temperature")+xlab("")+
+#   theme(axis.title.y = element_text(margin = margin(r = 10)))
+# 
+# ggplot(bottom, aes(x=Time, y=Salinity, group=Location, color=Location)) + 
+#   geom_line()+theme_classic()+ylab("Salinity")+xlab("")+
+#   theme(axis.title.y = element_text(margin = margin(r = 10)))
+# 
+# rm(bottom)
