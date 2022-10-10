@@ -41,6 +41,9 @@ weightGraph1
 CI_Graph1<-ggplot(data = foulingCI, aes(x = Gear, y = Condition_index, fill=Location))+geom_boxplot()+ylab("Condition index")
 CI_Graph1
 
+CI_Graph2<-ggplot(data = fouling, aes(x = Gear, y = Condition_index, fill=Location))+geom_boxplot()+ylab("Condition index")
+CI_Graph2
+
 fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Location))+geom_boxplot()+ylab("Fouling ratio")
 fouling_Graph1
 
@@ -83,8 +86,7 @@ data_summary <- function(data, varname, groupnames){
     c(mean = mean(x[[col]], na.rm=TRUE),
       SE = std.error(x[[col]], na.rm=TRUE))
   }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
+  data_sum<-plyr::ddply(data, groupnames, .fun=summary_func, varname)
   return(data_sum)}
 
 mean(fouling[fouling$Gear=="BP", "Condition_index"]) #11.00
