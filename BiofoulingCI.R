@@ -1,5 +1,5 @@
 #Biofouling and Condition Index
-#RK 8/19/22
+#RK 10/10/22
 
 library(nlme)
 library(lme4)
@@ -38,6 +38,9 @@ fouling<-foulingCI[foulingCI$Location=="Inside" | foulingCI$Location=="Outside",
 weightGraph1<-ggplot(data = foulingCI, aes(x = Gear, y = Weight, fill=Location))+geom_boxplot()+ylab("Whole wet weight (g)")
 weightGraph1
 
+weightGraph2<-ggplot(data = fouling, aes(x = Gear, y = Weight, fill=Location))+geom_boxplot()+ylab("Whole wet weight (g)")
+weightGraph2
+
 CI_Graph1<-ggplot(data = foulingCI, aes(x = Gear, y = Condition_index, fill=Location))+geom_boxplot()+ylab("Condition index")
 CI_Graph1
 
@@ -51,6 +54,7 @@ fouling_Graph1
 
 #location significant for weight, p=0.01
 artWeight<-art(Weight ~ Gear * Location, data=fouling)
+artWeight
 anova(artWeight)
 
 artFouling<-art(Fouling_ratio ~ Gear * Location, data=fouling)
@@ -68,7 +72,7 @@ artCI<-art(Condition_index ~ Gear * Location, data=fouling)
 artCI
 anova(artCI)
 
-art.con(artCI, "Gear:Location", adjust = "bonferroni") %>%  #post-hoc condition index
+art.con(artCI, "Gear:Location") %>%  #post-hoc condition index
   summary() %>%  # add significance stars to the output
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
@@ -76,6 +80,12 @@ art.con(artCI, "Gear:Location", adjust = "bonferroni") %>%  #post-hoc condition 
 
 
 art.con(artCI, "Gear") %>%  #post-hoc condition index
+  summary() %>%  # add significance stars to the output
+  mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+                       cutpoints = c(0, .001, .01, .05, .10, 1),
+                       symbols = c("***", "**", "*", ".", " ")))
+
+art.con(artCI, "Location") %>%  #post-hoc condition index
   summary() %>%  # add significance stars to the output
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
