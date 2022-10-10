@@ -77,62 +77,61 @@ anova(artHeightOne) #no significant differences
 
 SamplingTwo<-allData[allData$Date=="2022-07-05",]
 
-heightTwoGraph1<-ggplot(data = SamplingTwo, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
-heightTwoGraph1
-
-heightTwoGraph2<- ggplot(SamplingTwo, aes(x=Gear, y=Height, group=Gear)) + 
-  geom_boxplot(aes(fill=Gear))
-heightTwoGraph2 + facet_grid(. ~ Location)
-
-#Just location
-heightTwoGraph3<-ggplot(data = SamplingTwo, aes(x = Location, y = Height))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
-heightTwoGraph3
+# heightTwoGraph1<-ggplot(data = SamplingTwo, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
+# heightTwoGraph1
+# 
+# heightTwoGraph2<- ggplot(SamplingTwo, aes(x=Gear, y=Height, group=Gear)) + 
+#   geom_boxplot(aes(fill=Gear))
+# heightTwoGraph2 + facet_grid(. ~ Location)
+# 
+# #Just location
+# heightTwoGraph3<-ggplot(data = SamplingTwo, aes(x = Location, y = Height))+geom_boxplot()+scale_y_continuous(limits=c(0,85))+ylab("Shell height (mm)")
+# heightTwoGraph3
 
 #ANOVA - assumptions met!
-heightANOVA2 <- aov(Height ~ Gear * Location, data = SamplingTwo)
-summary(heightANOVA2) #significant location and interaction
-leveneTest(Height ~ Gear * Location, data = SamplingTwo) #p=0.3146
-plot(heightANOVA2,1)
-plot(heightANOVA2,2)
-heightResiduals2<-heightANOVA2$residuals
-shapiro.test(heightResiduals2) #p=0.07
-
-HSD1<-TukeyHSD(heightANOVA2, which='Gear:Location')
-
-HSDresults<-(HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE))
-HSDresults
+# heightANOVA2 <- aov(Height ~ Gear * Location, data = SamplingTwo)
+# summary(heightANOVA2) #significant location and interaction
+# leveneTest(Height ~ Gear * Location, data = SamplingTwo) #p=0.3146
+# plot(heightANOVA2,1)
+# plot(heightANOVA2,2)
+# heightResiduals2<-heightANOVA2$residuals
+# shapiro.test(heightResiduals2) #p=0.07
+# 
+# HSD1<-TukeyHSD(heightANOVA2, which='Gear:Location')
+# 
+# HSDresults<-(HSD.test(heightANOVA2, trt = c("Location", "Gear"), console = TRUE))
+# HSDresults
 
 #DAY 3 Height ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SamplingThree<-allData[allData$Date=="2022-07-26",]
 
 #location and gear
-heightThreeGraph1<-ggplot(data = SamplingThree, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
-heightThreeGraph1
-
-#Just location
-heightThreeGraph2<-ggplot(data = SamplingThree, aes(x = Location, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
-heightThreeGraph2
-
-#ANOVA - assumptions not met
-heightANOVA3 <- aov(Height ~ Gear * Location, data = SamplingThree)
-summary(heightANOVA3) #significant location
-leveneTest(Height ~ Gear * Location, data = SamplingThree) #p=0.020
-plot(heightANOVA3,1)
-plot(heightANOVA3,2)
-heightResiduals3<-heightANOVA3$residuals
-shapiro.test(heightResiduals3) #p=0.023
-
-#art ANOVA July 26 heights - location significant
-artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
-artDay3 #appropriate
-anova(artDay3)
+# heightThreeGraph1<-ggplot(data = SamplingThree, aes(x = Gear, y = Height, fill=Location))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
+# heightThreeGraph1
+# 
+# #Just location
+# heightThreeGraph2<-ggplot(data = SamplingThree, aes(x = Location, y = Height))+geom_boxplot()+ylab("Shell height (mm)")#+scale_y_continuous(limits=c(0,85))
+# heightThreeGraph2
+# 
+# #ANOVA - assumptions not met
+# heightANOVA3 <- aov(Height ~ Gear * Location, data = SamplingThree)
+# summary(heightANOVA3) #significant location
+# leveneTest(Height ~ Gear * Location, data = SamplingThree) #p=0.020
+# plot(heightANOVA3,1)
+# plot(heightANOVA3,2)
+# heightResiduals3<-heightANOVA3$residuals
+# shapiro.test(heightResiduals3) #p=0.023
+# 
+# #art ANOVA July 26 heights - location significant
+# artDay3<-art(Height ~ Gear * Location, data=SamplingThree)
+# artDay3 #appropriate
+# anova(artDay3)
 
 #Height over time/LGR ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Height over time graph both location and gear 
-timeGraphHeightDf<-data_summary(allData, "Height", 
-                                groupnames=c("Date", "Location", "Gear"))
+timeGraphHeightDf<-data_summary(allData, "Height",groupnames=c("Date", "Location", "Gear"))
 
 timeGraphHeight<-ggplot(timeGraphHeightDf, aes(x=Date, y=mean, color=Location, linetype=Gear)) +geom_line()+geom_point()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,position=position_dodge(0.05))+theme_classic()+ylab("Shell height (mm)")+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 15)))
 timeGraphHeight
@@ -140,8 +139,8 @@ timeGraphHeight
 SamplingFour<-allData[allData$Date=="2022-08-15",]
 
 #Mean final heights by location
-mean(SamplingFour[SamplingFour$Location=="Outside", "Height"]) #57.30
-mean(SamplingFour[SamplingFour$Location=="Inside", "Height"]) #60.41
+mean(SamplingFour[SamplingFour$Location=="Outside", "Height"]) #57.21
+mean(SamplingFour[SamplingFour$Location=="Inside", "Height"]) #60.49
 
 #Mean final heights by gear
 day3BP<-mean(SamplingFour[SamplingFour$Gear=="BP", "Height"]) #56.34
@@ -306,12 +305,6 @@ art.con(artGrowthRep, "Gear:Location", adjust="holm") %>%  # run ART-C for X1 ×
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
                        symbols = c("***", "**", "*", ".", " ")))
-
-#ART ANOVA growth rate b/w sampling days 2 and 3: not significant
-artGrowthRep2<-art(LGR2 ~ Gear * Location + Error(Replicate2), data=heightRepMeansThreeB) #appropriate
-artGrowthRep2
-anova(artGrowthRep2)
-
 
 mean(SamplingTwo[SamplingTwo$Treatment=="FCi", "Height"]) #52.97917
 mean(SamplingTwo[SamplingTwo$Treatment=="FCo", "Height"]) #46.70833

@@ -7,7 +7,6 @@ library(ggpubr)
 library(gridExtra)
 library(Hmisc)
 library(plotrix)
-library(plyr)
 library(dplyr)
 library(lubridate)
 library(gridExtra)
@@ -26,12 +25,13 @@ data_summary <- function(data, varname, groupnames){
     c(mean = mean(x[[col]], na.rm=TRUE),
       SE = std.error(x[[col]], na.rm=TRUE))
   }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
+  data_sum<-plyr::ddply(data, groupnames, .fun=summary_func,
                   varname)
   return(data_sum)}
 
 #Import data
-allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
+#allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
+allData<-read.csv("replicatetest.csv", na.strings=c(""," ","NA"))
 
 #Fix date format
 allData$Date<-mdy(allData$Date)
@@ -81,6 +81,8 @@ SamplingTwo<-plusSept[plusSept$Date=="2022-07-05",]
 SamplingThree<-plusSept[plusSept$Date=="2022-07-26",]
 SamplingFour<-plusSept[plusSept$Date=="2022-08-15",]
 SamplingFive<-plusSept[plusSept$Date=="2022-09-13",]
+
+
 
 
 timeGraphShellShapeDf<-data_summary(plusSept, "Shell.shape", groupnames=c("Date", "Location", "Gear"))
@@ -236,9 +238,6 @@ summary(lm.cupSept2)
 #   geom_boxplot(aes(fill=Gear))
 # ShapeThree + facet_grid(. ~ Location)
 # 
-# #ART - both location and gear:location significant
-# artShellShapeTwo<-art(Shell.shape ~ Gear * Location, data=SamplingTwo)
-# anova(artShellShapeTwo)
 # 
 # summaryTwo<-summarise(group_by(SamplingTwo, Treatment),Mean=mean(Shell.shape),SD=sd(Shell.shape))
 # summaryTwo
@@ -265,3 +264,19 @@ summary(lm.cupSept2)
 #   geom_line() +
 #   geom_point()+theme_classic()+geom_errorbar(aes(ymin=mean-SE, ymax=mean+SE), width=.2,
 #                                              position=position_dodge(0.05))
+
+
+ClarkFEST2<-ggplot(data = SamplingFour, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
+ClarkFEST2
+
+# ART - both location and location significant, no interaction
+artShellShape<-art(Shell.shape ~ Gear * Location, data=SamplingFour)
+artShellShape #appropriate
+anova(artShellShape)
+
+#gear post-hoc
+ShellShapeAugPostHoc<-art.con(artShellShape, "Gear")
+summary(ShellShapeAugPostHoc) %>%   #add significance stars to the output
+  mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
+                       cutpoints = c(0, .001, .01, .05, .10, 1),
+                       symbols = c("***", "**", "*", ".", " ")))

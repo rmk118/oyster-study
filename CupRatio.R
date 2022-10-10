@@ -143,7 +143,13 @@ fanRatioGraph1<-ggplot(data = SamplingOne, aes(x = Gear, y = Fan.ratio, fill=Loc
 SamplingFour<-allData[allData$Date=="2022-08-15",]
 
 #Combined graph cup ratio
-ggplot(data = SamplingFour, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
+ClarkFEST1<-ggplot(data = SamplingFour, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (SW/SH)")+theme_classic()+theme(axis.title.y = element_text(margin = margin(r = 15)))
+
+ClarkFEST2<-ggplot(data = SamplingFour, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+ylab("Shell shape index")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 15)))
+ClarkFEST2
+
+ClarkFEST<- ClarkFEST1 + ClarkFEST2+ plot_layout(nrow=1, guides = "collect")+ plot_annotation(tag_levels = 'A') & theme(legend.position = "bottom")
+ClarkFEST
 
 ggplot(data = SamplingFour, aes(x = Replicate2, y = Cup.ratio, fill=Treatment))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
 
@@ -192,16 +198,16 @@ summary(Shell3PostHoc) %>%   #add significance stars to the output
                        symbols = c("***", "**", "*", ".", " ")))
 
 
-initialFBi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.1","Cup.ratio"])
-initialFBi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.2","Cup.ratio"])
-initialFBi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.3","Cup.ratio"])
-initialFBo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.1","Cup.ratio"])
-initialFBo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.2","Cup.ratio"])
-initialFBo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.3","Cup.ratio"])
-
-initialFCi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.1","Cup.ratio"])
-initialFCi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.2","Cup.ratio"])
-initialFCi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.3","Cup.ratio"])
-initialFCo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.1","Cup.ratio"])
-initialFCo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.2","Cup.ratio"])
-initialFCo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.3","Cup.ratio"])
+# initialFBi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.1","Cup.ratio"])
+# initialFBi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.2","Cup.ratio"])
+# initialFBi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.3","Cup.ratio"])
+# initialFBo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.1","Cup.ratio"])
+# initialFBo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.2","Cup.ratio"])
+# initialFBo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.3","Cup.ratio"])
+# 
+# initialFCi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.1","Cup.ratio"])
+# initialFCi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.2","Cup.ratio"])
+# initialFCi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.3","Cup.ratio"])
+# initialFCo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.1","Cup.ratio"])
+# initialFCo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.2","Cup.ratio"])
+# initialFCo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.3","Cup.ratio"])
