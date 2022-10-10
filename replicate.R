@@ -77,3 +77,10 @@ anova(artFinal)
 artFinal2<-art(Height ~ Gear * Location, data=SamplingFour)
 artFinal2 #appropriate!
 anova(artFinal2)
+
+
+cages<-SamplingFour[SamplingFour$Gear=="FC",]
+#art ANOVA final cage heights
+artCagesFinal<-art(Height ~ Replicate * Location, data=cages)
+artCagesFinal #appropriate
+anova(artCagesFinal)

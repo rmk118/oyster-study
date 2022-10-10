@@ -16,7 +16,8 @@ hrbrthemes::import_roboto_condensed()
 library(patchwork)
 
 #Import data
-allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
+#allData<-read.csv("oysterDataAll.csv", na.strings=c(""," ","NA"))
+allData<-read.csv("replicatetest.csv", na.strings=c(""," ","NA"))
 
 #Fix date format
 allData$Date<-mdy(allData$Date)
@@ -29,8 +30,16 @@ allData<-within(allData, {
   Location<-as.factor(Location)
   Gear<-as.factor(Gear)
   Treatment<-as.factor(Treatment)
+  Replicate<-as.factor(Replicate)
 })
 str(allData)
+
+allData$Replicate2<-paste0(allData$Treatment,".",allData$Replicate)
+allData$Replicate2<-as.factor(allData$Replicate2)
+str(allData)
+
+SamplingFour<-allData[allData$Date=="2022-08-15",]
+table(SamplingFour$Location,SamplingFour$Gear)
 
 #DAY 1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Select data
@@ -92,24 +101,6 @@ LocationPostHocShell<-art.con(artShellShapeOne, "Location", adjust="bonferroni")
 SamplingTwo<-allData[allData$Date=="2022-07-05",]
 SamplingThree<-allData[allData$Date=="2022-07-26",]
 
-# #Combined graph cup ratio
-# ggplot(data = SamplingTwo, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
-# 
-# #Combined graph shell shape
-# ggplot(data = SamplingTwo, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,9))+ylab("Shell shape")+theme_classic()
-# 
-# #Cup ratio ART 2- significant effect of both location and significant interaction
-# artCupRatioTwo<-art(Cup.ratio ~ Gear * Location, data=SamplingTwo)
-# artCupRatioTwo #appropriate
-# anova(artCupRatioTwo)
-# 
-# #Gear:Location post-hoc
-# LocationGearPostHoc<-art.con(artCupRatioTwo, "Gear:Location", adjust="bonferroni")
-# summary(LocationGearPostHoc) %>%   #add significance stars to the output
-#   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
-#                        cutpoints = c(0, .001, .01, .05, .10, 1),
-#                        symbols = c("***", "**", "*", ".", " ")))
-
 #Summary function
 data_summary <- function(data, varname, groupnames){
   summary_func <- function(x, col){
@@ -142,85 +133,11 @@ timeGraphFanRatio<-ggplot(timeGraphFanRatioDf, aes(x=Date, y=mean, color=Locatio
 timeGraphFanRatio
 
 #Day one fan ratio - both location and gear significant
-artFanRatio<-art(Cup.ratio ~ Gear * Location, data=SamplingOne)
+artFanRatio<-art(Cup.ratio ~ Gear * Location + (1|Replicate2), data=SamplingOne)
+artFanRatio #not appropriate
 anova(artFanRatio)
 
 fanRatioGraph1<-ggplot(data = SamplingOne, aes(x = Gear, y = Fan.ratio, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,1.5))+ylab("Fan ratio (shell length/height)")+theme_classic()
-fanRatioGraph3<-ggplot(data = SamplingThree, aes(x = Gear, y = Fan.ratio, fill=Location))+geom_boxplot()+ylab("Fan ratio (shell length/height)")+theme_classic()#+scale_y_continuous(limits=c(0,1.2))
-
-myData<-as.tibble(allData)
-myData %>%
-  group_by(Date, Location, Gear) %>%
-  summarise(
-    n = n(),
-    meanCup = mean(Cup.ratio),
-    #sdCup = sd(Cup.ratio),
-    meanFan = mean(Fan.ratio),
-   # sdFan = sd(Fan.ratio),
-    meanShell = mean(Shell.shape),
-    #sdShell = sd(Shell.shape)
-  )
-
-# #Shell shape ART two - significant effect of location and interaction
-# artShellShapeTwo<-art(Shell.shape ~ Gear * Location, data=SamplingTwo)
-# artShellShapeTwo #appropriate
-# anova(artShellShapeTwo)
-
-# #Shell shape day 2 Gear:Location post-hoc
-# LocationGearPostHocShell2<-art.con(artShellShapeTwo, "Gear:Location", adjust="bonferroni")
-# summary(LocationGearPostHocShell2) %>%   #add significance stars to the output
-#   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
-#                        cutpoints = c(0, .001, .01, .05, .10, 1),
-#                        symbols = c("***", "**", "*", ".", " ")))
-
-#DAY 3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# #Combined graph cup ratio
-# ggplot(data = SamplingThree, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (Shell width/Shell height")+xlab("Gear")+scale_y_continuous(limits=c(0.15,0.45))+theme_classic()#+theme_ipsum(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 12)))
-# 
-# #Cup ratio only by gear
-# ggplot(data = SamplingThree, aes(x = Gear, y = Cup.ratio))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+xlab("")+ theme(axis.title.y = element_text(margin = margin(r = 10)))#+scale_y_continuous(limits=c(0,0.5))
-# 
-# #Shell shape only by gear
-# ggplot(data = SamplingThree, aes(x = Gear, y = Shell.shape))+geom_boxplot()+ylab("Shell shape")+theme_ipsum(axis_title_just="cc", axis_title_size = 15, axis_text_size = 10)+xlab("Gear")+ theme(axis.title.y = element_text(margin = margin(r = 5)))+scale_y_continuous(limits=c(0,7.5))
-# 
-# #Combined graph cup ratio
-# CupRatioPoster<-ggplot(data = SamplingThree, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (SW/SH)")+xlab("Gear")+scale_y_continuous(limits=c(0.15,0.45))+theme_classic()#+theme_ipsum(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 12)))
-# 
-# #Combined graph shell shape
-# ShellShapePoster<-ggplot(data = SamplingThree, aes(x = Gear, y = Shell.shape, fill=Location))+geom_boxplot()+scale_y_continuous(limits=c(0,7.5))+ylab("Shell shape index")+theme_classic()
-
-combined <- CupRatioPoster + ShellShapePoster + plot_layout(guides = "collect") & theme(legend.position = "bottom")
-
-# #Cup ratio ART - significant effect of gear
-# artCupRatioThree<-art(Cup.ratio ~ Gear * Location, data=SamplingThree)
-# artCupRatioThree #appropriate
-# anova(artCupRatioThree)
-# 
-# #Gear post-hoc
-# Cup3GearPostHoc<-art.con(artCupRatioThree, "Gear", adjust="bonferroni")
-# summary(Cup3GearPostHoc) %>%   #add significance stars to the output
-#   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
-#                        cutpoints = c(0, .001, .01, .05, .10, 1),
-#                        symbols = c("***", "**", "*", ".", " ")))
-
-# #Shell shape ART - significant effect of gear
-# artShellThree<-art(Shell.shape ~ Gear * Location, data=SamplingThree)
-# anova(artShellThree)
-# 
-# #floating gear higher than BP
-# Shell3PostHoc<-art.con(artShellThree, "Gear", adjust="bonferroni")
-# summary(Shell3PostHoc) %>%   #add significance stars to the output
-#   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
-#                        cutpoints = c(0, .001, .01, .05, .10, 1),
-#                        symbols = c("***", "**", "*", ".", " ")))
-# 
-# #Combined graph fan ratio
-# ggplot(data = SamplingThree, aes(x = Gear, y = Fan.ratio, fill=Location))+geom_boxplot()+ylab("Fan ratio (Shell length/Shell height")+xlab("Gear")+theme_ipsum(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 12)))
-
-#Fan ratio ART - significant effect of gear
-# artFanThree<-art(Fan.ratio ~ Gear * Location, data=SamplingThree)
-# anova(artFanThree)
 
 #DAY 4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SamplingFour<-allData[allData$Date=="2022-08-15",]
@@ -228,17 +145,18 @@ SamplingFour<-allData[allData$Date=="2022-08-15",]
 #Combined graph cup ratio
 ggplot(data = SamplingFour, aes(x = Gear, y = Cup.ratio, fill=Location))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
 
-#Cup ratio ART 4- significant effect of 
-artCupRatioFour<-art(Cup.ratio ~ Gear * Location, data=SamplingFour)
-artCupRatioFour #not appropriate
+ggplot(data = SamplingFour, aes(x = Replicate2, y = Cup.ratio, fill=Treatment))+geom_boxplot()+ylab("Cup ratio (shell width/height)")+theme_classic()#+scale_y_continuous(limits=c(0,0.5))
+
+#Cup ratio ART 4- significant effect of gear, location, and interaction
+artCupRatioFour<-art(Cup.ratio ~ Gear * Location + (1|Replicate2), data=SamplingFour)
+artCupRatioFour #appropriate
 anova(artCupRatioFour)
 
 test2<-data_summary(SamplingFour, "Cup.ratio", groupnames=c("Treatment"))
 test2
-#Cup ratio time graph
+
 test1<-data_summary(allData, "Cup.ratio", groupnames=c("Treatment"))
 test1
-ggplot(data=test1, aes(x=Treatment, y=mean*100))+geom_bar(stat="identity")+theme_classic()
 
 
 #Combined graph cup ratio
@@ -272,3 +190,20 @@ summary(Shell3PostHoc) %>%   #add significance stars to the output
   mutate(sig. = symnum(p.value, corr=FALSE, na=FALSE,
                        cutpoints = c(0, .001, .01, .05, .10, 1),
                        symbols = c("***", "**", "*", ".", " ")))
+
+
+initialFBi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.1","Cup.ratio"])
+initialFBi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.2","Cup.ratio"])
+initialFBi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBi.3","Cup.ratio"])
+initialFBo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.1","Cup.ratio"])
+initialFBo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.2","Cup.ratio"])
+initialFBo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FBo.3","Cup.ratio"])
+
+initialFCi.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.1","Cup.ratio"])
+initialFCi.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.2","Cup.ratio"])
+initialFCi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.3","Cup.ratio"])
+initialFCo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.1","Cup.ratio"])
+initialFCo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.2","Cup.ratio"])
+initialFCo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.3","Cup.ratio"])
+
+SamplingFour$CupChange<-SamplingFour
