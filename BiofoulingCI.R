@@ -20,7 +20,7 @@ hrbrthemes::import_roboto_condensed()
 #import and subset data
 foulingCI<-read.csv("BiofoulingCI.csv")
 foulingCI<-subset(foulingCI, select=c(Location,Gear,Treatment,Oyster,Fouling_weight, Whole_wet_weight, Fouling_ratio, Dry_tissue, Dry_shell, Condition_index))
-foulingCI<-rename(foulingCI, Weight=Whole_wet_weight)
+foulingCI<-dplyr::rename(foulingCI, Weight=Whole_wet_weight)
 
 #Convert variables to factors
 foulingCI<-within(foulingCI, {
@@ -47,7 +47,7 @@ CI_Graph1
 CI_Graph2<-ggplot(data = fouling, aes(x = Gear, y = Condition_index, fill=Location))+geom_boxplot()+ylab("Condition index")
 CI_Graph2
 
-fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Location))+geom_boxplot()+ylab("Fouling ratio")
+fouling_Graph1<-ggplot(data = fouling, aes(x = Gear, y = Fouling_ratio, fill=Location))+geom_boxplot()+ylab("Fouling ratio")+theme_classic()+ theme(axis.title.y = element_text(margin = margin(r = 10)))
 fouling_Graph1
 
 #all residuals highly non-normal plus significant Levene's tests for fouling ratio, so using nonparametric ANOVA

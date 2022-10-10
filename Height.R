@@ -1,5 +1,5 @@
 #Ruby Krasnow
-#10/4/22
+#10/10/22
 
 library(nlme)
 library(lme4)
@@ -176,7 +176,6 @@ bags<-SamplingFour[SamplingFour$Gear=="FB",]
 cages<-SamplingFour[SamplingFour$Gear=="FC",]
 replicateTest<-ggplot(data = bags, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
 replicateTestCages<-ggplot(data = cages, aes(x = Gear, y = Height, fill=Replicate2))+geom_boxplot()+ylab("Shell height (mm)")
-
 
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

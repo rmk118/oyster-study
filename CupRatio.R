@@ -205,5 +205,3 @@ initialFCi.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCi.
 initialFCo.1<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.1","Cup.ratio"])
 initialFCo.2<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.2","Cup.ratio"])
 initialFCo.3<-mean(allData[allData$Date=="2022-06-14" &allData$Replicate2=="FCo.3","Cup.ratio"])
-
-SamplingFour$CupChange<-SamplingFour
