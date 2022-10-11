@@ -71,31 +71,31 @@ InFCplotAll<-ggplot(data=InFCdata, aes(x = Datetime, y = motionIndex))+ geom_lin
 InFCplotAll
 
 
-#Average FC data over 10-minute intervals
-FCday1 <- read.csv("InnerFC_Accel.csv",header=TRUE)
-FCday1<-rename(FCday1, "Datetime"="ISO.8601.Time", "accelX"="Ax..g.", "accelY"="Ay..g.", "accelZ"="Az..g.")
-FCday1$Datetime<-ymd_hms(FCday1$Datetime)
-
-FCday1<-FCday1[FCday1$Datetime %within% day1,]
-FCday1a = FCday1 %>% 
-  mutate(
-    diffX = accelX - lag(accelX),
-    diffY = accelY - lag(accelY),
-    diffZ = accelZ - lag(accelZ),
-    motionIndex = sqrt((diffX)^2+(diffY)^2)+(diffZ)^2)
-str(FCday1a)
-
-FCplotDay1a<-ggplot(data=FCday1a, aes(x = Datetime, y = motionIndex))+ geom_line()+ theme_bw()+ labs(x = "Time", y = "Motion")+ggtitle("All cage data (1 measurement/sec)")
-FCplotDay1a
-
-FCday1a <- FCday1a %>%
-  mutate(rolling= rollmean(motionIndex, k = 600, fill = NA))
-FCday1a$Gear<-"FC"
+# #Average FC data over 10-minute intervals
+# FCday1 <- read.csv("InnerFC_Accel.csv",header=TRUE)
+# FCday1<-rename(FCday1, "Datetime"="ISO.8601.Time", "accelX"="Ax..g.", "accelY"="Ay..g.", "accelZ"="Az..g.")
+# FCday1$Datetime<-ymd_hms(FCday1$Datetime)
 # 
-# FBday1a <- FBday1 %>%
-#   mutate(rolling= rollmean(motionIndex, k = 6, fill = NA))
-FBday1a$rolling<-FBday1a$motionIndex
-FBday1a$Gear<-"FB"
+# FCday1<-FCday1[FCday1$Datetime %within% day1,]
+# FCday1a = FCday1 %>% 
+#   mutate(
+#     diffX = accelX - lag(accelX),
+#     diffY = accelY - lag(accelY),
+#     diffZ = accelZ - lag(accelZ),
+#     motionIndex = sqrt((diffX)^2+(diffY)^2)+(diffZ)^2)
+# str(FCday1a)
+# 
+# FCplotDay1a<-ggplot(data=FCday1a, aes(x = Datetime, y = motionIndex))+ geom_line()+ theme_bw()+ labs(x = "Time", y = "Motion")+ggtitle("All cage data (1 measurement/sec)")
+# FCplotDay1a
+# 
+# FCday1a <- FCday1a %>%
+#   mutate(rolling= rollmean(motionIndex, k = 600, fill = NA))
+# FCday1a$Gear<-"FC"
+# # 
+# # FBday1a <- FBday1 %>%
+# #   mutate(rolling= rollmean(motionIndex, k = 6, fill = NA))
+# FBday1a$rolling<-FBday1a$motionIndex
+# FBday1a$Gear<-"FB"
 
 
 combined<- FBplotAll + InFCplotAll + (OutFCplotAll+ggtitle("Outside cages")) + plot_layout(ncol=1, guides = "collect")
