@@ -23,7 +23,9 @@ library(patchwork)
 
 ######################### Part 1: HOBO Data  ########################################
 #Import HOBO data
-HOBOdata_unordered<-read.csv("HOBOdata.csv")
+#HOBOdata_unordered<-read.csv("HOBOdata.csv")
+#Import HOBO data - through Oct. 6
+HOBOdata_unordered<-read.csv("HOBOdataThrough10_6.csv")
 
 #Convert date and location
 HOBOdata_unordered$Date.time<-mdy_hms(HOBOdata_unordered$Date.time)
@@ -33,7 +35,9 @@ HOBOdata$Location<-as.factor(HOBOdata$Location)
 #Rename salinity column
 names(HOBOdata)[3]<-"Salinity"
 
-noAir<- HOBOdata[HOBOdata$Salinity>5,]
+#noAir<- HOBOdata[HOBOdata$Salinity>5,]
+noAir<-HOBOdata[HOBOdata$Date.time>"2022-07-01",]
+#noAir<-HOBOdata
 
 #Part 1a: Temperature Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -41,17 +45,17 @@ noAir<- HOBOdata[HOBOdata$Salinity>5,]
 # allTemps<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
 # allTemps
 
-#Temperature Plot no salinity <5
-tempNoAir<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
-tempNoAir
-
-#Rolling daily average all temps
-DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
-DailyAvgTemp
-
-#Rolling daily average temp no  salinity <5
-tempNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
-tempNoAirRolling
+# #Temperature Plot no salinity <5
+# tempNoAir<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line()+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+# tempNoAir
+# 
+# #Rolling daily average all temps
+# DailyAvgTemp<-ggplot(HOBOdata, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+# DailyAvgTemp
+# 
+# #Rolling daily average temp no  salinity <5
+# tempNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Temp, group=Location, color=Location))+ geom_line(alpha=0.4)+geom_ma(n=24, linetype="solid")+ylab("Temperature (°C)")+xlab("")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))
+# tempNoAirRolling
 
 #Part 1b: Salinity Plots ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -60,13 +64,13 @@ tempNoAirRolling
 #   theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data")
 # allSalinity
 
-#Salinity Plot no salinity <5
-salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data >5")
-salinityNoAir
-
-#Salinity Plot no salinity <5 ROLLING AVERAGE
-salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)") #, subtitle="All salinity data >5")
-salinityNoAirRolling
+# #Salinity Plot no salinity <5
+# salinityNoAir<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line()+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 10, axis_text_size = 10)+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)", subtitle="All salinity data >5")
+# salinityNoAir
+# 
+# #Salinity Plot no salinity <5 ROLLING AVERAGE
+# salinityNoAirRolling<-ggplot(noAir, aes(x=Date.time, y=Salinity, group=Location, color=Location))+ geom_line(alpha=0.4)+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+geom_ma(n=24, linetype="solid")+theme(axis.title.y = element_text(margin = margin(r = 10)))+labs(x="", y="Conductivity (mS/cm)") #, subtitle="All salinity data >5")
+# salinityNoAirRolling
 
 # #Salinity plot starting 6/17
 # starting6.17<-HOBOdata[HOBOdata$Date.time>"2022-06-17 04:00:00",]
@@ -160,7 +164,7 @@ DailyAvgTemp2<-ggplot(common, aes(x=Date.time, y=rolling, group=Location, color=
   theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(12.5, 22.5)
 DailyAvgTemp2
 
-grid.arrange(tempNoAirRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
+# grid.arrange(tempNoAirRolling,DailyAvgTemp2, ncol=1) #shows that using the geom_ma function gives the same graph as manually calculated rolling average
 
 #Part 1d: Salinity Analysis ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 inSalMean<-mean(noAir[noAir$Location=="Inside", "Salinity"])#mean inside = 31.66 mS/cm
@@ -223,7 +227,7 @@ max(rolling_sal_diffs, na.rm = TRUE) #2.17
 min(rolling_sal_diffs, na.rm = TRUE) #-4.66
 length(rolling_sal_diffs[rolling_sal_diffs>0])/length(rolling_sal_diffs) #81.5%
 
-DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))+ylim(25,35)
+DailyAvgSal2<-ggplot(common, aes(x=Date.time, y=sal_rolling, group=Location, color=Location))+geom_line()+ylab("Conductivity (mS/cm)")+theme_ipsum_rc(axis_title_just="cc", axis_title_size = 13, axis_text_size = 10)+xlab("")+theme(axis.title.y = element_text(margin = margin(r = 10)))#+ylim(25,35)
 DailyAvgSal2
 
 grid.arrange(salinityNoAirRolling,DailyAvgSal2, ncol=1)
@@ -295,28 +299,28 @@ chlA_graph
 
 OutsideChlA<-df_updated[df_updated$Location=="Outside",'mean']
 InsideChlA<-df_updated[df_updated$Location=="Inside",'mean']
-mean(InsideChlA) #7.63
-mean(OutsideChlA) #6.03
-mean(InsideChlA)-mean(OutsideChlA) #1.60
-sd(InsideChlA) #3.47
-sd(OutsideChlA) #2.28
-sqrt((sd(InsideChlA))^2+(sd(OutsideChlA))^2) #4.15
-max(InsideChlA) #14.45
-max(OutsideChlA) #10.16
-max(InsideChlA)-max(OutsideChlA) #4.29
-min(InsideChlA) #2.35
-min(OutsideChlA) #2.97
-min(InsideChlA)-min(OutsideChlA)
+# mean(InsideChlA) #7.63
+# mean(OutsideChlA) #6.03
+# mean(InsideChlA)-mean(OutsideChlA) #1.60
+# sd(InsideChlA) #3.47
+# sd(OutsideChlA) #2.28
+# sqrt((sd(InsideChlA))^2+(sd(OutsideChlA))^2) #4.15
+# max(InsideChlA) #14.45
+# max(OutsideChlA) #10.16
+# max(InsideChlA)-max(OutsideChlA) #4.29
+# min(InsideChlA) #2.35
+# min(OutsideChlA) #2.97
+# min(InsideChlA)-min(OutsideChlA)
 
 differencesChlA<-data.frame(OutsideChlA,InsideChlA)
 differencesChlA$Diff<-differencesChlA$InsideChlA-differencesChlA$OutsideChlA
-meanDiffChlA<-mean(differencesChlA$Diff)
-meanDiffChlA #1.60 μg/L
-sdDiffChlA<-sd(differencesChlA$Diff)
-sdDiffChlA #3.09 μg/L
-max(differencesChlA$Diff) #6.62
-min(differencesChlA$Diff) #-1.62
-length(differencesChlA$Diff[differencesChlA$Diff>0])/length(differencesChlA$Diff) #50.0%
+# meanDiffChlA<-mean(differencesChlA$Diff)
+# meanDiffChlA #1.60 μg/L
+# sdDiffChlA<-sd(differencesChlA$Diff)
+# sdDiffChlA #3.09 μg/L
+# max(differencesChlA$Diff) #6.62
+# min(differencesChlA$Diff) #-1.62
+# length(differencesChlA$Diff[differencesChlA$Diff>0])/length(differencesChlA$Diff) #50.0%
 
 ######################### Part 3: Turbidity  ########################################
 
@@ -347,27 +351,27 @@ OutsideTurbidity<-df_turbdity[df_turbdity$Location=="Outside",'mean']
 InsideTurbidity<-df_turbdity[df_turbdity$Location=="Inside",'mean']
 differences_turbidity<-data.frame(OutsideTurbidity,InsideTurbidity)
 differences_turbidity$Diff<-differences_turbidity$OutsideTurbidity-differences_turbidity$InsideTurbidity
-meanTurbidityDiff<-mean(differences_turbidity$Diff)
-meanTurbidityDiff #2.04 NTU
-sdTurbidityDiff<-sd(differences_turbidity$Diff)
-sdTurbidityDiff #3.07 NTU
-max(differences_turbidity$Diff) #10.52
-min(differences_turbidity$Diff) #0.05
+# meanTurbidityDiff<-mean(differences_turbidity$Diff)
+# meanTurbidityDiff #2.04 NTU
+# sdTurbidityDiff<-sd(differences_turbidity$Diff)
+# sdTurbidityDiff #3.07 NTU
+# max(differences_turbidity$Diff) #10.52
+# min(differences_turbidity$Diff) #0.05
 
-mean(OutsideTurbidity) #4.00
-sd(OutsideTurbidity) #3.41
-mean(InsideTurbidity) #1.95
-sd(InsideTurbidity) #0.76
-
-mean(OutsideTurbidity)-mean(InsideTurbidity) #2.04
-sqrt((sd(OutsideTurbidity))^2+(sd(InsideTurbidity))^2) #3.49
-
-max(OutsideTurbidity) #13.32
-min(OutsideTurbidity) #1.37
-max(InsideTurbidity) #3.03
-min(InsideTurbidity) #0.87
-max(OutsideTurbidity)-max(InsideTurbidity) #10.29
-min(OutsideTurbidity)-min(InsideTurbidity) #0.504
+# mean(OutsideTurbidity) #4.00
+# sd(OutsideTurbidity) #3.41
+# mean(InsideTurbidity) #1.95
+# sd(InsideTurbidity) #0.76
+# 
+# mean(OutsideTurbidity)-mean(InsideTurbidity) #2.04
+# sqrt((sd(OutsideTurbidity))^2+(sd(InsideTurbidity))^2) #3.49
+# 
+# max(OutsideTurbidity) #13.32
+# min(OutsideTurbidity) #1.37
+# max(InsideTurbidity) #3.03
+# min(InsideTurbidity) #0.87
+# max(OutsideTurbidity)-max(InsideTurbidity) #10.29
+# min(OutsideTurbidity)-min(InsideTurbidity) #0.504
 
 ###############################################################################
 ######################### Combined graphs  ########################################
